@@ -1568,6 +1568,92 @@
         return { posX, posZ, yaw, wallSide };
       }
 
+      // --- THUẬT TOÁN ĐỊNH HƯỚNG VÀ GIẢI QUYẾT VA CHẠM BÀN - GHẾ (CHAIR-TABLE DOCKING & CLEARANCE SOLVER) ---
+      function resolveChairTableInteractions(resolvedList) {
+        if (!Array.isArray(resolvedList)) return;
+        const tables = resolvedList.filter(r => r.item.kind === 'table' || r.item.kind === 'desk');
+        const chairs = resolvedList.filter(r => r.item.kind === 'chair');
+
+        chairs.forEach(chair => {
+          let bestParent = null;
+          let minDist = Infinity;
+
+          tables.forEach(parent => {
+            const dist = Math.hypot(parent.posX - chair.posX, parent.posZ - chair.posZ);
+            if (dist < minDist) {
+              minDist = dist;
+              bestParent = parent;
+            }
+          });
+
+          if (!bestParent) return;
+
+          const tw = bestParent.item?.width || 1.6;
+          const td = bestParent.item?.depth || 0.8;
+          const cw = chair.item?.width || 0.55;
+          const cd = chair.item?.depth || 0.55;
+          const tyaw = ((bestParent.yaw || 0) * Math.PI) / 180;
+
+          const relX = chair.posX - bestParent.posX;
+          const relZ = chair.posZ - bestParent.posZ;
+          const cosT = Math.cos(-tyaw);
+          const sinT = Math.sin(-tyaw);
+          const lx = relX * cosT - relZ * sinT;
+          const lz = relX * sinT + relZ * cosT;
+
+          const hw = tw / 2;
+          const hd = td / 2;
+          const reachW = hw + cd * 0.75;
+          const reachD = hd + cd * 0.75;
+
+          // Chỉ can thiệp nếu ghế nằm trong phạm vi tương tác của chiếc bàn này
+          if (Math.abs(lx) > reachW || Math.abs(lz) > reachD) {
+            return;
+          }
+
+          const targetDepthZ = hd + cd * 0.35 - 0.06;
+          const targetDepthX = hw + cd * 0.35 - 0.06;
+          const isPenetrating = Math.abs(lx) < targetDepthX && Math.abs(lz) < targetDepthZ;
+
+          const normX = Math.abs(lx) / (hw || 1);
+          const normZ = Math.abs(lz) / (hd || 1);
+
+          let targetLx = lx;
+          let targetLz = lz;
+
+          if (isPenetrating) {
+            if (normZ >= normX) {
+              const signZ = lz >= 0 ? 1 : -1;
+              targetLz = signZ * targetDepthZ;
+              targetLx = Math.max(-hw + cw * 0.45, Math.min(hw - cw * 0.45, lx));
+            } else {
+              const signX = lx >= 0 ? 1 : -1;
+              targetLx = signX * targetDepthX;
+              targetLz = Math.max(-hd + cw * 0.45, Math.min(hd - cw * 0.45, lz));
+            }
+
+            const cosInv = Math.cos(tyaw);
+            const sinInv = Math.sin(tyaw);
+            chair.posX = bestParent.posX + (targetLx * cosInv - targetLz * sinInv);
+            chair.posZ = bestParent.posZ + (targetLx * sinInv + targetLz * cosInv);
+          }
+
+          // Kiểm tra và hiệu chỉnh góc quay: Mặt ngồi (-Z) luôn hướng vào bàn, lưng tựa (+Z) quay ra ngoài
+          const toTableX = bestParent.posX - chair.posX;
+          const toTableZ = bestParent.posZ - chair.posZ;
+          const correctFacingYaw = Math.atan2(-toTableX, -toTableZ) * 180 / Math.PI;
+
+          const curYawRad = ((chair.yaw || 0) * Math.PI) / 180;
+          const backX = Math.sin(curYawRad);
+          const backZ = Math.cos(curYawRad);
+          const backFacesTable = (backX * toTableX + backZ * toTableZ) > 0;
+
+          if (isPenetrating || backFacesTable) {
+            chair.yaw = correctFacingYaw;
+          }
+        });
+      }
+
       // --- THUẬT TOÁN ĐỊNH HƯỚNG VÀ TIẾP XÚC THÔNG MINH (SMART ERGONOMIC & ORIENTATION SOLVER) ---
       function solveObjectPlacementAndOrientation(items, rw, rd, rh) {
         if (!Array.isArray(items)) return [];
@@ -1631,50 +1717,22 @@
           }
         });
 
-        // B4: Xử lý ghế ngồi (Chair) - ĐẢM BẢO 100% LUÔN HƯỚNG VÀO BÀN HỌC / BÀN TRÀ
+        // B4: Xử lý ghế ngồi (Chair) - ĐẢM BẢO 100% LUÔN HƯỚNG VÀO BÀN HỌC / BÀN TRÀ & KHÔNG CHÌM VÀO BÀN
+        resolveChairTableInteractions(resolved);
+        // Với các ghế đứng độc lập xa bàn (dưới 1.1m tới tường)
         resolved.filter(r => r.item.kind === 'chair').forEach(chair => {
-          // Tìm bàn gần nhất trong bán kính 1.85m
-          let bestParent = null;
-          let minDist = 1.85;
-
-          desks.concat(tables).forEach(parent => {
-            const dist = Math.hypot(parent.posX - chair.posX, parent.posZ - chair.posZ);
-            if (dist < minDist) {
-              minDist = dist;
-              bestParent = parent;
-            }
-          });
-
-          if (bestParent) {
-            const dx = bestParent.posX - chair.posX;
-            const dz = bestParent.posZ - chair.posZ;
-            const dist = Math.hypot(dx, dz);
-            if (dist > 0.05) {
-              // Chair front (mặt ngồi nhìn về phía trước) là local -Z.
-              // Để xoay local -Z hướng về (dx, dz):
-              chair.yaw = Math.atan2(-dx, -dz) * 180 / Math.PI;
-
-              // Nếu ghế bị đặt đè quá sát vào tâm bàn (khoảng cách < 0.38m), lùi nhẹ ghế ra để tư thế ngồi chuẩn
-              if (dist < 0.38) {
-                const normX = dx / dist;
-                const normZ = dz / dist;
-                chair.posX = bestParent.posX - normX * 0.52;
-                chair.posZ = bestParent.posZ - normZ * 0.52;
-              }
-            }
-          } else {
-            // Nếu ghế đứng độc lập gần tường (dưới 1.2m tới tường) mà không có bàn
+          const nearTable = desks.concat(tables).some(p => Math.hypot(p.posX - chair.posX, p.posZ - chair.posZ) < 1.4);
+          if (!nearTable) {
             const dLeft = Math.abs(chair.posX - (-halfW));
             const dRight = Math.abs(chair.posX - halfW);
             const dBack = Math.abs(chair.posZ - halfD);
             const dFront = Math.abs(chair.posZ - (-halfD));
             const minWallDist = Math.min(dLeft, dRight, dBack, dFront);
             if (minWallDist < 1.1) {
-              // Tựa lưng vào tường, mặt hướng vào trong phòng
-              if (minWallDist === dBack) chair.yaw = 0; // tựa lưng +Z áp tường, mặt nhìn -Z vào phòng
-              else if (minWallDist === dFront) chair.yaw = 180; // tựa lưng -Z áp tường, mặt nhìn +Z vào phòng
-              else if (minWallDist === dLeft) chair.yaw = -90; // mặt nhìn +X
-              else chair.yaw = 90; // mặt nhìn -X
+              if (minWallDist === dBack) chair.yaw = 0;
+              else if (minWallDist === dFront) chair.yaw = 180;
+              else if (minWallDist === dLeft) chair.yaw = -90;
+              else chair.yaw = 90;
             }
           }
         });
@@ -1754,6 +1812,9 @@
       const solvedObjects = room.layoutVersion === 2
         ? (room.objects || []).map(item => ({ item, posX: item.x, posY: item.y || 0, posZ: item.z, yaw: item.yaw, wallSide: null }))
         : solveObjectPlacementAndOrientation(room.objects || [], w, d, h);
+
+      // Đảm bảo không ghế nào bị kẹt, chìm trong bàn hoặc quay ngược lưng vào bàn
+      resolveChairTableInteractions(solvedObjects);
 
       solvedObjects.forEach(resolved => {
         const item = resolved.item;
@@ -1859,24 +1920,51 @@
             break;
           }
           case 'chair': {
-            const chairMetalMat = createMaterial('#64748B', 0.45, 0.4);
+            const effectiveH = Math.max(0.88, fh);
+            const chairMetalMat = createMaterial('#334155', 0.45, 0.45);
             const woodCanvas = generateWoodCanvas(item.color || '#D8BA92');
             const chairWoodMat = woodCanvas
               ? new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(woodCanvas), roughness: 0.45, metalness: 0.05 })
               : createMaterial(item.color || '#D8BA92', 0.65, 0.05);
-            const clw = Math.max(0.02, Math.min(0.035, fw * 0.05));
-            // 4 chân sắt ghế
-            box(-fw * 0.42 + clw / 2, fh * 0.24, -fd * 0.4 + clw / 2, clw, fh * 0.48, clw, chairMetalMat);
-            box(fw * 0.42 - clw / 2, fh * 0.24, -fd * 0.4 + clw / 2, clw, fh * 0.48, clw, chairMetalMat);
-            box(-fw * 0.42 + clw / 2, fh * 0.24, fd * 0.4 - clw / 2, clw, fh * 0.48, clw, chairMetalMat);
-            box(fw * 0.42 - clw / 2, fh * 0.24, fd * 0.4 - clw / 2, clw, fh * 0.48, clw, chairMetalMat);
-            // Mặt ngồi gỗ uốn cong
-            box(0, fh * 0.49, 0, fw * 0.92, fh * 0.06, fd * 0.9, chairWoodMat);
-            // 2 thanh đỡ lưng tựa
-            box(-fw * 0.38, fh * 0.74, fd * 0.4, clw, fh * 0.46, clw, chairMetalMat);
-            box(fw * 0.38, fh * 0.74, fd * 0.4, clw, fh * 0.46, clw, chairMetalMat);
-            // Bản tựa lưng gỗ
-            box(0, fh * 0.84, fd * 0.41, fw * 0.88, fh * 0.22, 0.04, chairWoodMat);
+
+            // Ergonomic upholstered seat cushion (#2D3748 or #334155 or custom color)
+            const cushionHex = (item.color && item.color !== '#A0A0A0') ? item.color : '#334155';
+            const cushionMat = createMaterial(cushionHex, 0.65, 0.05);
+
+            const clw = Math.max(0.024, Math.min(0.038, fw * 0.055));
+            const legH = effectiveH * 0.48;
+
+            // 4 chân thép sơn tĩnh điện thanh mảnh, vững chắc
+            const m1 = box(-fw * 0.40 + clw / 2, legH * 0.5, -fd * 0.38 + clw / 2, clw, legH, clw, chairMetalMat);
+            const m2 = box(fw * 0.40 - clw / 2, legH * 0.5, -fd * 0.38 + clw / 2, clw, legH, clw, chairMetalMat);
+            const m3 = box(-fw * 0.40 + clw / 2, legH * 0.5, fd * 0.38 - clw / 2, clw, legH, clw, chairMetalMat);
+            const m4 = box(fw * 0.40 - clw / 2, legH * 0.5, fd * 0.38 - clw / 2, clw, legH, clw, chairMetalMat);
+
+            // Khung giằng chịu lực dưới mặt ghế
+            const m5 = box(0, legH * 0.90, 0, fw * 0.78, clw * 0.9, fd * 0.74, chairMetalMat);
+            [m1, m2, m3, m4, m5].forEach(m => { m.userData = { noTexture: true, isMetal: true }; });
+
+            // Mặt ngồi đệm êm ái, bo cạnh thác nước phía trước (mặt ngồi nhìn về -Z)
+            // Lớp đế ngồi
+            box(0, legH + 0.015, 0, fw * 0.90, 0.03, fd * 0.88, chairWoodMat);
+            // Đệm mút bọc vải/da êm ái
+            box(0, legH + 0.045, -fd * 0.02, fw * 0.88, 0.04, fd * 0.84, cushionMat);
+            // Mép bo thác nước phía trước ghế
+            box(0, legH + 0.035, -fd * 0.42, fw * 0.86, 0.035, 0.04, cushionMat);
+
+            // 2 trụ kim loại đỡ lưng tựa vút cao từ sau mặt ghế (z = +fd * 0.38)
+            const spineH = effectiveH - legH;
+            const s1 = box(-fw * 0.34, legH + spineH * 0.48, fd * 0.38, clw, spineH * 0.96, clw, chairMetalMat);
+            const s2 = box(fw * 0.34, legH + spineH * 0.48, fd * 0.38, clw, spineH * 0.96, clw, chairMetalMat);
+            [s1, s2].forEach(m => { m.userData = { noTexture: true, isMetal: true }; });
+
+            // Tựa lưng công thái học cao ráo, ôm sát cột sống (cao từ Y=0.55m lên tới effectiveH ~0.90m)
+            const backH = spineH * 0.68;
+            const backY = effectiveH - backH * 0.5 - 0.02;
+            // Bản tựa lưng gỗ / đệm êm (nằm ở phía sau +Z)
+            box(0, backY, fd * 0.40, fw * 0.86, backH, 0.04, chairWoodMat);
+            // Đệm tựa lưng êm ái phía trong (+Z tựa lưng, phía trong hướng -Z về phía người ngồi)
+            box(0, backY, fd * 0.375, fw * 0.80, backH * 0.88, 0.025, cushionMat);
             break;
           }
           case 'bed':
@@ -2554,7 +2642,7 @@
           group.traverse(child => {
             if (child.isMesh) {
               // Preserve metallic frames and legs from being overwritten by wood or fabric textures
-              if (child.material && typeof child.material.metalness === 'number' && child.material.metalness >= 0.3) return;
+              if (child.userData?.noTexture || (child.material && typeof child.material.metalness === 'number' && child.material.metalness >= 0.3)) return;
               apply(child, target[0], fw, fd);
             }
           });
