@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "expo start",
+    "start": "expo start --go",
+    "start:lan": "expo start --go --lan",
+    "start:tunnel": "expo start --go --tunnel",
+    "start:client": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "prestart": "node scripts/build-viewer.cjs",

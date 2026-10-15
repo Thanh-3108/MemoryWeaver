@@ -691,11 +691,11 @@ export default function App() {
         }, 10000);
       }
     } else {
+      setStatus(isEn ? 'Expo Go mode: Tap sample voice chips below (use APK for hardware mic).' : 'Chế độ Expo Go: Chạm gợi ý giọng nói bên dưới (dùng APK để thu mic thật).');
       if (voiceTimeoutRef.current) clearTimeout(voiceTimeoutRef.current);
       voiceTimeoutRef.current = setTimeout(() => {
         setIsListeningVoice(false);
-        setStatus(isEn ? 'Microphone timed out.' : 'Đã tự động tắt micro do không có giọng nói.');
-      }, 8500);
+      }, 15000);
     }
   };
 
