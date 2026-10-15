@@ -7,14 +7,23 @@ echo                 MEMORYWEAVER - TRUNG TAM KHOI DONG
 echo ======================================================================
 echo.
 echo  [1] Nguoi dung Cai App APK: CHI CAN BAT SERVER (Khong can Expo, khong can QR)
-echo  [2] Lap trinh vien: Bat dong thoi Server + Expo Dev Server (che do Tunnel)
-echo  [3] Build lai file APK moi nhat (Release Standalone)
+echo  [2] Chay Server + Expo Dev Server (Tunnel - vuot tuong lua, quet ma tu moi noi)
+echo  [3] Chay Server + Expo Dev Server (LAN - truc tiep Wi-Fi noi bo)
+echo  [4] Build lai file APK moi nhat (Release Standalone)
+echo  [5] Mo Tuong lua Windows cho mang noi bo (Cho che do LAN)
 echo.
-set /p opt="Nhap lua chon cua ban [1/2/3] (Mac dinh 1): "
+set /p opt="Nhap lua chon cua ban [1/2/3/4/5] (Mac dinh 1): "
 if "%opt%"=="" set opt=1
 
-if "%opt%"=="3" (
+if "%opt%"=="4" (
     call BUILD_APK.bat
+    exit /b 0
+)
+
+if "%opt%"=="5" (
+    cd expo-app
+    powershell -NoProfile -ExecutionPolicy Bypass -File "allow-local-network.ps1"
+    pause
     exit /b 0
 )
 
@@ -45,8 +54,13 @@ start "MemoryWeaver - Backend Server (Port 8787)" cmd /k "cd server && npm start
 
 timeout /t 2 /nobreak >nul
 
-echo [2/2] Dang khoi dong Expo App Bundler (Che do Tunnel tranh bi tuong lua chan)...
-start "MemoryWeaver - Expo App" cmd /k "cd expo-app && npx expo start --tunnel --clear"
+if "%opt%"=="2" (
+    echo [2/2] Dang khoi dong Expo App Bundler (Che do Tunnel - vuot tuong lua)...
+    start "MemoryWeaver - Expo App" cmd /k "cd expo-app && npx expo start --tunnel --clear"
+) else (
+    echo [2/2] Dang khoi dong Expo App Bundler (Che do LAN noi bo)...
+    start "MemoryWeaver - Expo App" cmd /k "cd expo-app && npx expo start --clear"
+)
 
 echo.
 echo ======================================================================
