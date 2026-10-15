@@ -65,7 +65,7 @@ export function createServer({ apiKey = process.env.GEMINI_API_KEY, token = proc
         ] }, req);
     }
     const connectionCheck = req.method === 'GET' && pathname === '/api/connection';
-    if (!connectionCheck && (req.method !== 'POST' || !['/api/room','/api/segment','/api/extract-textures'].includes(pathname))) return send(res, 404, { error: 'Không tìm thấy API.' }, req);
+    if (!connectionCheck && (req.method !== 'POST' || !['/api/room','/api/segment','/api/extract-textures','/api/transcribe'].includes(pathname))) return send(res, 404, { error: 'Không tìm thấy API.' }, req);
     if (token) {
       const got = Buffer.from(req.headers.authorization || '');
       const expected = Buffer.from(`Bearer ${token}`);
@@ -92,8 +92,40 @@ export function createServer({ apiKey = process.env.GEMINI_API_KEY, token = proc
         if (length > 6_200_000) { send(res, 413, { error: 'Ảnh quá lớn.' }); return; }
         chunks.push(chunk);
       }
+      let rawJson;
+      try { rawJson = JSON.parse(Buffer.concat(chunks).toString('utf8')); }
+      catch { return send(res, 400, { error: 'Dữ liệu JSON không hợp lệ.' }); }
+      if (pathname === '/api/transcribe') {
+        const audio = rawJson.audioBase64 || rawJson.audio || rawJson.imageBase64 || '';
+        if (!audio) return send(res, 400, { error: 'Hãy cung cấp dữ liệu âm thanh.' });
+        if (!effectiveApiKey) return send(res, 503, { error: 'Server chưa có GEMINI_API_KEY để phiên âm giọng nói.' });
+        try {
+          const mime = rawJson.mimeType || 'audio/mp4';
+          const cleanB64 = audio.includes(',') ? audio.split(',')[1] : audio;
+          const transcribeRes = await fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+            method: 'POST', signal: controller.signal,
+            headers: { 'x-goog-api-key': effectiveApiKey, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                role: 'user',
+                parts: [
+                  { text: 'Hãy nghe đoạn âm thanh này và chuyển thành văn bản tiếng Việt chính xác những gì người nói đã nói. Chỉ trả về đúng câu nói đó, không thêm bất kỳ bình luận hay định dạng nào khác.' },
+                  { inlineData: { mimeType: mime, data: cleanB64 } }
+                ]
+              }],
+              generationConfig: { maxOutputTokens: 256, temperature: 0.1 }
+            })
+          });
+          if (!transcribeRes.ok) return send(res, 502, { error: 'Không thể phiên âm giọng nói.' });
+          const tJson = await transcribeRes.json();
+          const spokenText = (tJson.candidates?.[0]?.content?.parts?.[0]?.text || '').trim();
+          return send(res, 200, { text: spokenText }, req);
+        } catch (e) {
+          return send(res, 500, { error: e.message || 'Lỗi nhận diện âm thanh.' }, req);
+        }
+      }
       let input;
-      try { input = validateInput(JSON.parse(Buffer.concat(chunks).toString('utf8'))); }
+      try { input = validateInput(rawJson); }
       catch (err) { return send(res, 400, { error: err.message }); }
       if (pathname === '/api/extract-textures') {
         if (!input.image) return send(res, 400, { error: 'Hãy chọn ảnh để lấy texture.' });

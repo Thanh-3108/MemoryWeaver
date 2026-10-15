@@ -11,7 +11,10 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
-  Alert
+  Alert,
+  NativeModules,
+  NativeEventEmitter,
+  PermissionsAndroid
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
@@ -20,6 +23,9 @@ import * as SecureStore from 'expo-secure-store';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import { requestRoom, validEndpoint, requestDiagnosis, extractTextures } from './lib/room-api';
 import RoomViewer3D from './components/RoomViewer3D';
+
+const { VoiceRecognition } = NativeModules;
+const voiceEmitter = VoiceRecognition ? new NativeEventEmitter(VoiceRecognition) : null;
 
 const DEFAULT_APP_TOKEN = 'f5634d78c2437a8171514944e2ca5c657917267aea61fe77';
 const DEFAULT_REMOTE_ENDPOINT = typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_API_URL
@@ -285,9 +291,43 @@ export default function App() {
   useEffect(() => {
     loadSettings();
     loadSavedRooms();
+
+    if (!voiceEmitter) return;
+    const subReady = voiceEmitter.addListener('onSpeechReady', () => {
+      setStatus('Đang lắng nghe giọng nói...');
+    });
+    const subStart = voiceEmitter.addListener('onSpeechStart', () => {
+      setStatus('Đang ghi nhận giọng nói...');
+    });
+    const subPartial = voiceEmitter.addListener('onSpeechPartialResults', (e) => {
+      if (e?.text) setInputText(e.text);
+    });
+    const subResults = voiceEmitter.addListener('onSpeechResults', (e) => {
+      if (voiceTimeoutRef.current) clearTimeout(voiceTimeoutRef.current);
+      setIsListeningVoice(false);
+      if (e?.text) {
+        setInputText(e.text);
+        sendMessage(e.text, { isVoice: true });
+      }
+    });
+    const subError = voiceEmitter.addListener('onSpeechError', (e) => {
+      if (voiceTimeoutRef.current) clearTimeout(voiceTimeoutRef.current);
+      setIsListeningVoice(false);
+      setStatus(e?.message || 'Đã tắt micro.');
+    });
+    const subEnd = voiceEmitter.addListener('onSpeechEnd', () => {
+      setIsListeningVoice(false);
+    });
+
     return () => {
       abortControllerRef.current?.abort();
       if (voiceTimeoutRef.current) clearTimeout(voiceTimeoutRef.current);
+      subReady.remove();
+      subStart.remove();
+      subPartial.remove();
+      subResults.remove();
+      subError.remove();
+      subEnd.remove();
     };
   }, []);
 
@@ -537,22 +577,64 @@ export default function App() {
     return roomReply || 'Đã cập nhật căn phòng theo ý bạn.';
   };
 
-  const startVoiceListening = () => {
+  const requestMicrophonePermission = async () => {
+    if (Platform.OS !== 'android') return true;
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+        {
+          title: 'Quyền sử dụng Micro',
+          message: 'MemoryWeaver cần quyền micro để bạn có thể ra lệnh và sắp xếp phòng bằng giọng nói.',
+          buttonPositive: 'Cho phép',
+          buttonNegative: 'Từ chối'
+        }
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    } catch (e) {
+      console.warn('Microphone permission request error:', e);
+      return false;
+    }
+  };
+
+  const startVoiceListening = async () => {
     if (isBusy) return;
+    const hasPerm = await requestMicrophonePermission();
+    if (!hasPerm) {
+      Alert.alert('Cần quyền Micro', 'Vui lòng cấp quyền micro để sử dụng tính năng giọng nói.');
+      return;
+    }
+
     setIsListeningVoice(true);
     setSpeakingText('Tôi đang nghe');
     setStatus('Đang lắng nghe giọng nói…');
-    if (voiceTimeoutRef.current) clearTimeout(voiceTimeoutRef.current);
-    voiceTimeoutRef.current = setTimeout(() => {
-      setIsListeningVoice(false);
-      setStatus('Đã tự động tắt micro do không có giọng nói.');
-    }, 8500);
+
+    if (VoiceRecognition && typeof VoiceRecognition.startListening === 'function') {
+      try {
+        await VoiceRecognition.startListening({ promptText: 'Tôi đang nghe' });
+      } catch (err) {
+        console.warn('VoiceRecognition start error:', err);
+        if (voiceTimeoutRef.current) clearTimeout(voiceTimeoutRef.current);
+        voiceTimeoutRef.current = setTimeout(() => {
+          setIsListeningVoice(false);
+          setStatus('Đã tắt micro.');
+        }, 10000);
+      }
+    } else {
+      if (voiceTimeoutRef.current) clearTimeout(voiceTimeoutRef.current);
+      voiceTimeoutRef.current = setTimeout(() => {
+        setIsListeningVoice(false);
+        setStatus('Đã tự động tắt micro do không có giọng nói.');
+      }, 8500);
+    }
   };
 
   const stopVoiceListening = () => {
     if (voiceTimeoutRef.current) clearTimeout(voiceTimeoutRef.current);
     setIsListeningVoice(false);
     setStatus('Đã tắt micro.');
+    if (VoiceRecognition && typeof VoiceRecognition.stopListening === 'function') {
+      VoiceRecognition.stopListening().catch(() => {});
+    }
   };
 
   const toggleVoiceListening = () => {
@@ -617,7 +699,11 @@ export default function App() {
         setPendingPlacement({ item: missingItem, rawPrompt });
         setStatus(`Hỏi thêm vị trí: Bạn muốn đặt ${missingItem} vào đâu?`);
         if (options.isVoice || isListeningVoice) {
-          setSpeakingText('Bạn muốn đặt nó vào đâu?');
+          const askText = 'Bạn muốn đặt nó vào đâu?';
+          setSpeakingText(askText);
+          if (VoiceRecognition && typeof VoiceRecognition.speak === 'function') {
+            VoiceRecognition.speak(askText).catch(() => {});
+          }
         }
         setInputText('');
         return;
@@ -677,6 +763,9 @@ export default function App() {
       const closingConfirmation = generateConfirmationSpeech(prompt, data.reply);
       if (options.isVoice || isListeningVoice) {
         setSpeakingText(closingConfirmation);
+        if (VoiceRecognition && typeof VoiceRecognition.speak === 'function') {
+          VoiceRecognition.speak(closingConfirmation).catch(() => {});
+        }
       }
 
       if (usePhotoTexture && imagePayload) {
