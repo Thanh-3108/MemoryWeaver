@@ -29,7 +29,14 @@ export async function requestRoom({ endpoint, token, prompt, image, previousRoom
     throw netErr;
   }
   let data;
-  try { data = await res.json(); } catch { throw new Error(`Server trả dữ liệu không hợp lệ (${res.status}).`); }
+  try {
+    data = await res.json();
+  } catch {
+    if (res.status === 502 || res.status === 503 || res.status === 504) {
+      throw new Error(`Đường truyền Cloudflare/máy chủ đang bận (${res.status}). Vui lòng bấm Gửi lại sau vài giây.`);
+    }
+    throw new Error(`Server trả dữ liệu không hợp lệ (${res.status}).`);
+  }
   if (!res.ok) throw new Error(data.error || `Lỗi server (${res.status}).`);
   return validateRoom(data);
 }

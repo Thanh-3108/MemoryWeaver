@@ -120,12 +120,44 @@ test('source attribution requires a real text quote and never retains stale attr
   assert.equal(after.objects[0].source.type, 'inferred');
   assert.equal(after.caregiverContext, undefined);
 });
+
+test('createRoom sanitizes dimensions, bounds, synonyms and invalid objects from raw AI output', () => {
+  const raw = {
+    title: 'Lớp học xưa',
+    reply: 'Đã dựng lại lớp học',
+    wallColor: 'white',
+    floorColor: '#abc',
+    width: 6, depth: 6, height: 3,
+    floorTextureStyle: 'wood',
+    lightingStyle: 'morning',
+    objects: [
+      { kind: 'book', label: 'Sách giáo khoa', description: 'Quyển sách cũ', color: '#123456', x: 0, y: 0.8, z: 0, yaw: 0, width: 0.2, height: 0.02, depth: 0.15 },
+      { kind: 'whiteboard', label: 'Bảng trắng', description: 'Bảng treo trên tường', color: '#FFFFFF', x: 0, y: 1.2, z: -3.5, yaw: 0, width: 2.0, height: 1.0, depth: 0.1 },
+      { kind: 'couch', label: 'Ghế dài', description: 'Ghế ngồi nghỉ', color: '#555555', x: 5.0, y: 0, z: 0, yaw: 90, width: 1.8, height: 0.9, depth: 0.8 },
+      { kind: 'unknown_alien_artifact', label: 'Vật thể lạ', description: 'Bỏ qua vật không hợp lệ', color: '#000', x: 0, y: 0, z: 0, yaw: 0, width: 1, height: 1, depth: 1 }
+    ]
+  };
+  const room = createRoom(raw, 'lớp học xưa');
+  assert.equal(room.floorTextureStyle, 'wood_planks');
+  assert.equal(room.lightingStyle, 'morning_sun');
+  assert.equal(room.wallColor, '#FFFFFF');
+  assert.equal(room.floorColor, '#AABBCC');
+  assert.equal(room.objects.length, 3);
+  assert.equal(room.objects[0].kind, 'book');
+  assert.ok(room.objects[0].height >= 0.05);
+  assert.equal(room.objects[1].kind, 'whiteboard');
+  assert.ok(Math.abs(room.objects[1].z) + room.objects[1].depth / 2 <= room.depth / 2);
+  assert.equal(room.objects[2].kind, 'sofa');
+  assert.ok(Math.abs(room.objects[2].x) + room.objects[2].depth / 2 <= room.width / 2);
+  assert.doesNotThrow(() => validateRoom(room));
+});
+
 test('bad output repairs once, repeated invalid output returns error without replacing room', async () => {
   for (const repair of [true, false]) {
     let calls = 0;
     await withServer({ fetchImpl: async () => response(++calls === 1 || !repair ? { ...fixture, width: 100 } : fixture) }, async url => {
       const r = await post(url, { prompt: 'room' });
-      assert.equal(r.status, repair ? 200 : 502); assert.equal(calls, 2);
+      assert.equal(r.status, repair ? 200 : 422); assert.equal(calls, 2);
     });
   }
 });

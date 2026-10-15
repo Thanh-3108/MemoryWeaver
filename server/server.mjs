@@ -175,6 +175,7 @@ export function createServer({ apiKey = process.env.GEMINI_API_KEY, token = proc
       let room;
       try { room = input.previous ? applyEdit(input.previous, JSON.parse(text), input.prompt) : createRoom(JSON.parse(text), input.prompt); }
       catch (error) {
+        console.log(`[VALIDATION_FAILED attempt=${attempt}]`, error.message);
         if (attempt === 0) {
           contents = [
             ...contents,
@@ -183,7 +184,7 @@ export function createServer({ apiKey = process.env.GEMINI_API_KEY, token = proc
           ];
           continue;
         }
-        return send(res, 502, { error: 'AI chưa tạo được bố cục hợp lệ sau hai lần thử. Hãy mô tả phòng đơn giản hơn.' }, req);
+        return send(res, 422, { error: 'AI chưa tạo được bố cục hợp lệ sau hai lần thử. Hãy mô tả phòng đơn giản hơn.' }, req);
       }
       return send(res, 200, room, req);
       }
