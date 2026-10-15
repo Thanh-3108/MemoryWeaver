@@ -2274,7 +2274,12 @@
     const photoTextures = new Set();
     function clearPhotoTextures() {
       photoMaterials.forEach((original, material) => {
-        material.map = original;
+        if (original && typeof original === 'object') {
+          material.map = original.map !== undefined ? original.map : original;
+          if (original.roughness !== undefined) material.roughness = original.roughness;
+        } else {
+          material.map = original;
+        }
         material.needsUpdate = true;
       });
       photoMaterials.clear();
@@ -2298,8 +2303,12 @@
         if (!texture) return;
         const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
         materials.forEach(material => {
-          if (!photoMaterials.has(material)) photoMaterials.set(material, material.map);
+          if (!photoMaterials.has(material)) photoMaterials.set(material, { map: material.map, roughness: material.roughness });
           material.map = texture;
+          if (texPack.pbr_materials && texPack.pbr_materials[kind]) {
+            const pbr = texPack.pbr_materials[kind];
+            if (typeof pbr.roughness === 'number') material.roughness = pbr.roughness;
+          }
           material.needsUpdate = true;
         });
       }
@@ -2311,8 +2320,14 @@
         whiteboard: ['board',1,1], blackboard: ['board',1,1], board: ['board',1,1],
         window: ['window',1,2], curtain: ['window',1,2], sofa: ['sofa',2,2] };
       furnitureMeshes.forEach(group => {
-        const target = mapping[group.userData?.furnitureInfo?.kind];
-        if (target) group.traverse(child => { if (child.isMesh) apply(child, ...target); });
+        const info = group.userData?.furnitureInfo;
+        const kind = info?.kind;
+        const target = mapping[kind];
+        if (target) {
+          const fw = Math.max(1, Math.round(info?.width || target[1]));
+          const fd = Math.max(1, Math.round(info?.depth || target[2]));
+          group.traverse(child => { if (child.isMesh) apply(child, target[0], fw, fd); });
+        }
       });
       render();
     }

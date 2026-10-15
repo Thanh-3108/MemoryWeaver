@@ -97,7 +97,7 @@ export function createServer({ apiKey = process.env.GEMINI_API_KEY, token = proc
       catch (err) { return send(res, 400, { error: err.message }); }
       if (pathname === '/api/extract-textures') {
         if (!input.image) return send(res, 400, { error: 'Hãy chọn ảnh để lấy texture.' });
-        try { return send(res, 200, await textureImpl(input.image, controller.signal)); }
+        try { return send(res, 200, await textureImpl(input.image, controller.signal, effectiveApiKey, fetchImpl)); }
         catch (error) {
           return send(res, error.name === 'AbortError' ? 504 : 503, { code: 'TEXTURE_UNAVAILABLE', error: 'Chưa lấy được texture ảnh. Phòng 3D vẫn dùng vật liệu mặc định; kiểm tra Python, numpy, Pillow và OpenCV nếu muốn bật tính năng này.' });
         }

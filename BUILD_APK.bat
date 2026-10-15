@@ -10,15 +10,10 @@ echo.
 set "JAVA_HOME=C:\Program Files\Microsoft\jdk-17.0.20.101-hotspot"
 set "Path=%JAVA_HOME%\bin;%Path%"
 
-echo [1/2] Dang dong bo ma nguon moi nhat sang thu muc build...
-copy /Y "expo-app\App.js" "..\expo-app\App.js" >nul
-xcopy /E /I /Y "expo-app\components" "..\expo-app\components" >nul
-xcopy /E /I /Y "expo-app\generated" "..\expo-app\generated" >nul
-xcopy /E /I /Y "expo-app\viewer" "..\expo-app\viewer" >nul
-xcopy /E /I /Y "expo-app\lib" "..\expo-app\lib" >nul
+echo [1/2] Chuan bi moi truong build APK Release...
+cd expo-app\android
 
 echo [2/2] Dang bien dich APK Release bang Gradle (cho khoang 1-2 phut)...
-cd ..\expo-app\android
 cmd /c "gradlew.bat assembleRelease"
 if errorlevel 1 (
     echo.
@@ -27,8 +22,8 @@ if errorlevel 1 (
     exit /b 1
 )
 
-copy /Y "app\build\outputs\apk\release\app-release.apk" "..\..\MemoryWeaver\MemoryWeaver.apk" >nul
 copy /Y "app\build\outputs\apk\release\app-release.apk" "..\..\MemoryWeaver.apk" >nul
+copy /Y "app\build\outputs\apk\release\app-release.apk" "..\..\..\MemoryWeaver.apk" >nul
 
 echo.
 echo ======================================================================

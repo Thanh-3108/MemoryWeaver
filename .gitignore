@@ -6,3 +6,7 @@ Builds/
 Logs/
 **/__pycache__/
 *.apk
+**/android/.gradle/
+**/android/app/build/
+**/android/build/
+**/android/app/.cxx/
