@@ -10,3 +10,4 @@ Logs/
 **/android/app/build/
 **/android/build/
 **/android/app/.cxx/
+*.exe

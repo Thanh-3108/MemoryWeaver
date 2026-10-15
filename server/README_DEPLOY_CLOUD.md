@@ -1,38 +1,42 @@
-# 🌐 HƯỚNG DẪN DEPLOY SERVER LÊN CLOUD (MIỄN PHÍ & KHÔNG ĐỔI IP)
+# 🌐 HƯỚNG DẪN ĐƯA SERVER LÊN CLOUD (KHÔNG LO ĐỔI IP)
 
-Để điện thoại không bao giờ bị lỗi mất kết nối khi đổi mạng Wi-Fi, bạn có thể triển khai Backend Server lên nền tảng Cloud miễn phí (Render, Railway hoặc Koyeb). Sau khi deploy, server sẽ có một đường link cố định HTTPS (ví dụ: `https://memoryweaver-api.onrender.com`).
+Để điện thoại không bao giờ bị mất kết nối khi đổi mạng Wi-Fi hay dùng 4G/5G, bạn có 2 giải pháp hoàn hảo:
 
 ---
 
-## CÁCH 1: DEPLOY MIỄN PHÍ LÊN RENDER.COM (Khuyên Dùng - 2 Phút)
+## 🚀 GIẢI PHÁP 1: BẬT CHẾ ĐỘ CLOUD TRÊN MÁY TÍNH (1 CLICK - 3 GIÂY)
+
+Không cần cài đặt hay đăng ký bất kỳ tài khoản nào:
+1. Nhấp đúp vào **`CHAY_SERVER.bat`**.
+2. Chọn số **`1`** (Chế độ Cloud HTTPS).
+3. Máy tính sẽ tự động cấp một đường link Cloud HTTPS toàn cầu (ví dụ: `https://abc-xyz.trycloudflare.com`).
+4. Mở App MemoryWeaver trên điện thoại $\rightarrow$ vào mục **Cài đặt** (Bánh răng) $\rightarrow$ dán đường link HTTPS này vào và bấm **Lưu**.
+
+> Điện thoại ở bất kỳ đâu, dùng 4G/5G hay Wi-Fi nào cũng kết nối thông suốt về máy tính!
+
+---
+
+## ☁️ GIẢI PHÁP 2: DEPLOY LÊN CLOUD 24/7 (RENDER SINGAPORE - MIỄN PHÍ)
+
+Nếu muốn server hoạt động 24/7 ngay cả khi bạn tắt máy tính:
 
 1. Đăng ký tài khoản miễn phí tại: [https://render.com](https://render.com) (đăng nhập bằng GitHub).
-2. Tạo mới **Web Service** $\rightarrow$ chọn Repository GitHub `MemoryWeaver` của bạn.
-3. Cấu hình các thông số:
-   - **Root Directory:** `server`
-   - **Environment:** `Node`
-   - **Build Command:** `npm install` (hoặc để trống vì server không cần thư viện nặng)
-   - **Start Command:** `node server.mjs`
-   - **Instance Type:** `Free`
-4. Cài đặt Biến Môi Trường (Environment Variables):
-   - `GEMINI_API_KEY`: Dán khóa API của bạn (hoặc người dùng có thể tự nhập khóa trong Cài đặt của app).
-   - `APP_ACCESS_TOKEN`: Dán mã token bảo mật của bạn.
-   - `PORT`: `8787` (hoặc để Render tự cấp).
-5. Bấm **Create Web Service** $\rightarrow$ Render sẽ cung cấp URL dạng:
+2. Tạo mới: Chọn **New +** $\rightarrow$ **Blueprint**.
+3. Chọn Repository GitHub `MemoryWeaver` của bạn.
+4. Render sẽ tự động đọc file cấu hình **`render.yaml`** đã chuẩn bị sẵn:
+   - **Khu vực:** Singapore (mạng cực nhanh về Việt Nam).
+   - **Runtime:** Node.js 22.
+   - **Gói:** Miễn phí 100% (Free Plan).
+5. Nhập biến môi trường `GEMINI_API_KEY`: Dán khóa Gemini API của bạn vào.
+6. Bấm **Apply** $\rightarrow$ Sau 2 phút, bạn sẽ có một tên miền cố định vĩnh viễn dạng:
    ```
-   https://memoryweaver-api.onrender.com
+   https://memoryweaver-ai-server.onrender.com
    ```
-6. Mở App MemoryWeaver trên điện thoại $\rightarrow$ vào **Cài đặt** $\rightarrow$ dán URL HTTPS này vào $\rightarrow$ Lưu kết nối!
-   Từ nay dù bạn đi đâu, dùng 4G hay bất kỳ mạng Wi-Fi nào, app vẫn kết nối thông suốt 100%!
+7. Mở App trên điện thoại $\rightarrow$ vào Cài đặt $\rightarrow$ dán địa chỉ này vào và dùng mãi mãi không bao giờ phải đổi lại!
 
 ---
 
-## CÁCH 2: DÙNG NGROK KHI VẪN CHẠY TRÊN MÁY TÍNH (Tạm Thời)
+## 🛠️ GIẢI PHÁP 3: RAILWAY / DOCKER
 
-Nếu bạn muốn chạy server trên máy tính nhưng ra ngoài vẫn dùng được 4G:
-1. Mở terminal tại máy tính:
-   ```bash
-   npx ngrok http 8787
-   ```
-2. Ngrok sẽ sinh ra một URL public dạng: `https://xxxx-xx-xx.ngrok-free.app`.
-3. Dán URL này vào mục Cài đặt của App trên điện thoại.
+Mã nguồn đã tích hợp sẵn **`railway.json`** và **`server/Dockerfile`**:
+* Trên Railway: Chỉ cần chọn **Deploy from GitHub repo** $\rightarrow$ Hệ thống tự động nhận diện `Dockerfile` và deploy trong 1 phút.

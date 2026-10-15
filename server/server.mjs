@@ -196,8 +196,15 @@ export function createServer({ apiKey = process.env.GEMINI_API_KEY, token = proc
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const host = process.env.HOST || '0.0.0.0';
-  if (!['127.0.0.1', 'localhost', '::1'].includes(host) && (process.env.APP_ACCESS_TOKEN || '').length < 24) {
-    console.error('APP_ACCESS_TOKEN must have at least 24 characters for LAN.'); process.exit(1);
+  const port = Number(process.env.PORT || 8787);
+  const token = process.env.APP_ACCESS_TOKEN || '';
+  if (token && token.length < 8) {
+    console.error('APP_ACCESS_TOKEN must have at least 8 characters.');
+    process.exit(1);
   }
-  createServer().listen(Number(process.env.PORT || 8787), host, () => console.log(`MemoryWeaver server listening on ${host}:${process.env.PORT || 8787}`));
+  createServer().listen(port, host, () => {
+    console.log(`MemoryWeaver server listening on ${host}:${port}`);
+    if (token) console.log('Authentication: Bearer token enabled.');
+    else console.log('Authentication: Open API (No token required).');
+  });
 }

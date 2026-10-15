@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: memoryweaver-ai-server
+    runtime: node
+    plan: free
+    region: singapore
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node server.mjs
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-flash-lite-latest
+      - key: APP_ACCESS_TOKEN
+        generateValue: true
+      - key: HOST
+        value: 0.0.0.0
