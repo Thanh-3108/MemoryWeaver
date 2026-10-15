@@ -51,8 +51,79 @@ Hệ thống sẽ tự động bật 2 cửa sổ:
 - **Cửa sổ 2:** Expo Dev Server (Hiển thị mã QR để quét bằng điện thoại qua app **Expo Go**).
 
 ### Bước 2: Trải nghiệm ngay
-1. Trên điện thoại, mở **Expo Go** và quét mã QR.
+1. Trên điện thoại, mở **Expo Go** và quét mã QR (hoặc cài đặt trực tiếp file `MemoryWeaver.apk`).
 2. Tại màn hình **Người Soạn Phòng**:
    - Bạn có thể bấm ngay `📂 Thư viện phòng` $\rightarrow$ chọn **"Lớp học của Thành (Giờ ăn trưa 12h)"** để mở ngay căn phòng mẫu hoàn chỉnh!
    - Bấm nút **`🌟 Bắt đầu cho người bệnh`** ở góc trên.
    - Thưởng thức trải nghiệm bước đi trong phòng học thời niên thiếu, chạm vào bàn học của Thành, nghe đọc chuyện kỷ niệm giờ ăn trưa 12h!
+
+---
+
+## 🎙️ 3. TRỢ LÝ GIỌNG NÓI & ĐIỀU KHIỂN KHÔNG GIAN THÔNG MINH
+
+Ứng dụng tích hợp hệ thống điều khiển giọng nói tiếng Việt tự nhiên:
+1. **Nút `[ 🎙️ Nói ]`:**
+   - Chạm vào nút, hệ thống sẽ cất giọng đọc *"Tôi đang nghe..."* và hiển thị thanh sóng âm lắng nghe.
+   - **Tự động ngắt thông minh:** Nếu sau 8 giây không có âm thanh giọng nói, hệ thống sẽ tự động tắt micro và thông báo *"Đã tự động tắt micro do không có giọng nói"*.
+2. **Khảo sát vị trí thông minh (Spatial Clarification):**
+   - Nếu bạn nói hoặc chat lệnh thêm đồ vật mà **thiếu thông tin vị trí** (ví dụ: *"Thêm một cái ghế"* hay *"Thêm tivi"*):
+     + **Giọng nói:** Hệ thống sẽ hỏi lại ngay: *"Bạn muốn đặt nó vào đâu?"*
+     + **Chat:** Hệ thống gửi tin nhắn: *"Bạn muốn đặt [vật thể] vào vị trí nào trong phòng? (ví dụ: đằng trước cái bàn, bên cạnh cửa sổ, hay trên tường?)"*
+     + Bạn chỉ cần trả lời tiếp (ví dụ: *"đằng trước bàn học"*) $\rightarrow$ AI sẽ tự động ghép nối và đặt đúng vị trí!
+3. **Câu nói chốt lại kết quả:**
+   - Khi hoàn thành yêu cầu, hệ thống sẽ cất giọng xác nhận trực quan, ví dụ: *"Đã thêm một cái kệ đằng sau cái bàn."*, *"Đã dịch chuyển ghế lại gần cửa sổ."*, *"Đã điều chỉnh kích thước căn phòng."*
+
+---
+
+## 📐 4. MỞ RỘNG PHÒNG THEO ĐO ĐẠC & GẮN ĐỒ LÊN TƯỜNG
+
+- **Mở rộng phòng theo kích thước mét hoặc tỉ lệ:**
+  - Nhập hoặc nói: *"Mở rộng phòng thêm 1 mét"*, *"Tăng chiều dài lên 8 mét"*, *"Mở rộng không gian phòng khách"*.
+  - AI sẽ điều chỉnh kích thước sàn và tường (`width`, `depth` từ 4m đến 16m) mà vẫn giữ nguyên vị trí hài hòa của các đồ vật bên trong.
+- **Tự động hít tường (Wall Snapping):**
+  - Các vật thể như `cửa sổ (window)`, `bảng (whiteboard)`, `tranh ảnh (picture)`, `đồng hồ (clock)`, `rèm (curtain)`, `điều hòa (air_conditioner)` được thuật toán Three.js tự động hít sát vào bức tường gần nhất, tính toán độ cao cân đối và xoay góc mặt vào lòng phòng.
+
+---
+
+## ⚙️ 5. CÀI ĐẶT SERVER CLOUD & NHẬP GEMINI API TRỰC TIẾP
+
+Không còn lo lắng việc đổi mạng Wi-Fi làm thay đổi địa chỉ IP máy tính:
+1. Mở mục **Cài đặt** trên góc phải ứng dụng.
+2. **Nhập URL Server Cloud (HTTPS):** Triển khai server lên Render, Railway hoặc ngrok theo hướng dẫn trong [server/README_DEPLOY_CLOUD.md](file:///F:/MemoryWeaver/MemoryWeaver/server/README_DEPLOY_CLOUD.md).
+3. **Khóa Gemini API (Tùy chọn):** Bạn có thể nhập trực tiếp Gemini API Key (`AIzaSy...`) của mình vào ô cài đặt. Ứng dụng sẽ gửi khóa an toàn qua header `X-Gemini-API-Key` đến server.
+
+---
+
+## 📲 6. BẢN CÀI ĐẶT ĐỘC LẬP (APK)
+
+Trong thư mục dự án đã đóng gói sẵn file APK độc lập:
+```
+F:\MemoryWeaver\MemoryWeaver\MemoryWeaver.apk
+```
+- Bạn chỉ cần chép file này sang điện thoại Android và bấm cài đặt một lần duy nhất.
+- Ứng dụng chạy trực tiếp như app thông thường, tự lưu cấu hình trong bộ nhớ máy, không cần chạy lại các câu lệnh môi trường mỗi lần mở.
+
+---
+
+## 🐙 7. ĐỒNG BỘ MÃ NGUỒN LÊN GITHUB
+
+Toàn bộ mã nguồn dự án đã được quản lý bằng Git với 2 nhánh chính thống:
+- `main`: Nhánh production ổn định.
+- `develop`: Nhánh phát triển tính năng mới.
+
+Để đồng bộ hoặc push lên repository GitHub của bạn:
+1. Chạy file:
+   ```
+   DONG_BO_GITHUB.bat
+   ```
+2. Nhập URL repository GitHub của bạn (ví dụ `https://github.com/TenBan/MemoryWeaver.git`).
+3. Script sẽ tự động commit và đẩy cả hai nhánh `main` và `develop` lên GitHub.
+
+Các lệnh Git cơ bản dùng hàng ngày:
+```bash
+git pull origin main                      # Kéo code mới nhất về máy
+git checkout develop                      # Chuyển sang nhánh develop để code
+git add .                                 # Thêm thay đổi
+git commit -m "noi dung thay doi"         # Ghi nhận commit
+git push origin develop                   # Đẩy lên GitHub
+```
