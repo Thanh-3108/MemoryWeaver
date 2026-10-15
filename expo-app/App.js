@@ -21,8 +21,10 @@ import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import { requestRoom, validEndpoint, requestDiagnosis, extractTextures } from './lib/room-api';
 import RoomViewer3D from './components/RoomViewer3D';
 
-const DEFAULT_APP_TOKEN = '';
-const DEFAULT_REMOTE_ENDPOINT = typeof process !== 'undefined' ? (process.env?.EXPO_PUBLIC_API_URL || '') : '';
+const DEFAULT_APP_TOKEN = 'f5634d78c2437a8171514944e2ca5c657917267aea61fe77';
+const DEFAULT_REMOTE_ENDPOINT = typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_API_URL
+  ? process.env.EXPO_PUBLIC_API_URL
+  : 'http://192.168.1.207:8787';
 
 const SUGGESTIONS = [
   'Lớp học bận rộn lúc 12h trưa, bàn học của Thành ở góc phải ngay cửa sổ',
