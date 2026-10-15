@@ -224,8 +224,8 @@
       furnitureMeshes.forEach(group => {
         const info = group.userData?.furnitureInfo;
         const kind = info?.kind || '';
-        // Skip small props that should not block walking
-        if (['rug', 'picture', 'notebook', 'water_bottle', 'mug', 'clock', 'curtain', 'air_conditioner', 'fan'].includes(kind)) return;
+        // Skip small props and ceiling/wall fixtures that should not block walking
+        if (['rug', 'picture', 'notebook', 'water_bottle', 'mug', 'clock', 'curtain', 'air_conditioner', 'fan', 'projector', 'projector_screen'].includes(kind)) return;
         const box = new THREE.Box3().setFromObject(group);
         // Slightly contract box 2cm to avoid getting stuck when walking close
         box.min.x += 0.02; box.min.z += 0.02;
@@ -584,6 +584,40 @@
       ctx.fillRect(130, 243, 40, 6);
       ctx.fillStyle = '#4B5563'; // Đồ lau bảng
       ctx.fillRect(180, 241, 55, 9);
+      return canvas;
+    }
+
+    function generateSlideCanvas(title) {
+      if (!hasCanvasSupport) return null;
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 320;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+      // Mặt phông màn chiếu trắng ngà chống lóa
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, 512, 320);
+      // Thanh tiêu đề bài học màu xanh hải quân / chuẩn giáo dục
+      ctx.fillStyle = '#1E3A8A';
+      ctx.fillRect(0, 0, 512, 48);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 18px sans-serif';
+      ctx.fillText(title || 'BÀI GIẢNG ĐIỆN TỬ • TRÌNH CHIẾU', 24, 31);
+      // Nội dung đề cương bài thuyết trình / bài giảng
+      ctx.fillStyle = '#1E293B';
+      ctx.font = '14px sans-serif';
+      ctx.fillText('1. Nội dung trọng tâm bài học & chu trình phản ứng', 28, 85);
+      ctx.fillText('2. Phân tích sơ đồ & khái niệm cốt lõi', 28, 118);
+      ctx.fillText('3. Thảo luận nhóm & thực hành vận dụng', 28, 151);
+      // Khung sơ đồ / hình ảnh minh họa bài giảng
+      ctx.fillStyle = '#F8FAFC';
+      ctx.strokeStyle = '#94A3B8';
+      ctx.lineWidth = 1.5;
+      ctx.fillRect(36, 175, 440, 110);
+      ctx.strokeRect(36, 175, 440, 110);
+      ctx.fillStyle = '#64748B';
+      ctx.font = '13px monospace';
+      ctx.fillText('[ Sơ đồ phân tích chu trình & dữ liệu minh họa ]', 78, 236);
       return canvas;
     }
 
@@ -1525,7 +1559,7 @@
 
         // B1: Xác định tọa độ sơ bộ của toàn bộ vật thể (kèm snap tường cho đồ gắn tường)
         const resolved = items.map(item => {
-          const isWallFixture = ['window', 'door', 'whiteboard', 'blackboard', 'air_conditioner', 'curtain', 'clock', 'picture'].includes(item.kind);
+          const isWallFixture = ['window', 'door', 'whiteboard', 'blackboard', 'air_conditioner', 'curtain', 'clock', 'picture', 'projector_screen'].includes(item.kind);
           let posX = item.x;
           let posY = typeof item.y === 'number' ? item.y : 0;
           let posZ = item.z;
@@ -1539,12 +1573,10 @@
             yaw = snapped.yaw;
             wallSide = snapped.wallSide;
             if (posY < 0.3) {
-              if (item.kind === 'air_conditioner') posY = rh * 0.74;
-              else if (item.kind === 'clock') posY = rh * 0.70;
-              else if (item.kind === 'picture') posY = rh * 0.50;
-              else if (item.kind === 'whiteboard' || item.kind === 'blackboard') posY = rh * 0.38;
-              else if (item.kind === 'window' || item.kind === 'curtain') posY = rh * 0.36;
+              if (item.kind === 'clock') posY = rh * 0.70;
             }
+          } else if (item.kind === 'projector') {
+            if (posY < 0.3) posY = rh - (item.height || 0.35) - 0.15;
           }
 
           return {
@@ -1558,15 +1590,15 @@
           };
         });
 
-        // B2: Nhận diện các tâm điểm phòng (bảng dạy học, TV, bàn học, bàn trà)
-        const teachingBoard = resolved.find(r => r.item.kind === 'whiteboard' || r.item.kind === 'blackboard');
+        // B2: Nhận diện các tâm điểm phòng (màn chiếu, bảng dạy học, TV, bàn học, bàn trà)
+        const teachingBoard = resolved.find(r => r.item.kind === 'projector_screen' || r.item.kind === 'whiteboard' || r.item.kind === 'blackboard');
         const tvList = resolved.filter(r =>
           r.item.kind === 'television' || r.item.kind === 'tv' ||
           /tivi|ti vi|tv|television|màn hình/i.test((r.item.label || '') + ' ' + (r.item.description || ''))
         );
         const desks = resolved.filter(r => r.item.kind === 'desk');
         const tables = resolved.filter(r => r.item.kind === 'table');
-        const supports = resolved.filter(r => ['desk', 'table', 'shelf', 'cabinet', 'chair', 'bed'].includes(r.item.kind));
+        const supports = resolved.filter(r => ['desk', 'table', 'shelf', 'cabinet', 'chair', 'bed', 'podium'].includes(r.item.kind));
 
         // B3: Xử lý định hướng bàn học (Desk)
         // Nếu trong lớp học có bảng dạy học, mặt trước bàn học (tấm chắn chân +Z) hướng về phía bảng
@@ -2102,6 +2134,81 @@
             box(screenW * 0.44, tvCenterY - screenH * 0.45, -screenD * 0.52, 0.012, 0.012, 0.01, ledMat);
             break;
           }
+          case 'projector_screen': {
+            const casingMat = createMaterial('#E2E8F0', 0.4, 0.4);
+            const borderMat = createMaterial('#0F172A', 0.85, 0.05);
+            const barMat = createMaterial('#94A3B8', 0.5, 0.3);
+            const slideCanvas = generateSlideCanvas(item.label || room.title);
+            let screenFaceMat;
+            if (slideCanvas) {
+              const slideTex = new THREE.CanvasTexture(slideCanvas);
+              screenFaceMat = new THREE.MeshStandardMaterial({ map: slideTex, roughness: 0.35, metalness: 0.0 });
+            } else {
+              screenFaceMat = createMaterial('#FFFFFF', 0.35, 0.0);
+            }
+            // 1. Hộp cuốn màn chiếu nhôm trên đỉnh (Top roller casing)
+            box(0, 1.8 + fh * 0.48, 0, fw, 0.08, 0.08, casingMat);
+            // 2. Viền đen che sáng màn chiếu (Black masking border)
+            box(0, 1.8, -0.015, fw * 0.98, fh * 0.95, 0.015, borderMat);
+            // 3. Mặt vải màn chiếu trắng hiển thị slide (Projection white surface)
+            box(0, 1.8, -0.025, fw * 0.92, fh * 0.88, 0.01, screenFaceMat);
+            // 4. Thanh đối trọng đáy màn chiếu (Bottom tension bar)
+            box(0, 1.8 - fh * 0.48, -0.02, fw * 0.96, 0.035, 0.035, barMat);
+            break;
+          }
+          case 'projector': {
+            const caseMat = createMaterial('#F1F5F9', 0.35, 0.1);
+            const lensMat = createMaterial('#0284C7', 0.1, 0.8);
+            const ventMat = createMaterial('#334155', 0.6, 0.3);
+            const rodMat = createMaterial('#94A3B8', 0.4, 0.6);
+            const ceilingY = roomGroup.userData.height || 3.0;
+            const projY = Math.min(ceilingY - 0.35, Math.max(2.2, ceilingY - 0.45));
+            const rodH = ceilingY - projY;
+
+            // 1. Trụ treo trần kim loại và bản mã ốp trần
+            box(0, projY + rodH * 0.5, 0, 0.04, rodH, 0.04, rodMat, false);
+            box(0, ceilingY - 0.01, 0, 0.18, 0.02, 0.18, rodMat, false);
+
+            // 2. Thân máy chiếu hiện đại
+            box(0, projY, 0, fw, fh, fd, caseMat);
+
+            // 3. Ống kính quang học kính xanh ngọc hướng về phía trước (-Z)
+            box(fw * 0.22, projY, -fd * 0.52, fw * 0.26, fh * 0.65, 0.04, lensMat);
+
+            // 4. Khe tản nhiệt hai bên thân máy
+            box(-fw * 0.49, projY, 0, 0.02, fh * 0.6, fd * 0.6, ventMat);
+            box(fw * 0.49, projY, 0, 0.02, fh * 0.6, fd * 0.6, ventMat);
+
+            // 5. Đèn LED báo nguồn
+            box(-fw * 0.32, projY + fh * 0.51, fd * 0.25, 0.02, 0.01, 0.02, createMaterial('#10B981', 0.2, 0.1));
+            break;
+          }
+          case 'podium': {
+            const podiumWoodCanvas = generateWoodCanvas(item.color || '#5C3A21');
+            const podiumWoodMat = podiumWoodCanvas
+              ? new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(podiumWoodCanvas), roughness: 0.5, metalness: 0.05 })
+              : createMaterial(item.color || '#5C3A21', 0.65, 0.05);
+            const trimMat = createMaterial('#D4AF37', 0.3, 0.7);
+            const micMat = createMaterial('#1E293B', 0.4, 0.6);
+
+            // 1. Đế bục giảng vững chắc
+            box(0, fh * 0.03, 0, fw, fh * 0.06, fd, podiumWoodMat);
+
+            // 2. Thân bục đứng thanh lịch
+            box(0, fh * 0.48, 0, fw * 0.82, fh * 0.84, fd * 0.78, podiumWoodMat);
+
+            // 3. Viền chỉ kim loại trang trí mặt trước
+            box(0, fh * 0.52, -fd * 0.40, fw * 0.68, fh * 0.55, 0.02, trimMat);
+
+            // 4. Mặt bàn dốc đặt giáo án
+            box(0, fh * 0.95, 0, fw * 0.96, fh * 0.06, fd * 0.92, podiumWoodMat);
+            box(0, fh * 0.98, -fd * 0.44, fw * 0.92, 0.035, 0.03, trimMat);
+
+            // 5. Micro cổ ngỗng của giáo viên
+            box(-fw * 0.28, fh * 1.08, -fd * 0.2, 0.015, 0.22, 0.015, micMat);
+            box(-fw * 0.26, fh * 1.20, -fd * 0.25, 0.028, 0.05, 0.028, micMat);
+            break;
+          }
           default:
             box(0, fh * 0.5, 0, fw, fh, fd, woodMat);
         }
@@ -2277,6 +2384,7 @@
         if (original && typeof original === 'object') {
           material.map = original.map !== undefined ? original.map : original;
           if (original.roughness !== undefined) material.roughness = original.roughness;
+          if (original.color && material.color) material.color.copy(original.color);
         } else {
           material.map = original;
         }
@@ -2292,10 +2400,13 @@
       if (!roomGroup || !texPack || typeof texPack !== 'object') return;
       const cache = new Map();
       function apply(mesh, kind, x, y) {
-        if (!mesh?.material || typeof texPack[kind] !== 'string') return;
+        let texSrc = texPack[kind];
+        if (!texSrc && kind === 'screen' && texPack['board']) texSrc = texPack['board'];
+        if (!texSrc && kind === 'board' && texPack['screen']) texSrc = texPack['screen'];
+        if (!mesh?.material || typeof texSrc !== 'string') return;
         const key = kind + ':' + x + ':' + y;
         if (!cache.has(key)) {
-          const texture = loadTextureFromBase64(texPack[kind], x, y);
+          const texture = loadTextureFromBase64(texSrc, x, y);
           cache.set(key, texture);
           if (texture) photoTextures.add(texture);
         }
@@ -2303,8 +2414,17 @@
         if (!texture) return;
         const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
         materials.forEach(material => {
-          if (!photoMaterials.has(material)) photoMaterials.set(material, { map: material.map, roughness: material.roughness });
+          if (!photoMaterials.has(material)) {
+            photoMaterials.set(material, {
+              map: material.map,
+              roughness: material.roughness,
+              color: material.color ? material.color.clone() : null
+            });
+          }
           material.map = texture;
+          if (material.color) {
+            material.color.set(0xffffff); // Reset base tint so photo textures render with 100% vibrant, authentic colors
+          }
           if (texPack.pbr_materials && texPack.pbr_materials[kind]) {
             const pbr = texPack.pbr_materials[kind];
             if (typeof pbr.roughness === 'number') material.roughness = pbr.roughness;
@@ -2316,9 +2436,21 @@
       apply(floorMesh, 'floor', Math.max(2, Math.round(rw * .8)), Math.max(2, Math.round(rd * .8)));
       wallMeshes.forEach(mesh => { if (mesh !== ceilingMesh) apply(mesh, 'wall', 4, 2); });
       apply(ceilingMesh, 'ceiling', 4, 4);
-      const mapping = { desk: ['desk',2,2], table: ['desk',2,2], chair: ['chair',1,1],
-        whiteboard: ['board',1,1], blackboard: ['board',1,1], board: ['board',1,1],
-        window: ['window',1,2], curtain: ['window',1,2], sofa: ['sofa',2,2] };
+      const mapping = {
+        desk: ['desk', 2, 2],
+        table: ['desk', 2, 2],
+        podium: ['desk', 1, 1],
+        chair: ['chair', 1, 1],
+        whiteboard: ['board', 1, 1],
+        blackboard: ['board', 1, 1],
+        board: ['board', 1, 1],
+        projector_screen: ['screen', 1, 1],
+        television: ['screen', 1, 1],
+        tv: ['screen', 1, 1],
+        window: ['window', 1, 2],
+        curtain: ['window', 1, 2],
+        sofa: ['sofa', 2, 2]
+      };
       furnitureMeshes.forEach(group => {
         const info = group.userData?.furnitureInfo;
         const kind = info?.kind;

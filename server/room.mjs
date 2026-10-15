@@ -18,10 +18,24 @@ export const editSchema = obj({ reply: str, roomChanges: obj(roomProperties, [])
   update: { type: 'array', items: obj({ id: str, changes: obj(itemProperties, []) }) },
   remove: { type: 'array', items: str }
 });
-export const instructions = `Design a stylized 3D room from Vietnamese or English text or photos. It is an approximation, not an exact reconstruction or therapy.
-Only use supported furniture kinds: sofa, table, chair, bed, shelf, cabinet, plant, lamp, rug, picture, window, door, desk, wardrobe, clock, mug, backpack, blackboard, whiteboard, curtain, water_bottle, notebook, air_conditioner, fan, book, lunchbox, television.
-Room width/depth 4..16m; height 2.5..5m; furniture width/height/depth .05..4m (even for small items like books, mugs, or clocks, width/height/depth must be at least 0.05m); x/z -8..8m; y is base elevation, 0 for floor furniture. Yaw -360..360 degrees; colors #RRGGBB; at most 20 objects. Rotated footprints must fit entirely within floor boundaries and y + height must fit below ceiling.
-Wall fixtures (window, whiteboard, blackboard, picture, clock, curtain, air_conditioner): place along one of the 4 perimeter walls, offset inside the room so the bounding box never exceeds room boundaries; elevation y = 1.0..2.2m, with yaw facing inwards into the room.
+export const instructions = `Design a stylized 3D room from Vietnamese or English text, photos, or panoramas. It is an approximation, not an exact reconstruction or therapy.
+Only use supported furniture kinds: sofa, table, chair, bed, shelf, cabinet, plant, lamp, rug, picture, window, door, desk, wardrobe, clock, mug, backpack, blackboard, whiteboard, curtain, water_bottle, notebook, air_conditioner, fan, book, lunchbox, television, projector_screen, projector, podium.
+Room width/depth 4..16m; height 2.5..5m; furniture width/height/depth .05..4m (even for small items like books, mugs, or clocks, width/height/depth must be at least 0.05m); x/z -8..8m; y is base elevation, 0 for floor furniture. Yaw -360..360 degrees; colors #RRGGBB; at most 40 objects. Rotated footprints must fit entirely within floor boundaries and y + height must fit below ceiling.
+Wall fixtures (window, whiteboard, blackboard, projector_screen, picture, clock, curtain, air_conditioner): place along one of the 4 perimeter walls, offset inside the room so the bounding box never exceeds room boundaries; elevation y = 1.0..2.2m, with yaw facing inwards into the room.
+Ceiling fixtures (projector, lamp, fan): place with base elevation y = height - height_of_item, oriented toward target surface.
+
+ROOM ARCHETYPES & SPATIAL LAYOUT RULES:
+1. CLASSROOM / LECTURE HALL (Lớp học, Phòng học, Giảng đường, Trường học):
+   - Front Wall (z ≈ -depth/2 + 0.1..0.2m): Place a large 'projector_screen' (w: 2.2..3.0m, h: 1.5..1.8m) or 'whiteboard'/'blackboard' centered. If there is a projector screen, place a 'projector' on the ceiling (z ≈ -depth/2 + 2.5..3.0m, y ≈ height - 0.4m) aimed forward at the screen. Place a teacher's desk ('desk') or 'podium' at the front corner facing the room.
+   - Student Seating: Arrange student desks ('desk') and chairs ('chair') into NEAT PARALLEL ROWS (dãy bàn học sinh) facing the front screen/board (yaw = 0). For example, 2 columns of desk rows (left column x = -1.5m, right column x = 1.5m), with 2 to 4 desks per column from front to back (e.g. z = -0.8m, z = 0.8m, z = 2.4m). Put a chair behind each desk (z_chair = z_desk + 0.55m, yaw = 0).
+   - Details: Place student accessories on desks (book, notebook, water_bottle, backpack). On side walls, place large windows (window), clock (clock) on back or front wall, door (door) near a corner, wall fan or air_conditioner.
+   - Generate between 15 and 35 objects for classrooms so the space feels complete and authentic, never bare or empty!
+2. LIVING ROOM / BEDROOM / OFFICE:
+   - Position primary furniture centered or anchored against walls, maintain clear walking paths, orient seating toward focal points.
+
+PANORAMA & WIDE PHOTO PHILOSOPHY:
+- When the input is a wide-angle or panoramic photo, perceive the full room 360-degree environment: identify all visible walls, desk rows, presentation screens, windows, and ceiling lights, producing a cohesive full-room layout.
+
 Spatial relationships & positioning: when adding or moving an object relative to another (e.g. 'đằng sau bàn', 'trước sofa', 'cạnh cửa sổ', 'behind table', 'next to window', 'on wall'), compute relative (x, y, z) based on the referenced object's position. If the user asks to add an object but completely omits the location or reference point, return empty operations (add: [], update: [], remove: []) and in reply politely ask where they would like to place it (in the user's language: Vietnamese or English).
 Room resizing & expansion: when the user asks to expand or resize the room by meters or ratios (e.g. 'mở rộng phòng thêm 1m', 'tăng chiều dài lên 8m', 'expand room by 1 meter', 'make room wider'), update width/depth in roomChanges (clamped 4..16m) and keep existing items well-positioned. Position small objects above supporting surfaces using y; parentSupport may only reference an existing object ID, otherwise leave it empty. Coordinates are from floor center.
 Use only details requested by the user or visible in the photo; mark estimated geometry and image interpretations as inferred. Do not invent people, family history, memories, medical advice or medication schedules. Do not infer personal stories from appearance. Descriptions concern visible design only. Never claim user confirmation. source.type=user_provided is allowed only when source.evidence quotes the current user's text exactly describing that item; otherwise use inferred with empty evidence. Geometry remains approximate even for user_provided objects. Restricted areas must be explained as missing information, not fabricated memories. Reply in the user's language (Vietnamese if requested in Vietnamese, English if requested in English) and describe changes without invented claims.
@@ -40,7 +54,10 @@ const KIND_SYNONYMS = {
   mat: 'rug', painting: 'picture', poster: 'picture', board: 'whiteboard',
   chalkboard: 'blackboard', bottle: 'water_bottle', cup: 'mug', bag: 'backpack',
   schoolbag: 'backpack', ac: 'air_conditioner', tv: 'television', closet: 'wardrobe',
-  locker: 'cabinet', box: 'lunchbox', trashcan: 'plant', trash_can: 'plant'
+  locker: 'cabinet', box: 'lunchbox', trashcan: 'plant', trash_can: 'plant',
+  screen: 'projector_screen', projection_screen: 'projector_screen', man_chieu: 'projector_screen',
+  slide: 'projector_screen', projector: 'projector', may_chieu: 'projector',
+  podium: 'podium', buc_giang: 'podium', buc: 'podium', lectern: 'podium'
 };
 
 const NAMED_COLORS = {
@@ -169,7 +186,7 @@ export function createRoom(result, prompt, idFactory = randomUUID) {
     fitInRoom(next, room);
     provenance(next, prompt);
     cleaned.push(next);
-    if (cleaned.length >= 20) break;
+    if (cleaned.length >= 40) break;
   }
   const ids = new Set(cleaned.map(x => x.id));
   for (const item of cleaned) {
@@ -187,7 +204,7 @@ export function applyEdit(previous, edit, prompt, idFactory = randomUUID) {
   const base = validateRoom(previous);
   assertKeys(edit, ['reply','roomChanges','add','update','remove']);
   assertKeys(edit.roomChanges, roomFields);
-  for (const key of ['add','update','remove']) if (!Array.isArray(edit[key]) || edit[key].length > 20) throw new Error('Invalid edit operations');
+  for (const key of ['add','update','remove']) if (!Array.isArray(edit[key]) || edit[key].length > 40) throw new Error('Invalid edit operations');
   const result = { ...base, ...edit.roomChanges, reply: edit.reply, objects: base.objects.map(x => structuredClone(x)) };
   const used = new Set();
   const existing = new Map(result.objects.map(x => [x.id, x]));

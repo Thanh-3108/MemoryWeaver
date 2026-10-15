@@ -20,14 +20,15 @@ export async function extractTextures(image, signal, apiKey, fetchImpl = fetch, 
 Analyze this indoor photo to extract the TRUE, CLEAN architectural and furniture textures for realistic 3D reconstruction.
 
 For each surface present in the room:
-1. 'desk' (Table top / desk surface)
-2. 'floor' (Room floor)
-3. 'wall' (Main walls)
-4. 'board' (Blackboard, whiteboard, or presentation screen)
-5. 'chair' (Chair seats / backrests)
-6. 'ceiling' (Ceiling)
-7. 'sofa' (Sofa / upholstery if present)
-8. 'window' (Window / glass / curtain)
+1. 'screen' (Projector screen, slide presentation display, or television screen)
+2. 'desk' (Table top / student desk surface)
+3. 'floor' (Room floor)
+4. 'wall' (Main walls)
+5. 'board' (Blackboard, whiteboard, or presentation screen)
+6. 'chair' (Chair seats / backrests)
+7. 'ceiling' (Ceiling)
+8. 'sofa' (Sofa / upholstery if present)
+9. 'window' (Window / glass / curtain)
 
 CRITICAL INSTRUCTIONS:
 - IDENTIFY FOREIGN CLUTTER: Surfaces often have foreign objects (e.g., on desks: laptops, computer mice, calculators, notebooks, pens, books, hands; on floors: shoes, chair legs, backpacks, shadows).

@@ -189,14 +189,15 @@ def make_seamless_tile(patch_rgb, target_size=(512, 512)):
 
 
 def synthesize_wood_texture(dom_hex='#C48A57', sec_hex='#A16637', size=(512, 512), grain_dir='horizontal', photo_patch=None):
-    """Procedurally synthesize high-definition, realistic varnished wood grain texture."""
+    """Synthesize high-definition, realistic varnished wood grain texture preserving authentic photo colors."""
     w, h = size
     c1 = hex_to_rgb(dom_hex, (196.0, 138.0, 87.0))
     c2 = hex_to_rgb(sec_hex, (161.0, 102.0, 55.0))
 
     if photo_patch is not None and photo_patch.shape[0] >= 16 and photo_patch.shape[1] >= 16:
         patch_median = np.median(photo_patch.reshape(-1, 3), axis=0).astype(np.float32)
-        c1 = 0.7 * c1 + 0.3 * patch_median
+        c1 = patch_median
+        c2 = np.clip(patch_median * 0.78, 0.0, 255.0)
 
     y = np.linspace(0, 1, h)[:, None]
     x = np.linspace(0, 1, w)[None, :]
@@ -211,30 +212,31 @@ def synthesize_wood_texture(dom_hex='#C48A57', sec_hex='#A16637', size=(512, 512
     rng = np.random.RandomState(42)
     fibers = np.sin(coord_fiber * 128.0 + np.sin(coord_cross * 8.0) * 3.0) * 0.5 + 0.5
     rings = np.sin(coord_fiber * 24.0 + np.sin(coord_cross * 4.0) * 4.5) * 0.5 + 0.5
-    noise = rng.normal(0, 0.05, (h, w))
+    noise = rng.normal(0, 0.04, (h, w))
 
-    pattern = np.clip(0.6 * fibers + 0.3 * rings + noise, 0.0, 1.0)[:, :, None]
+    pattern = np.clip(0.65 * fibers + 0.25 * rings + noise, 0.0, 1.0)[:, :, None]
     wood = c1[None, None, :] * pattern + c2[None, None, :] * (1.0 - pattern)
 
     # Subtle polyurethane clear-coat varnish sheen variation
-    sheen = rng.normal(0, 3.0, (h, w, 1))
+    sheen = rng.normal(0, 2.5, (h, w, 1))
     wood = np.clip(wood + sheen, 0, 255).astype(np.uint8)
     return make_seamless_tile(wood, target_size=size)
 
 
 def synthesize_tile_texture(dom_hex='#EAEAEA', sec_hex='#D0D0D0', size=(512, 512), tile_style='terrazzo', tiles_per_axis=2, photo_patch=None):
-    """Procedurally synthesize high-definition, realistic architectural floor tiles (terrazzo or ceramic)."""
+    """Synthesize high-definition, realistic architectural floor tiles (terrazzo or ceramic)."""
     w, h = size
     c_tile = hex_to_rgb(dom_hex, (234.0, 234.0, 234.0))
     c_grout = hex_to_rgb(sec_hex, (200.0, 200.0, 200.0))
 
     if photo_patch is not None and photo_patch.shape[0] >= 16 and photo_patch.shape[1] >= 16:
         patch_median = np.median(photo_patch.reshape(-1, 3), axis=0).astype(np.float32)
-        c_tile = 0.7 * c_tile + 0.3 * patch_median
+        c_tile = patch_median
+        c_grout = np.clip(patch_median * 0.88, 0.0, 255.0)
 
     rng = np.random.RandomState(101)
     # Fine stone / terrazzo mineral specks
-    specks = rng.normal(0, 6.0, (h, w, 1))
+    specks = rng.normal(0, 5.0, (h, w, 1))
     tile_surface = np.clip(c_tile + specks, 0, 255)
 
     # Clean grout grid lines
@@ -255,24 +257,39 @@ def synthesize_tile_texture(dom_hex='#EAEAEA', sec_hex='#D0D0D0', size=(512, 512
 
 
 def synthesize_wall_texture(dom_hex='#E2EBE5', sec_hex='#D2DDD7', size=(512, 512), photo_patch=None):
-    """Procedurally synthesize realistic matte wall paint / plaster texture."""
+    """Synthesize realistic matte wall paint / plaster texture using authentic wall color."""
     w, h = size
     c_wall = hex_to_rgb(dom_hex, (226.0, 235.0, 229.0))
     if photo_patch is not None and photo_patch.shape[0] >= 16 and photo_patch.shape[1] >= 16:
         patch_median = np.median(photo_patch.reshape(-1, 3), axis=0).astype(np.float32)
-        c_wall = 0.7 * c_wall + 0.3 * patch_median
+        c_wall = patch_median
 
     rng = np.random.RandomState(88)
-    # Subtle eggshell roller-brush texture
-    micro_stucco = rng.normal(0, 3.5, (h, w, 1))
+    micro_stucco = rng.normal(0, 3.0, (h, w, 1))
     img = np.clip(c_wall + micro_stucco, 0, 255).astype(np.uint8)
     return make_seamless_tile(img, target_size=size)
 
 
-def synthesize_board_texture(dom_hex='#F2F2F2', sec_hex='#E0E0E0', size=(512, 512)):
-    """Procedurally synthesize smooth whiteboard or projection screen enamel."""
+def synthesize_screen_texture(photo_patch=None, dom_hex='#FFFFFF', size=(512, 384)):
+    """Synthesize projector screen / slide texture directly from cropped slide patch."""
+    tw, th = size
+    if photo_patch is not None and photo_patch.shape[0] >= 32 and photo_patch.shape[1] >= 32:
+        if HAS_CV2:
+            return cv2.resize(photo_patch, (tw, th), interpolation=cv2.INTER_AREA)
+        else:
+            pil_p = Image.fromarray(photo_patch)
+            return np.array(pil_p.resize((tw, th), Image.Resampling.BILINEAR))
+    c_bg = hex_to_rgb(dom_hex, (245.0, 248.0, 250.0))
+    img = np.full((th, tw, 3), c_bg, dtype=np.uint8)
+    return img
+
+
+def synthesize_board_texture(dom_hex='#F2F2F2', sec_hex='#E0E0E0', size=(512, 512), photo_patch=None):
+    """Synthesize smooth whiteboard or projection screen enamel."""
     w, h = size
     c_board = hex_to_rgb(dom_hex, (242.0, 242.0, 242.0))
+    if photo_patch is not None and photo_patch.shape[0] >= 16 and photo_patch.shape[1] >= 16:
+        c_board = np.median(photo_patch.reshape(-1, 3), axis=0).astype(np.float32)
     rng = np.random.RandomState(55)
     micro = rng.normal(0, 1.5, (h, w, 1))
     img = np.clip(c_board + micro, 0, 255).astype(np.uint8)
@@ -332,6 +349,105 @@ def crop_box_safe(img_rgb, box):
     return img_rgb[y0:y1, x0:x1]
 
 
+def find_autonomous_patches(img_rgb):
+    """Computer Vision heuristics to automatically isolate the cleanest patches
+    for desk, floor, wall, and screen from indoor/classroom photos when AI regions are not available.
+    """
+    h, w = img_rgb.shape[:2]
+    patches = {}
+
+    # 1. Screen / Slide / Presentation Display (center-upper area: y: 0.16..0.58, x: 0.22..0.78)
+    y_s0, y_s1 = int(h * 0.16), int(h * 0.58)
+    x_s0, x_s1 = int(w * 0.22), int(w * 0.78)
+    if y_s1 > y_s0 + 30 and x_s1 > x_s0 + 30:
+        screen_crop = img_rgb[y_s0:y_s1, x_s0:x_s1]
+        if screen_crop.size > 0:
+            patches["screen"] = {
+                "patch": screen_crop,
+                "box": [int(y_s0 / h * 1000), int(x_s0 / w * 1000), int(y_s1 / h * 1000), int(x_s1 / w * 1000)],
+                "material_type": "projector_slide"
+            }
+
+    # 2. Desk wood surface (lower-mid band: y: 0.55..0.96)
+    best_desk_patch = None
+    min_clutter = float('inf')
+    best_desk_box = None
+    pw, ph = int(w * 0.24), int(h * 0.12)
+    step_y = max(15, int(h * 0.04))
+    step_x = max(20, int(w * 0.06))
+
+    for y in range(int(h * 0.55), h - ph, step_y):
+        for x in range(int(w * 0.04), w - pw, step_x):
+            candidate = img_rgb[y:y+ph, x:x+pw]
+            mean_c = np.mean(candidate, axis=(0, 1))
+            if np.mean(mean_c) < 35 or np.mean(mean_c) > 235:
+                continue
+            score = get_patch_clutter_score(candidate)
+            if mean_c[0] > mean_c[2]:  # warm wood tone bias (red > blue)
+                score -= 1.2
+            if score < min_clutter:
+                min_clutter = score
+                best_desk_patch = candidate
+                best_desk_box = [int(y / h * 1000), int(x / w * 1000), int((y + ph) / h * 1000), int((x + pw) / w * 1000)]
+
+    if best_desk_patch is not None:
+        patches["desk"] = {
+            "patch": best_desk_patch,
+            "box": best_desk_box,
+            "material_type": "varnished_wood"
+        }
+
+    # 3. Floor (bottom area: y: 0.65..0.98, central-to-wide)
+    best_floor_patch = None
+    min_floor_clutter = float('inf')
+    best_floor_box = None
+    fpw, fph = int(w * 0.18), int(h * 0.10)
+    for y in range(int(h * 0.65), h - fph, step_y):
+        for x in range(int(w * 0.20), int(w * 0.75) - fpw, step_x):
+            candidate = img_rgb[y:y+fph, x:x+fpw]
+            score = get_patch_clutter_score(candidate)
+            if score < min_floor_clutter:
+                min_floor_clutter = score
+                best_floor_patch = candidate
+                best_floor_box = [int(y / h * 1000), int(x / w * 1000), int((y + fph) / h * 1000), int((x + fpw) / w * 1000)]
+
+    if best_floor_patch is not None:
+        patches["floor"] = {
+            "patch": best_floor_patch,
+            "box": best_floor_box,
+            "material_type": "ceramic_tile"
+        }
+
+    # 4. Wall (sides, upper-mid area: y: 0.15..0.55, near edges x: 0..0.22 or 0.78..1.0)
+    best_wall_patch = None
+    min_wall_clutter = float('inf')
+    best_wall_box = None
+    wpw, wph = int(w * 0.15), int(h * 0.15)
+    wall_x_ranges = [(int(w * 0.02), int(w * 0.22)), (int(w * 0.78), max(int(w * 0.79), w - wpw - 5))]
+    for xr0, xr1 in wall_x_ranges:
+        if xr1 <= xr0:
+            continue
+        for y in range(int(h * 0.18), int(h * 0.55), step_y):
+            for x in range(xr0, xr1, step_x):
+                if x + wpw > w or y + wph > h:
+                    continue
+                candidate = img_rgb[y:y+wph, x:x+wpw]
+                score = get_patch_clutter_score(candidate)
+                if score < min_wall_clutter:
+                    min_wall_clutter = score
+                    best_wall_patch = candidate
+                    best_wall_box = [int(y / h * 1000), int(x / w * 1000), int((y + wph) / h * 1000), int((x + wpw) / w * 1000)]
+
+    if best_wall_patch is not None:
+        patches["wall"] = {
+            "patch": best_wall_patch,
+            "box": best_wall_box,
+            "material_type": "matte_wall_paint"
+        }
+
+    return patches
+
+
 def extract_textures(image_input, regions_input=None):
     """Multi-stage Texture Reconstruction Engine:
     Parses AI semantic decomposition, filters clutter, and synthesizes high-definition,
@@ -369,9 +485,11 @@ def extract_textures(image_input, regions_input=None):
             if isinstance(item, dict) and item.get("name"):
                 ai_surface_map[item["name"]] = item
 
-    target_surfaces = ["desk", "floor", "wall", "board", "chair", "ceiling", "sofa", "window"]
+    auto_patches = find_autonomous_patches(img_rgb)
+    target_surfaces = ["screen", "desk", "floor", "wall", "board", "chair", "ceiling", "sofa", "window"]
 
     surface_defaults = {
+        "screen": {"material_type": "projector_slide", "dominant_color": "#FFFFFF", "secondary_color": "#1E3A8A", "roughness": 0.20},
         "desk": {"material_type": "varnished_wood", "dominant_color": "#C48A57", "secondary_color": "#A16637", "roughness": 0.35},
         "floor": {"material_type": "ceramic_tile", "dominant_color": "#EAEAEA", "secondary_color": "#D0D0D0", "roughness": 0.45},
         "wall": {"material_type": "matte_wall_paint", "dominant_color": "#E2EBE5", "secondary_color": "#D2DDD7", "roughness": 0.85},
@@ -396,35 +514,50 @@ def extract_textures(image_input, regions_input=None):
             has_clean = info.get("has_clean_patch")
             clean_box = info.get("clean_patch_box_2d") or info.get("clean_box_2d") or info.get("box_2d")
 
-            # Stage 2: Crop clean patch if available
             photo_patch = None
             if has_clean is not False and clean_box:
                 raw_patch = crop_box_safe(img_rgb, clean_box)
                 if raw_patch is not None and raw_patch.shape[0] >= 16 and raw_patch.shape[1] >= 16:
-                    # Inpaint clutter
                     photo_patch = inpaint_clutter_and_foreign_objects(raw_patch)
                     if not info.get("dominant_color"):
                         dom_color = get_dominant_color_hex(photo_patch)
 
-            # Stage 3: High-Definition Procedural Material Synthesis
+            # Fallback to autonomous computer vision patch if AI did not provide clean patch
+            if photo_patch is None and name in auto_patches:
+                auto_entry = auto_patches[name]
+                raw_patch = auto_entry["patch"]
+                if raw_patch is not None and raw_patch.shape[0] >= 16 and raw_patch.shape[1] >= 16:
+                    if name != "screen":
+                        photo_patch = inpaint_clutter_and_foreign_objects(raw_patch)
+                    else:
+                        photo_patch = raw_patch
+                    dom_color = get_dominant_color_hex(photo_patch)
+                    clean_box = auto_entry.get("box")
+
+            # Chair fallback to desk wood color
+            if name == "chair" and photo_patch is None and "desk" in auto_patches:
+                dom_color = get_dominant_color_hex(auto_patches["desk"]["patch"])
+
+            # Stage 3: High-Definition Realistic Texture Synthesis
             synth_tile = None
             tile_size = (512, 512)
 
-            if "wood" in mat_type or name in ["desk", "table"]:
+            if name == "screen":
+                synth_tile = synthesize_screen_texture(photo_patch=photo_patch, dom_hex=dom_color, size=(512, 384))
+            elif "wood" in mat_type or name in ["desk", "table"]:
                 synth_tile = synthesize_wood_texture(dom_color, sec_color, size=tile_size, grain_dir=grain_dir, photo_patch=photo_patch)
             elif "tile" in mat_type or "terrazzo" in mat_type or name == "floor":
                 synth_tile = synthesize_tile_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
             elif "wall" in mat_type or "paint" in mat_type or name in ["wall", "ceiling"]:
                 synth_tile = synthesize_wall_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
             elif "board" in mat_type or "whiteboard" in mat_type or name == "board":
-                synth_tile = synthesize_board_texture(dom_color, sec_color, size=tile_size)
+                synth_tile = synthesize_board_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
             elif "fabric" in mat_type or name == "sofa":
                 synth_tile = synthesize_fabric_texture(dom_color, sec_color, size=tile_size)
             else:
                 synth_tile = synthesize_wood_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
 
-            # Encode to compact Base64 JPEG data URI
-            b64_data = array_to_base64_jpeg(synth_tile, quality=86)
+            b64_data = array_to_base64_jpeg(synth_tile, quality=88)
             textures[name] = b64_data
 
             pbr_materials[name] = {
@@ -447,7 +580,7 @@ def extract_textures(image_input, regions_input=None):
         "pbr_materials": pbr_materials,
         "detected_surfaces": detected_surfaces,
         "fallback_surfaces": fallback_surfaces,
-        "pipeline_version": "3.0-ai-multi-stage-reconstruction"
+        "pipeline_version": "3.5-ai-panoramic-multi-stage-reconstruction"
     }
 
 

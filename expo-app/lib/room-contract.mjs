@@ -1,5 +1,5 @@
 // Shared by the server and Expo. No network or platform dependencies.
-export const kinds = ['sofa','table','chair','bed','shelf','cabinet','plant','lamp','rug','picture','window','door','desk','wardrobe','clock','mug','backpack','blackboard','whiteboard','curtain','water_bottle','notebook','air_conditioner','fan','book','lunchbox','television'];
+export const kinds = ['sofa','table','chair','bed','shelf','cabinet','plant','lamp','rug','picture','window','door','desk','wardrobe','clock','mug','backpack','blackboard','whiteboard','curtain','water_bottle','notebook','air_conditioner','fan','book','lunchbox','television','projector_screen','projector','podium'];
 export const roomFields = ['title','wallColor','floorColor','width','depth','height','floorTextureStyle','lightingStyle'];
 export const itemFields = ['kind','label','description','x','y','z','yaw','width','height','depth','color','isInteractable','restrictedDialogue','restrictedReason','parentSupport','source'];
 const fail = message => { throw new Error(message); };
@@ -28,7 +28,7 @@ export function validateRoom(input) {
   };
   if (!['vintage_tiles','wood_planks','bamboo_mat','solid'].includes(room.floorTextureStyle)) fail('Invalid floor style');
   if (!['morning_sun','warm_evening','cozy_night'].includes(room.lightingStyle)) fail('Invalid lighting');
-  if (!Array.isArray(input.objects) || input.objects.length > 20) fail('Invalid furniture count');
+  if (!Array.isArray(input.objects) || input.objects.length > 40) fail('Invalid furniture count');
   const ids = new Set();
   for (const raw of input.objects) {
     if (!isObject(raw) || !kinds.includes(raw.kind)) fail('Unsupported furniture kind');
