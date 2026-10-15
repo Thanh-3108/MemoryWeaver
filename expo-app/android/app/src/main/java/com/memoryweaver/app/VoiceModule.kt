@@ -24,6 +24,7 @@ class VoiceModule(private val reactContext: ReactApplicationContext) :
   private var speechRecognizer: SpeechRecognizer? = null
   private var textToSpeech: TextToSpeech? = null
   private var ttsReady = false
+  private var currentLanguage: String = "vi" // "vi" | "en"
   private var mediaRecorder: MediaRecorder? = null
   private var currentRecordingFile: File? = null
   private val mainHandler = Handler(Looper.getMainLooper())
@@ -42,11 +43,12 @@ class VoiceModule(private val reactContext: ReactApplicationContext) :
 
   override fun onInit(status: Int) {
     if (status == TextToSpeech.SUCCESS) {
-      val viLocale = Locale("vi", "VN")
-      val res = textToSpeech?.setLanguage(viLocale)
+      val targetLocale = if (currentLanguage == "en") Locale.US else Locale("vi", "VN")
+      val res = textToSpeech?.setLanguage(targetLocale)
       if (res == TextToSpeech.LANG_MISSING_DATA || res == TextToSpeech.LANG_NOT_SUPPORTED) {
         textToSpeech?.setLanguage(Locale.getDefault())
       }
+      textToSpeech?.setSpeechRate(0.92f)
       ttsReady = true
     }
   }
@@ -72,10 +74,34 @@ class VoiceModule(private val reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
+  fun setLanguage(lang: String, promise: Promise) {
+    currentLanguage = if (lang.startsWith("en", ignoreCase = true)) "en" else "vi"
+    mainHandler.post {
+      try {
+        if (textToSpeech != null && ttsReady) {
+          val targetLocale = if (currentLanguage == "en") Locale.US else Locale("vi", "VN")
+          val res = textToSpeech?.setLanguage(targetLocale)
+          if (res == TextToSpeech.LANG_MISSING_DATA || res == TextToSpeech.LANG_NOT_SUPPORTED) {
+            textToSpeech?.setLanguage(Locale.getDefault())
+          }
+        }
+        promise.resolve(true)
+      } catch (e: Exception) {
+        promise.resolve(false)
+      }
+    }
+  }
+
+  @ReactMethod
   fun speak(text: String, promise: Promise) {
     mainHandler.post {
       try {
         if (textToSpeech != null && ttsReady) {
+          // Detect whether the text contains Vietnamese characters or is in English
+          val hasVietnamese = Regex("[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠĂẰẮẲẴẶÂẦẤẨẪẬÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ]").containsMatchIn(text)
+          val targetLocale = if (hasVietnamese) Locale("vi", "VN") else if (currentLanguage == "en") Locale.US else Locale("vi", "VN")
+          textToSpeech?.setLanguage(targetLocale)
+          textToSpeech?.setSpeechRate(0.92f)
           textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "MW_SPEECH_${System.currentTimeMillis()}")
           promise.resolve(true)
         } else {
@@ -103,20 +129,31 @@ class VoiceModule(private val reactContext: ReactApplicationContext) :
   fun startListening(options: ReadableMap?, promise: Promise) {
     val perm = ContextCompat.checkSelfPermission(reactContext, Manifest.permission.RECORD_AUDIO)
     if (perm != PackageManager.PERMISSION_GRANTED) {
-      promise.reject("PERMISSION_DENIED", "Chưa cấp quyền truy cập micro.")
+      val isEn = currentLanguage == "en"
+      promise.reject("PERMISSION_DENIED", if (isEn) "Microphone permission denied." else "Chưa cấp quyền truy cập micro.")
       return
     }
 
     val promptText = if (options != null && options.hasKey("promptText")) options.getString("promptText") else null
+    val requestedLang = if (options != null && options.hasKey("language")) options.getString("language") else currentLanguage
+    if (!requestedLang.isNullOrEmpty()) {
+      currentLanguage = if (requestedLang.startsWith("en", ignoreCase = true)) "en" else "vi"
+    }
+
+    val primaryLang = if (currentLanguage == "en") "en-US" else "vi-VN"
+    val secondaryLang = if (currentLanguage == "en") "vi-VN" else "en-US"
 
     mainHandler.post {
       try {
         if (!SpeechRecognizer.isRecognitionAvailable(reactContext)) {
-          promise.reject("UNAVAILABLE", "Thiết bị chưa hỗ trợ Speech Recognition.")
+          val isEn = currentLanguage == "en"
+          promise.reject("UNAVAILABLE", if (isEn) "Speech recognition not supported on this device." else "Thiết bị chưa hỗ trợ Speech Recognition.")
           return@post
         }
 
         if (!promptText.isNullOrEmpty() && textToSpeech != null && ttsReady) {
+          val hasVietnamese = Regex("[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠĂẰẮẲẴẶÂẦẤẨẪẬÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ]").containsMatchIn(promptText)
+          textToSpeech?.setLanguage(if (hasVietnamese) Locale("vi", "VN") else if (currentLanguage == "en") Locale.US else Locale("vi", "VN"))
           textToSpeech?.speak(promptText, TextToSpeech.QUEUE_FLUSH, null, "PROMPT")
         }
 
@@ -126,10 +163,11 @@ class VoiceModule(private val reactContext: ReactApplicationContext) :
 
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
           putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-          putExtra(RecognizerIntent.EXTRA_LANGUAGE, "vi-VN")
-          putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "vi-VN")
+          putExtra(RecognizerIntent.EXTRA_LANGUAGE, primaryLang)
+          putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, primaryLang)
+          putExtra("android.speech.extra.EXTRA_ADDITIONAL_LANGUAGES", arrayOf(secondaryLang))
           putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, reactContext.packageName)
-          putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3)
+          putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5)
           putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
           putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 2500L)
           putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 2000L)
@@ -178,7 +216,8 @@ class VoiceModule(private val reactContext: ReactApplicationContext) :
   fun startRecordingAudio(promise: Promise) {
     val perm = ContextCompat.checkSelfPermission(reactContext, Manifest.permission.RECORD_AUDIO)
     if (perm != PackageManager.PERMISSION_GRANTED) {
-      promise.reject("PERMISSION_DENIED", "Chưa cấp quyền truy cập micro.")
+      val isEn = currentLanguage == "en"
+      promise.reject("PERMISSION_DENIED", if (isEn) "Microphone permission denied." else "Chưa cấp quyền truy cập micro.")
       return
     }
 
@@ -232,7 +271,8 @@ class VoiceModule(private val reactContext: ReactApplicationContext) :
           map.putString("mimeType", "audio/mp4")
           promise.resolve(map)
         } else {
-          promise.reject("NO_FILE", "Không tìm thấy file ghi âm.")
+          val isEn = currentLanguage == "en"
+          promise.reject("NO_FILE", if (isEn) "Audio recording file not found." else "Không tìm thấy file ghi âm.")
         }
       } catch (e: Exception) {
         promise.reject("STOP_RECORD_ERROR", e.message, e)
@@ -261,16 +301,17 @@ class VoiceModule(private val reactContext: ReactApplicationContext) :
   }
 
   override fun onError(error: Int) {
+    val isEn = currentLanguage == "en"
     val msg = when (error) {
-      SpeechRecognizer.ERROR_NO_MATCH -> "Không nhận diện được câu nói. Hãy nói to và rõ hơn."
-      SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "Đã tắt micro do không có giọng nói."
-      SpeechRecognizer.ERROR_AUDIO -> "Lỗi thiết bị thu âm."
-      SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Chưa cấp quyền Micro."
-      SpeechRecognizer.ERROR_NETWORK -> "Lỗi kết nối mạng giọng nói."
-      SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "Hết thời gian chờ kết nối mạng."
-      SpeechRecognizer.ERROR_CLIENT -> "Lỗi ứng dụng client."
-      SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "Bộ nhận diện đang bận."
-      else -> "Lỗi nhận diện ($error)."
+      SpeechRecognizer.ERROR_NO_MATCH -> if (isEn) "No speech recognized. Please speak louder and clearly." else "Không nhận diện được câu nói. Hãy nói to và rõ hơn."
+      SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> if (isEn) "Microphone timed out due to no speech." else "Đã tắt micro do không có giọng nói."
+      SpeechRecognizer.ERROR_AUDIO -> if (isEn) "Audio recording error." else "Lỗi thiết bị thu âm."
+      SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> if (isEn) "Microphone permission not granted." else "Chưa cấp quyền Micro."
+      SpeechRecognizer.ERROR_NETWORK -> if (isEn) "Network error during speech recognition." else "Lỗi kết nối mạng giọng nói."
+      SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> if (isEn) "Speech network timeout." else "Hết thời gian chờ kết nối mạng."
+      SpeechRecognizer.ERROR_CLIENT -> if (isEn) "Client app speech error." else "Lỗi ứng dụng client."
+      SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> if (isEn) "Speech recognizer is busy." else "Bộ nhận diện đang bận."
+      else -> if (isEn) "Speech recognition error ($error)." else "Lỗi nhận diện ($error)."
     }
     val map = Arguments.createMap()
     map.putInt("code", error)
@@ -288,9 +329,10 @@ class VoiceModule(private val reactContext: ReactApplicationContext) :
       map.putArray("matches", arr)
       sendEvent("onSpeechResults", map)
     } else {
+      val isEn = currentLanguage == "en"
       val map = Arguments.createMap()
       map.putInt("code", SpeechRecognizer.ERROR_NO_MATCH)
-      map.putString("message", "Không nhận diện được giọng nói.")
+      map.putString("message", if (isEn) "No speech recognized." else "Không nhận diện được giọng nói.")
       sendEvent("onSpeechError", map)
     }
   }

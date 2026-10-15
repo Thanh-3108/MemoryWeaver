@@ -13,7 +13,7 @@ function mount(requestRoom, fetchImpl) {
     useRef: initial => { const i = cursor++; if (!(i in slots)) slots[i] = { current: initial }; return slots[i]; },
     useEffect: fn => { effects.push(fn); }
   };
-  const native = new Proxy({ StyleSheet: { create: s => s }, Platform: { OS: 'android' }, Alert: { alert: (...args) => alerts.push(args) } }, { get: (o,k) => o[k] || k });
+  const native = new Proxy({ StyleSheet: { create: s => s }, Platform: { OS: 'android' }, Alert: { alert: (...args) => alerts.push(args) }, useWindowDimensions: () => ({ width: 390, height: 844 }) }, { get: (o,k) => o[k] || k });
   const modules = {
     react: React, 'react-native': native,
     '@react-native-async-storage/async-storage': { getItem: async () => 'http://192.168.1.17:8787', removeItem: async () => {}, setItem: async (...args) => writes.push(args) },

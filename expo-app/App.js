@@ -14,7 +14,8 @@ import {
   Alert,
   NativeModules,
   NativeEventEmitter,
-  PermissionsAndroid
+  PermissionsAndroid,
+  useWindowDimensions
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
@@ -232,8 +233,14 @@ function getObjectIcon(kind) {
 }
 
 export default function App() {
+  const dims = typeof useWindowDimensions === 'function' ? useWindowDimensions() : { width: 390, height: 844 };
+  const width = dims?.width || 390;
+  const height = dims?.height || 844;
+  const isLandscape = width > height;
+
   // Trải nghiệm người dùng: 'creator' (Người soạn phòng) | 'patient' (Người bệnh Alzheimer)
   const [role, setRole] = useState('creator');
+  const [voiceLang, setVoiceLang] = useState('vi'); // 'vi' | 'en'
 
   const [messages, setMessages] = useState([
     {
@@ -291,6 +298,14 @@ export default function App() {
   useEffect(() => {
     loadSettings();
     loadSavedRooms();
+    AsyncStorage.getItem('mw_voice_lang').then(saved => {
+      if (saved === 'en' || saved === 'vi') {
+        setVoiceLang(saved);
+        if (VoiceRecognition && typeof VoiceRecognition.setLanguage === 'function') {
+          VoiceRecognition.setLanguage(saved).catch(() => {});
+        }
+      }
+    }).catch(() => {});
 
     if (!voiceEmitter) return;
     const subReady = voiceEmitter.addListener('onSpeechReady', () => {
@@ -528,40 +543,75 @@ export default function App() {
     setStatus('Đã làm mới không gian');
   };
 
-  // Kiểm tra câu lệnh thêm đồ vật xem đã có thông tin vị trí tương đối/nơi đặt hay chưa
-  const checkPlacementQuery = (text) => {
+  // Kiểm tra câu lệnh thêm đồ vật xem đã có thông tin vị trí tương đối/nơi đặt hay chưa (Hỗ trợ Song ngữ VI & EN)
+  const checkPlacementQuery = (text, lang = voiceLang) => {
     if (!text || typeof text !== 'string') return null;
     const lower = text.toLowerCase().trim();
-    const addKeywords = ['thêm', 'bổ sung', 'đặt thêm', 'cho thêm', 'kê thêm', 'tạo thêm', 'lắp thêm', 'treo thêm'];
-    const isAdd = addKeywords.some(kw => lower.includes(kw));
-    if (!isAdd) return null;
 
-    const locKeywords = [
+    // Vietnamese keywords
+    const viAddKeywords = ['thêm', 'bổ sung', 'đặt thêm', 'cho thêm', 'kê thêm', 'tạo thêm', 'lắp thêm', 'treo thêm'];
+    const viLocKeywords = [
       'đằng trước', 'phía trước', 'trước', 'đằng sau', 'phía sau', 'sau',
       'bên cạnh', 'cạnh', 'sát', 'gần', 'ở giữa', 'giữa', 'góc',
       'trên tường', 'lên tường', 'vào tường', 'tường', 'bên trái', 'bên phải',
       'trên bàn', 'trên sàn', 'dưới', 'đối diện', 'ngang'
     ];
+
+    // English keywords
+    const enAddKeywords = ['add', 'place', 'put', 'insert', 'create', 'install', 'hang', 'set up'];
+    const enLocKeywords = [
+      'in front of', 'front of', 'behind', 'back of', 'next to', 'beside', 'near',
+      'close to', 'in the middle of', 'middle of', 'center of', 'in the corner',
+      'corner', 'on the wall', 'against the wall', 'on wall', 'to the left of',
+      'to the right of', 'left of', 'right of', 'on the table', 'on the floor',
+      'under', 'opposite', 'across from'
+    ];
+
+    const isEn = lang === 'en' || (!viAddKeywords.some(kw => lower.includes(kw)) && enAddKeywords.some(kw => lower.includes(kw)));
+    const addKeywords = isEn ? enAddKeywords : viAddKeywords;
+    const locKeywords = isEn ? enLocKeywords : viLocKeywords;
+
+    const isAdd = addKeywords.some(kw => lower.includes(kw));
+    if (!isAdd) return null;
+
     const hasLocation = locKeywords.some(kw => lower.includes(kw));
     if (hasLocation) return null;
 
-    let objectName = 'đồ vật này';
+    let objectName = isEn ? 'this item' : 'đồ vật này';
     for (const kw of addKeywords) {
       const idx = lower.indexOf(kw);
       if (idx !== -1) {
         let remainder = lower.slice(idx + kw.length).trim();
-        remainder = remainder.replace(/^(một\s+|chiếc\s+|cái\s+|1\s+)/i, '').trim();
+        remainder = remainder.replace(/^(một\s+|chiếc\s+|cái\s+|1\s+|a\s+|an\s+|the\s+|some\s+)/i, '').trim();
         if (remainder) {
           objectName = remainder;
           break;
         }
       }
     }
-    return objectName;
+    return { objectName, isEn };
   };
 
-  const generateConfirmationSpeech = (promptText, roomReply) => {
+  const generateConfirmationSpeech = (promptText, roomReply, lang = voiceLang) => {
     const lower = (promptText || '').toLowerCase();
+    const isEn = lang === 'en' || /^[a-zA-Z0-9\s.,!?'"-]+$/.test(promptText || '');
+
+    if (isEn) {
+      if (lower.includes('add') || lower.includes('place') || lower.includes('put') || lower.includes('hang')) {
+        return `Added ${promptText.trim()}.`;
+      }
+      if (lower.includes('move') || lower.includes('shift') || lower.includes('slide')) {
+        return 'Moved the item to your requested position.';
+      }
+      if (lower.includes('expand') || lower.includes('wider') || lower.includes('longer') || lower.includes('size') || lower.includes('meter')) {
+        return 'Adjusted the room size.';
+      }
+      if (lower.includes('color') || lower.includes('paint')) {
+        return 'Changed the room colors.';
+      }
+      return roomReply || 'Updated the room according to your request.';
+    }
+
     if (lower.includes('thêm') || lower.includes('kê') || lower.includes('đặt') || lower.includes('treo')) {
       return `Đã ${promptText.trim()}.`;
     }
@@ -577,16 +627,29 @@ export default function App() {
     return roomReply || 'Đã cập nhật căn phòng theo ý bạn.';
   };
 
+  const toggleVoiceLanguage = async () => {
+    const nextLang = voiceLang === 'vi' ? 'en' : 'vi';
+    setVoiceLang(nextLang);
+    if (VoiceRecognition && typeof VoiceRecognition.setLanguage === 'function') {
+      VoiceRecognition.setLanguage(nextLang).catch(() => {});
+    }
+    await AsyncStorage.setItem('mw_voice_lang', nextLang).catch(() => {});
+    setStatus(nextLang === 'en' ? 'Voice language set to English 🇺🇸' : 'Đã chuyển giọng nói sang Tiếng Việt 🇻🇳');
+  };
+
   const requestMicrophonePermission = async () => {
     if (Platform.OS !== 'android') return true;
     try {
+      const isEn = voiceLang === 'en';
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
         {
-          title: 'Quyền sử dụng Micro',
-          message: 'MemoryWeaver cần quyền micro để bạn có thể ra lệnh và sắp xếp phòng bằng giọng nói.',
-          buttonPositive: 'Cho phép',
-          buttonNegative: 'Từ chối'
+          title: isEn ? 'Microphone Permission' : 'Quyền sử dụng Micro',
+          message: isEn
+            ? 'MemoryWeaver needs microphone permission so you can place objects and command the room with voice.'
+            : 'MemoryWeaver cần quyền micro để bạn có thể ra lệnh và sắp xếp phòng bằng giọng nói.',
+          buttonPositive: isEn ? 'Allow' : 'Cho phép',
+          buttonNegative: isEn ? 'Deny' : 'Từ chối'
         }
       );
       return granted === PermissionsAndroid.RESULTS.GRANTED;
@@ -600,30 +663,38 @@ export default function App() {
     if (isBusy) return;
     const hasPerm = await requestMicrophonePermission();
     if (!hasPerm) {
-      Alert.alert('Cần quyền Micro', 'Vui lòng cấp quyền micro để sử dụng tính năng giọng nói.');
+      const isEn = voiceLang === 'en';
+      Alert.alert(
+        isEn ? 'Microphone Permission Needed' : 'Cần quyền Micro',
+        isEn
+          ? 'Please grant microphone permission to use voice commands.'
+          : 'Vui lòng cấp quyền micro để sử dụng tính năng giọng nói.'
+      );
       return;
     }
 
+    const isEn = voiceLang === 'en';
+    const promptText = isEn ? 'I am listening' : 'Tôi đang nghe';
     setIsListeningVoice(true);
-    setSpeakingText('Tôi đang nghe');
-    setStatus('Đang lắng nghe giọng nói…');
+    setSpeakingText(promptText);
+    setStatus(isEn ? 'Listening to voice...' : 'Đang lắng nghe giọng nói…');
 
     if (VoiceRecognition && typeof VoiceRecognition.startListening === 'function') {
       try {
-        await VoiceRecognition.startListening({ promptText: 'Tôi đang nghe' });
+        await VoiceRecognition.startListening({ language: voiceLang, promptText });
       } catch (err) {
         console.warn('VoiceRecognition start error:', err);
         if (voiceTimeoutRef.current) clearTimeout(voiceTimeoutRef.current);
         voiceTimeoutRef.current = setTimeout(() => {
           setIsListeningVoice(false);
-          setStatus('Đã tắt micro.');
+          setStatus(isEn ? 'Microphone turned off.' : 'Đã tắt micro.');
         }, 10000);
       }
     } else {
       if (voiceTimeoutRef.current) clearTimeout(voiceTimeoutRef.current);
       voiceTimeoutRef.current = setTimeout(() => {
         setIsListeningVoice(false);
-        setStatus('Đã tự động tắt micro do không có giọng nói.');
+        setStatus(isEn ? 'Microphone timed out.' : 'Đã tự động tắt micro do không có giọng nói.');
       }, 8500);
     }
   };
@@ -631,7 +702,7 @@ export default function App() {
   const stopVoiceListening = () => {
     if (voiceTimeoutRef.current) clearTimeout(voiceTimeoutRef.current);
     setIsListeningVoice(false);
-    setStatus('Đã tắt micro.');
+    setStatus(voiceLang === 'en' ? 'Microphone turned off.' : 'Đã tắt micro.');
     if (VoiceRecognition && typeof VoiceRecognition.stopListening === 'function') {
       VoiceRecognition.stopListening().catch(() => {});
     }
@@ -659,7 +730,12 @@ export default function App() {
     }
 
     if (!inputText.trim() && !selectedImage) {
-      Alert.alert('Nhắc nhở', 'Hãy nhập mô tả hoặc chọn một bức ảnh trước khi gửi.');
+      Alert.alert(
+        voiceLang === 'en' ? 'Notice' : 'Nhắc nhở',
+        voiceLang === 'en'
+          ? 'Please enter a description or pick an image before sending.'
+          : 'Hãy nhập mô tả hoặc chọn một bức ảnh trước khi gửi.'
+      );
       return;
     }
 
@@ -671,24 +747,34 @@ export default function App() {
     const imagePayload = selectedImage;
 
     if (!rawPrompt && !imagePayload) {
-      Alert.alert('Nhắc nhở', 'Hãy nhập mô tả hoặc chọn một bức ảnh trước khi gửi.');
+      Alert.alert(
+        voiceLang === 'en' ? 'Notice' : 'Nhắc nhở',
+        voiceLang === 'en'
+          ? 'Please enter a description or pick an image before sending.'
+          : 'Hãy nhập mô tả hoặc chọn một bức ảnh trước khi gửi.'
+      );
       return;
     }
 
     let prompt = rawPrompt;
     if (pendingPlacement) {
-      prompt = `Thêm ${pendingPlacement.item} ${rawPrompt}`;
+      prompt = pendingPlacement.isEn
+        ? `Add ${pendingPlacement.item} ${rawPrompt}`
+        : `Thêm ${pendingPlacement.item} ${rawPrompt}`;
       setPendingPlacement(null);
     } else if (rawPrompt) {
-      const missingItem = checkPlacementQuery(rawPrompt);
-      if (missingItem) {
+      const placementCheck = checkPlacementQuery(rawPrompt, voiceLang);
+      if (placementCheck) {
+        const { objectName: missingItem, isEn } = placementCheck;
         const userMsgClarify = {
           id: Date.now().toString(),
-          author: 'Bạn',
+          author: isEn ? 'You' : 'Bạn',
           text: rawPrompt,
           isUser: true,
         };
-        const botQuestion = `Bạn muốn đặt ${missingItem} vào vị trí nào trong phòng? (ví dụ: đằng trước cái bàn, bên cạnh cửa sổ, hay trên tường?)`;
+        const botQuestion = isEn
+          ? `Where would you like to place ${missingItem} in the room? (e.g. behind the desk, next to the window, or on the wall?)`
+          : `Bạn muốn đặt ${missingItem} vào vị trí nào trong phòng? (ví dụ: đằng trước cái bàn, bên cạnh cửa sổ, hay trên tường?)`;
         const aiQuestionMsg = {
           id: (Date.now() + 1).toString(),
           author: 'MemoryWeaver',
@@ -696,10 +782,10 @@ export default function App() {
           isUser: false,
         };
         setMessages(prev => [...prev.slice(-39), userMsgClarify, aiQuestionMsg]);
-        setPendingPlacement({ item: missingItem, rawPrompt });
-        setStatus(`Hỏi thêm vị trí: Bạn muốn đặt ${missingItem} vào đâu?`);
+        setPendingPlacement({ item: missingItem, rawPrompt, isEn });
+        setStatus(isEn ? `Asking placement: Where to place ${missingItem}?` : `Hỏi thêm vị trí: Bạn muốn đặt ${missingItem} vào đâu?`);
         if (options.isVoice || isListeningVoice) {
-          const askText = 'Bạn muốn đặt nó vào đâu?';
+          const askText = isEn ? 'Where would you like to place it?' : 'Bạn muốn đặt nó vào đâu?';
           setSpeakingText(askText);
           if (VoiceRecognition && typeof VoiceRecognition.speak === 'function') {
             VoiceRecognition.speak(askText).catch(() => {});
@@ -858,9 +944,290 @@ export default function App() {
     ? currentRoom.objects.filter(obj => obj && obj.label)
     : [];
 
+  const renderVoiceBanner = () => {
+    if (!isListeningVoice) return null;
+    const isEn = voiceLang === 'en';
+    return (
+      <View style={styles.voiceListeningBanner}>
+        <View style={styles.voiceHeaderRow}>
+          <View style={styles.voicePulseIndicator}>
+            <Text style={styles.voicePulseDot}>🔴</Text>
+            <Text style={styles.voiceStatusTitle}>
+              {isEn ? '"I am listening..."' : '"Tôi đang nghe..."'}
+            </Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <View style={styles.voiceLangToggleRow}>
+              <TouchableOpacity
+                style={[styles.voiceLangBadge, voiceLang === 'vi' && styles.voiceLangBadgeActive]}
+                onPress={() => voiceLang !== 'vi' && toggleVoiceLanguage()}
+              >
+                <Text style={[styles.voiceLangBadgeText, voiceLang === 'vi' && styles.voiceLangBadgeTextActive]}>🇻🇳 VI</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.voiceLangBadge, voiceLang === 'en' && styles.voiceLangBadgeActive]}
+                onPress={() => voiceLang !== 'en' && toggleVoiceLanguage()}
+              >
+                <Text style={[styles.voiceLangBadgeText, voiceLang === 'en' && styles.voiceLangBadgeTextActive]}>🇺🇸 EN</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity style={styles.voiceCloseBtn} onPress={stopVoiceListening}>
+              <Text style={styles.voiceCloseBtnText}>{isEn ? '✕ Close' : '✕ Tắt'}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <Text style={styles.voiceInstructionText}>
+          {isEn
+            ? 'Speak command to add, move, or resize room (or tap quick examples):'
+            : 'Nói lệnh thêm đồ vật, di chuyển hoặc mở rộng phòng (hoặc chạm nhanh mẫu):'}
+        </Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.voiceChipsScroll}>
+          {isEn ? (
+            <>
+              <TouchableOpacity style={styles.voiceChip} onPress={() => handleVoiceInput('Add a shelf behind the desk')}>
+                <Text style={styles.voiceChipText}>🎙️ "Add shelf behind desk"</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.voiceChip} onPress={() => handleVoiceInput('Move chair closer to the window')}>
+                <Text style={styles.voiceChipText}>🎙️ "Move chair near window"</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.voiceChip} onPress={() => handleVoiceInput('Expand room by 1 meter')}>
+                <Text style={styles.voiceChipText}>🎙️ "Expand room by 1m"</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.voiceChip} onPress={() => handleVoiceInput('Hang painting on the right wall')}>
+                <Text style={styles.voiceChipText}>🎙️ "Hang painting on wall"</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.voiceChip} onPress={() => handleVoiceInput('Add a chair')}>
+                <Text style={styles.voiceChipText}>⚠️ "Add a chair" (Location test)</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <TouchableOpacity style={styles.voiceChip} onPress={() => handleVoiceInput('Thêm một cái kệ đằng sau cái bàn')}>
+                <Text style={styles.voiceChipText}>🎙️ "Thêm kệ đằng sau bàn"</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.voiceChip} onPress={() => handleVoiceInput('Dịch chuyển ghế lại gần cửa sổ')}>
+                <Text style={styles.voiceChipText}>🎙️ "Dịch ghế lại gần cửa sổ"</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.voiceChip} onPress={() => handleVoiceInput('Mở rộng căn phòng thêm 1 mét')}>
+                <Text style={styles.voiceChipText}>🎙️ "Mở rộng phòng thêm 1m"</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.voiceChip} onPress={() => handleVoiceInput('Treo bức tranh lên bức tường bên phải')}>
+                <Text style={styles.voiceChipText}>🎙️ "Treo tranh lên tường"</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.voiceChip} onPress={() => handleVoiceInput('Thêm một cái ghế')}>
+                <Text style={styles.voiceChipText}>⚠️ "Thêm một cái ghế" (Test vị trí)</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </ScrollView>
+      </View>
+    );
+  };
+
+  const renderAttachmentBar = () => (
+    <View style={styles.attachmentBar}>
+      {imageUri ? (
+        <View style={styles.attachedRow}>
+          <Image source={{ uri: imageUri }} style={styles.thumbImage} />
+          <Text style={styles.attachedText}>
+            {voiceLang === 'en' ? 'Image attached • Ready to send' : 'Đã chọn ảnh • Sẵn sàng gửi'}
+          </Text>
+          <TouchableOpacity disabled={isBusy} onPress={clearImage} style={styles.clearImgBtn}>
+            <Text style={styles.clearImgText}>{voiceLang === 'en' ? 'Remove' : 'Bỏ ảnh'}</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <Text style={styles.unattachedText}>
+          {voiceLang === 'en' ? 'No image attached' : 'Chưa chọn ảnh'}
+        </Text>
+      )}
+    </View>
+  );
+
+  const renderInputRow = () => (
+    <View style={styles.inputRow}>
+      <TouchableOpacity
+        style={[styles.photoBtn, isBusy && styles.disabledBtn]}
+        onPress={pickImage}
+        disabled={isBusy || isPicking}
+      >
+        <Text style={styles.photoBtnText}>
+          {isPicking ? (voiceLang === 'en' ? 'Wait…' : 'Đợi…') : (voiceLang === 'en' ? '+ Photo' : '+ Ảnh')}
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.textureBtn, usePhotoTexture && styles.textureBtnActive]}
+        disabled={isBusy}
+        onPress={() => setUsePhotoTexture(value => !value)}
+      >
+        <Text style={[styles.textureBtnText, usePhotoTexture && styles.textureBtnTextActive]}>
+          {usePhotoTexture ? 'Texture: ON' : 'Texture: OFF'}
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.langPillBtn}
+        onPress={toggleVoiceLanguage}
+        accessibilityLabel="Đổi ngôn ngữ giọng nói"
+      >
+        <Text style={styles.langPillText}>{voiceLang === 'vi' ? '🇻🇳 VI' : '🇺🇸 EN'}</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.voiceBtn, isListeningVoice && styles.voiceBtnActive]}
+        disabled={isBusy}
+        onPress={toggleVoiceListening}
+        accessibilityRole="button"
+        accessibilityLabel={voiceLang === 'en' ? 'Tap to speak' : 'Bấm để nói'}
+      >
+        <Text style={styles.voiceBtnText}>
+          {isListeningVoice ? (voiceLang === 'en' ? '🔴 Listening' : '🔴 Đang nghe') : (voiceLang === 'en' ? '🎙️ Speak' : '🎙️ Nói')}
+        </Text>
+      </TouchableOpacity>
+
+      <TextInput
+        style={styles.textInput}
+        placeholder={
+          voiceLang === 'en'
+            ? 'e.g.: Classroom at 12pm, Thanh desk by window…'
+            : 'Ví dụ: Phòng học của Thành lúc 12h trưa, bàn ở góc cửa sổ…'
+        }
+        placeholderTextColor="#8d9b94"
+        value={inputText}
+        onChangeText={setInputText}
+        multiline
+        maxLength={4000}
+        editable={!isBusy}
+      />
+
+      <TouchableOpacity
+        style={[styles.sendBtn, isBusy && styles.cancelBtn]}
+        accessibilityLabel={isBusy ? 'Hủy yêu cầu' : 'Gửi mô tả phòng'}
+        onPress={handleSendOrCancel}
+        disabled={isPicking}
+      >
+        <Text style={styles.sendBtnText}>
+          {isBusy ? (voiceLang === 'en' ? 'Cancel' : 'Hủy') : (voiceLang === 'en' ? 'Send' : 'Gửi')}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderMemoryBar = () => {
+    if (!currentRoom) return null;
+    return (
+      <View style={styles.memoryBar}>
+        <View style={styles.memoryLeft}>
+          <Text style={styles.memoryIcon}>🧠</Text>
+          <Text style={styles.memoryText} numberOfLines={1}>
+            {voiceLang === 'en' ? 'Room in session • Edit anytime' : 'Phòng trong phiên này • Gõ để chỉnh sửa tiếp'}
+          </Text>
+        </View>
+        <TouchableOpacity
+          style={styles.newRoomBtn}
+          onPress={() => {
+            Alert.alert(
+              voiceLang === 'en' ? 'New Room' : 'Tạo phòng mới',
+              voiceLang === 'en'
+                ? 'Do you want to reset the room memory to start fresh?'
+                : 'Bạn có muốn làm mới bộ nhớ để thiết kế căn phòng mới từ đầu không?',
+              [
+                { text: voiceLang === 'en' ? 'Cancel' : 'Hủy', style: 'cancel' },
+                {
+                  text: voiceLang === 'en' ? 'New Room' : 'Tạo phòng mới',
+                  style: 'destructive',
+                  onPress: () => {
+                    resetRoom();
+                    setStatus(voiceLang === 'en' ? 'Reset memory • Enter description' : 'Đã làm mới bộ nhớ • Nhập mô tả để tạo phòng mới');
+                  }
+                }
+              ]
+            );
+          }}
+        >
+          <Text style={styles.newRoomBtnText}>{voiceLang === 'en' ? '↺ Reset' : '↺ Phòng mới'}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const renderMessagesList = () => (
+    <ScrollView
+      ref={scrollViewRef}
+      style={styles.messageList}
+      contentContainerStyle={styles.messageListContent}
+      onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+    >
+      {messages.map(msg => (
+        <View
+          key={msg.id}
+          style={[
+            styles.messageBubble,
+            msg.isUser ? styles.userBubble : styles.aiBubble
+          ]}
+        >
+          <Text style={[styles.messageAuthor, msg.isUser && { color: '#d9eee3' }]}>{msg.author}</Text>
+          <Text style={[styles.messageText, msg.isUser && { color: '#ffffff' }]}>{msg.text}</Text>
+        </View>
+      ))}
+    </ScrollView>
+  );
+
+  const renderSuggestionsList = () => {
+    if (currentRoom || isBusy) return null;
+    return (
+      <View style={styles.suggestionsWrapper}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.suggestionsContainer}
+        >
+          {CAREGIVER_SUGGESTIONS.map((sug, idx) => (
+            <TouchableOpacity
+              key={'cg-' + idx}
+              style={styles.caregiverChip}
+              onPress={() => setInputText(sug.text)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.caregiverChipText}>{sug.label}</Text>
+            </TouchableOpacity>
+          ))}
+          {SUGGESTIONS.map((sug, idx) => (
+            <TouchableOpacity
+              key={'sug-' + idx}
+              style={styles.suggestionChip}
+              onPress={() => setInputText(sug)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.suggestionText}>💡 {sug}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+    );
+  };
+
+  const render3DViewer = () => (
+    <RoomViewer3D
+      room={currentRoom}
+      textures={textures}
+      navMode={navMode}
+      onNavModeChange={setNavMode}
+      onNavWarning={message => setStatus(message)}
+      cameraView={cameraView}
+      onSelectFurniture={handleSelectFurniture}
+      onRestrictedTouch={handleRestrictedTouch}
+      onPovChange={handlePovChange}
+      focusLabel={focusLabel}
+      speakText={speakingText}
+    />
+  );
+
   // =========================================================================
   // GIAO DIỆN 1: DÀNH CHO NGƯỜI BỆNH ALZHEIMER (PATIENT MEMORY EXPERIENCE)
   // Toàn màn hình 3D, không hộp chat, chữ to rõ, thẻ ký ức nổi, hỗ trợ đọc giọng
+  // Hỗ trợ mượt mà cả màn hình Dọc và Ngang (Portrait & Landscape)
   // =========================================================================
   if (role === 'patient') {
     return (
@@ -869,7 +1236,7 @@ export default function App() {
           <StatusBar barStyle="light-content" backgroundColor="#121a16" />
 
           {/* Thanh tiêu đề & điều hướng tĩnh lặng cho Người Bệnh */}
-          <View style={styles.patientTopBar}>
+          <View style={[styles.patientTopBar, isLandscape && styles.patientTopBarLandscape]}>
             <View style={styles.patientTitleBlock}>
               <Text style={styles.patientBadge}>👵 KHÔNG GIAN KÝ ỨC THÂN THUỘC</Text>
               <Text style={styles.patientTitleText} numberOfLines={1}>{roomTitle}</Text>
@@ -922,24 +1289,12 @@ export default function App() {
 
           {/* Khung hiển thị 3D tràn viền */}
           <View style={styles.patientViewerWrap}>
-            <RoomViewer3D
-              room={currentRoom}
-              textures={textures}
-              navMode={navMode}
-              onNavModeChange={setNavMode}
-              onNavWarning={message => setStatus(message)}
-              cameraView={cameraView}
-              onSelectFurniture={handleSelectFurniture}
-              onRestrictedTouch={handleRestrictedTouch}
-              onPovChange={handlePovChange}
-              focusLabel={focusLabel}
-              speakText={speakingText}
-            />
+            {render3DViewer()}
           </View>
 
           {/* Thanh Neo Kỷ Niệm Thân Quen (Bottom Highlights Carousel) */}
           {interactiveObjects.length > 0 && (
-            <View style={styles.patientMemoryPillsBar}>
+            <View style={[styles.patientMemoryPillsBar, isLandscape && styles.patientMemoryPillsBarLandscape]}>
               <Text style={styles.patientPillsTitle}>✨ Chạm vào kỷ niệm để gợi nhớ:</Text>
               <ScrollView
                 horizontal
@@ -975,7 +1330,7 @@ export default function App() {
           {/* Thẻ Ký Ức Nổi To Rõ (Patient Memory Card Modal) */}
           {activeMemoryModal && (
             <View style={styles.patientMemoryCardBackdrop}>
-              <View style={styles.patientMemoryCard}>
+              <View style={[styles.patientMemoryCard, isLandscape && styles.patientMemoryCardLandscape]}>
                 <View style={styles.patientCardHeader}>
                   <View style={styles.patientCardIconTitle}>
                     <Text style={styles.patientCardAvatar}>{activeMemoryModal.isInteractable ? '👵' : '🔒'}</Text>
@@ -997,7 +1352,7 @@ export default function App() {
                   </TouchableOpacity>
                 </View>
 
-                <ScrollView style={styles.patientCardBody} contentContainerStyle={{ paddingBottom: 6 }}>
+                <ScrollView style={[styles.patientCardBody, isLandscape && { maxHeight: 110 }]} contentContainerStyle={{ paddingBottom: 6 }}>
                   <Text style={styles.patientCardText}>
                     {activeMemoryModal.description}
                   </Text>
@@ -1043,9 +1398,9 @@ export default function App() {
             transparent
           >
             <View style={styles.modalOverlay}>
-              <View style={[styles.modalContent, { maxHeight: '80%' }]}>
+              <View style={[styles.modalContent, { maxHeight: isLandscape ? '92%' : '80%' }]}>
                 <Text style={styles.modalTitle}>Chọn Không Gian Ký Ức</Text>
-                <ScrollView style={{ maxHeight: 350 }}>
+                <ScrollView style={{ maxHeight: isLandscape ? 200 : 350 }}>
                   {savedRooms.map(item => (
                     <TouchableOpacity
                       key={item.id}
@@ -1077,319 +1432,227 @@ export default function App() {
   // =========================================================================
   // GIAO DIỆN 2: DÀNH CHO NGƯỜI SOẠN PHÒNG (CREATOR / CAREGIVER STUDIO)
   // Đầy đủ công cụ soạn phòng, ảnh, texture, bộ nhớ phòng, lưu trữ và nút khởi động
+  // Thiết kế thông minh hỗ trợ cả màn hình DỌC (Portrait) và NGANG (Landscape)
   // =========================================================================
   return (
     <SafeAreaProvider><SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#f4efe8" />
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        {/* Header Người Soạn Phòng */}
-        <View style={styles.header}>
-          <View>
-            <View style={styles.brandRow}>
-              <Text style={styles.appTitle}>MEMORYWEAVER</Text>
-              <Text style={styles.roleBadge}>🧑‍⚕️ Người Soạn Phòng</Text>
-            </View>
-            <Text style={styles.appSubtitle}>Biên soạn & chuẩn bị không gian gợi nhớ ký ức</Text>
-          </View>
-          <View style={styles.headerActionRow}>
-            {currentRoom && (
-              <TouchableOpacity
-                style={styles.startTherapyBtn}
-                onPress={() => {
-                  setSpeakingText(null);
-                  setActiveMemoryModal(null);
-                  setRole('patient');
-                }}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.startTherapyBtnText}>🌟 Bắt đầu cho người bệnh</Text>
-              </TouchableOpacity>
-            )}
-            <TouchableOpacity style={styles.settingsBtn} onPress={openSettings}>
-              <Text style={styles.settingsBtnText}>Cài đặt</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Thanh quản lý Thư viện phòng ký ức & Khởi động */}
-        <View style={styles.creatorActionBar}>
-          <TouchableOpacity
-            style={styles.actionPillBtn}
-            onPress={() => setSavedRoomsModalVisible(true)}
-          >
-            <Text style={styles.actionPillText}>📂 Thư viện phòng ({savedRooms.length})</Text>
-          </TouchableOpacity>
-
-          {currentRoom && (
-            <TouchableOpacity
-              style={[styles.actionPillBtn, styles.saveRoomPillBtn]}
-              onPress={() => {
-                setSaveRoomInputTitle(roomTitle || currentRoom.title || '');
-                setSaveModalVisible(true);
-              }}
-            >
-              <Text style={[styles.actionPillText, styles.saveRoomPillText]}>💾 Lưu phòng này</Text>
-            </TouchableOpacity>
-          )}
-
-          {!currentRoom && savedRooms.length > 0 && (
-            <TouchableOpacity
-              style={[styles.actionPillBtn, styles.launchPillBtn]}
-              onPress={() => selectSavedRoom(savedRooms[0])}
-            >
-              <Text style={styles.launchPillText}>⚡ Nạp mẫu "{savedRooms[0].title.slice(0, 18)}…"</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-
-        {/* === 3D Room Viewer (Tập trung không gian 3D trực quan) === */}
-        <View style={[styles.viewerContainer, isExpanded ? styles.viewerContainerExpanded : styles.viewerContainerNormal]}>
-          <View style={styles.viewerHeader}>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.roomTitleText} numberOfLines={1}>{roomTitle}</Text>
-              {povMode === 'focused' ? (
-                <Text style={styles.povSubtitleText}>👁️ Đang đứng cạnh: {focusedLabel} (Vuốt để nhìn quanh)</Text>
-              ) : currentRoom ? (
-                <Text style={styles.povSubtitleText}>🧠 Bộ nhớ bật • Gõ để chỉnh sửa tiếp đến khi đúng ý</Text>
-              ) : null}
-            </View>
-            <View style={styles.viewerControls}>
-              <TouchableOpacity
-                style={styles.expandBtn}
-                onPress={() => setIsExpanded(prev => !prev)}
-                accessibilityLabel="Phóng to hoặc thu nhỏ căn phòng"
-              >
-                <Text style={styles.expandBtnText}>{isExpanded ? '🗗 Thu gọn' : '⛶ Mở rộng'}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.resetBtn} disabled={!currentRoom} onPress={() => setNavMode(mode => mode === 'fpv' ? 'overview' : 'fpv')}>
-                <Text style={styles.resetBtnText}>{navMode === 'fpv' ? 'Toàn cảnh' : 'Bước vào phòng'}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.resetBtn} onPress={resetRoom}>
-                <Text style={styles.resetBtnText}>Làm mới</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <RoomViewer3D
-            room={currentRoom}
-            textures={textures}
-            navMode={navMode}
-            onNavModeChange={setNavMode}
-            onNavWarning={message => setStatus(message)}
-            cameraView={cameraView}
-            onSelectFurniture={handleSelectFurniture}
-            onRestrictedTouch={handleRestrictedTouch}
-            onPovChange={handlePovChange}
-            focusLabel={focusLabel}
-            speakText={speakingText}
-          />
-        </View>
-
-        {/* Chat & Controls Area */}
-        <View style={[styles.chatSection, isExpanded && styles.chatSectionCollapsed]}>
-          <View style={styles.statusBar}>
-            <Text style={styles.statusText}>{status}</Text>
-          </View>
-
-          {/* Thanh hiển thị trạng thái Bộ nhớ phòng (Room Memory Banner) */}
-          {currentRoom ? (
-            <View style={styles.memoryBar}>
-              <View style={styles.memoryLeft}>
-                <Text style={styles.memoryIcon}>🧠</Text>
-                <Text style={styles.memoryText} numberOfLines={1}>
-                  Phòng trong phiên này • Gõ để chỉnh sửa tiếp
-                </Text>
+        {isLandscape ? (
+          /* ===== BỐ CỤC MÀN HÌNH NGANG (LANDSCAPE STUDIO) ===== */
+          <View style={styles.landscapeContainer}>
+            {/* Header Màn hình Ngang Thu Gọn */}
+            <View style={styles.landscapeHeader}>
+              <View style={styles.brandRow}>
+                <Text style={styles.appTitle}>MEMORYWEAVER</Text>
+                <Text style={styles.roleBadge}>🧑‍⚕️ Studio</Text>
               </View>
-              <TouchableOpacity
-                style={styles.newRoomBtn}
-                onPress={() => {
-                  Alert.alert(
-                    'Tạo phòng mới',
-                    'Bạn có muốn làm mới bộ nhớ để thiết kế căn phòng mới từ đầu không?',
-                    [
-                      { text: 'Hủy', style: 'cancel' },
-                      {
-                        text: 'Tạo phòng mới',
-                        style: 'destructive',
-                        onPress: () => {
-                          resetRoom();
-                          setStatus('Đã làm mới bộ nhớ • Nhập mô tả để tạo phòng mới');
-                        }
-                      }
-                    ]
-                  );
-                }}
-              >
-                <Text style={styles.newRoomBtnText}>↺ Phòng mới</Text>
-              </TouchableOpacity>
-            </View>
-          ) : null}
+              <View style={styles.landscapeHeaderActions}>
+                <TouchableOpacity
+                  style={styles.actionPillBtn}
+                  onPress={() => setSavedRoomsModalVisible(true)}
+                >
+                  <Text style={styles.actionPillText}>📂 Thư viện ({savedRooms.length})</Text>
+                </TouchableOpacity>
 
-          {/* Messages list */}
-          <ScrollView
-            ref={scrollViewRef}
-            style={styles.messageList}
-            contentContainerStyle={styles.messageListContent}
-            onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
-          >
-            {messages.map(msg => (
-              <View
-                key={msg.id}
-                style={[
-                  styles.messageBubble,
-                  msg.isUser ? styles.userBubble : styles.aiBubble
-                ]}
-              >
-                <Text style={[styles.messageAuthor, msg.isUser && { color: '#d9eee3' }]}>{msg.author}</Text>
-                <Text style={[styles.messageText, msg.isUser && { color: '#ffffff' }]}>{msg.text}</Text>
-              </View>
-            ))}
-          </ScrollView>
-
-          {/* Quick suggestions when starting fresh */}
-          {!currentRoom && !isBusy ? (
-            <View style={styles.suggestionsWrapper}>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.suggestionsContainer}
-              >
-                {CAREGIVER_SUGGESTIONS.map((sug, idx) => (
+                {currentRoom && (
                   <TouchableOpacity
-                    key={'cg-' + idx}
-                    style={styles.caregiverChip}
-                    onPress={() => setInputText(sug.text)}
-                    activeOpacity={0.7}
+                    style={[styles.actionPillBtn, styles.saveRoomPillBtn]}
+                    onPress={() => {
+                      setSaveRoomInputTitle(roomTitle || currentRoom.title || '');
+                      setSaveModalVisible(true);
+                    }}
                   >
-                    <Text style={styles.caregiverChipText}>{sug.label}</Text>
+                    <Text style={[styles.actionPillText, styles.saveRoomPillText]}>💾 Lưu</Text>
                   </TouchableOpacity>
-                ))}
-                {SUGGESTIONS.map((sug, idx) => (
-                  <TouchableOpacity
-                    key={'sug-' + idx}
-                    style={styles.suggestionChip}
-                    onPress={() => setInputText(sug)}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.suggestionText}>💡 {sug}</Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
-          ) : null}
+                )}
 
-          {/* Image preview / status bar */}
-          <View style={styles.attachmentBar}>
-            {imageUri ? (
-              <View style={styles.attachedRow}>
-                <Image source={{ uri: imageUri }} style={styles.thumbImage} />
-                <Text style={styles.attachedText}>Đã chọn ảnh • Sẵn sàng gửi</Text>
-                <TouchableOpacity disabled={isBusy} onPress={clearImage} style={styles.clearImgBtn}>
-                  <Text style={styles.clearImgText}>Bỏ ảnh</Text>
+                {currentRoom && (
+                  <TouchableOpacity
+                    style={styles.startTherapyBtn}
+                    onPress={() => {
+                      setSpeakingText(null);
+                      setActiveMemoryModal(null);
+                      setRole('patient');
+                    }}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={styles.startTherapyBtnText}>🌟 Cho người bệnh</Text>
+                  </TouchableOpacity>
+                )}
+
+                <TouchableOpacity style={styles.settingsBtn} onPress={openSettings}>
+                  <Text style={styles.settingsBtnText}>⚙️</Text>
                 </TouchableOpacity>
               </View>
-            ) : (
-              <Text style={styles.unattachedText}>Chưa chọn ảnh</Text>
-            )}
-          </View>
+            </View>
 
-          {/* Voice Listening Active Banner */}
-          {isListeningVoice ? (
-            <View style={styles.voiceListeningBanner}>
-              <View style={styles.voiceHeaderRow}>
-                <View style={styles.voicePulseIndicator}>
-                  <Text style={styles.voicePulseDot}>🔴</Text>
-                  <Text style={styles.voiceStatusTitle}>"Tôi đang nghe..."</Text>
+            {/* Thân Màn Hình Ngang: Cột Trái 3D (62%) & Cột Phải Bảng Điều Khiển (38%) */}
+            <View style={styles.landscapeBody}>
+              {/* Cột Trái: Bộ xem phòng 3D */}
+              <View style={[styles.landscapeViewerCol, isExpanded && { flex: 1 }]}>
+                <View style={styles.viewerHeader}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.roomTitleText} numberOfLines={1}>{roomTitle}</Text>
+                    {povMode === 'focused' ? (
+                      <Text style={styles.povSubtitleText}>👁️ {focusedLabel}</Text>
+                    ) : null}
+                  </View>
+                  <View style={styles.viewerControls}>
+                    <TouchableOpacity
+                      style={styles.expandBtn}
+                      onPress={() => setIsExpanded(prev => !prev)}
+                      accessibilityLabel="Phóng to hoặc thu nhỏ căn phòng"
+                    >
+                      <Text style={styles.expandBtnText}>{isExpanded ? '🗗 Thu gọn' : '⛶ Mở rộng'}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.resetBtn} disabled={!currentRoom} onPress={() => setNavMode(mode => mode === 'fpv' ? 'overview' : 'fpv')}>
+                      <Text style={styles.resetBtnText}>{navMode === 'fpv' ? 'Toàn cảnh' : 'Bước vào'}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.resetBtn} onPress={resetRoom}>
+                      <Text style={styles.resetBtnText}>Làm mới</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <TouchableOpacity style={styles.voiceCloseBtn} onPress={stopVoiceListening}>
-                  <Text style={styles.voiceCloseBtnText}>✕ Tắt micro</Text>
+
+                <View style={{ flex: 1 }}>
+                  {render3DViewer()}
+                </View>
+              </View>
+
+              {/* Cột Phải: Chat, Giọng nói và Bảng điều khiển (Tự động ẩn khi phóng to) */}
+              {!isExpanded && (
+                <View style={styles.landscapeChatCol}>
+                  <View style={styles.statusBar}>
+                    <Text style={styles.statusText} numberOfLines={1}>{status}</Text>
+                  </View>
+
+                  {renderMemoryBar()}
+                  {renderMessagesList()}
+                  {renderSuggestionsList()}
+                  {renderVoiceBanner()}
+                  {renderAttachmentBar()}
+                  {renderInputRow()}
+                </View>
+              )}
+            </View>
+          </View>
+        ) : (
+          /* ===== BỐ CỤC MÀN HÌNH DỌC (PORTRAIT STUDIO) ===== */
+          <>
+            {/* Header Người Soạn Phòng */}
+            <View style={styles.header}>
+              <View>
+                <View style={styles.brandRow}>
+                  <Text style={styles.appTitle}>MEMORYWEAVER</Text>
+                  <Text style={styles.roleBadge}>🧑‍⚕️ Người Soạn Phòng</Text>
+                </View>
+                <Text style={styles.appSubtitle}>Biên soạn & chuẩn bị không gian gợi nhớ ký ức</Text>
+              </View>
+              <View style={styles.headerActionRow}>
+                {currentRoom && (
+                  <TouchableOpacity
+                    style={styles.startTherapyBtn}
+                    onPress={() => {
+                      setSpeakingText(null);
+                      setActiveMemoryModal(null);
+                      setRole('patient');
+                    }}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={styles.startTherapyBtnText}>🌟 Bắt đầu cho người bệnh</Text>
+                  </TouchableOpacity>
+                )}
+                <TouchableOpacity style={styles.settingsBtn} onPress={openSettings}>
+                  <Text style={styles.settingsBtnText}>Cài đặt</Text>
                 </TouchableOpacity>
               </View>
-              <Text style={styles.voiceInstructionText}>
-                Nói lệnh thêm đồ vật, di chuyển hoặc mở rộng phòng (hoặc chạm nhanh mẫu):
-              </Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.voiceChipsScroll}>
-                <TouchableOpacity style={styles.voiceChip} onPress={() => handleVoiceInput('Thêm một cái kệ đằng sau cái bàn')}>
-                  <Text style={styles.voiceChipText}>🎙️ "Thêm kệ đằng sau bàn"</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.voiceChip} onPress={() => handleVoiceInput('Dịch chuyển ghế lại gần cửa sổ')}>
-                  <Text style={styles.voiceChipText}>🎙️ "Dịch ghế lại gần cửa sổ"</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.voiceChip} onPress={() => handleVoiceInput('Mở rộng căn phòng thêm 1 mét')}>
-                  <Text style={styles.voiceChipText}>🎙️ "Mở rộng phòng thêm 1m"</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.voiceChip} onPress={() => handleVoiceInput('Treo bức tranh lên bức tường bên phải')}>
-                  <Text style={styles.voiceChipText}>🎙️ "Treo tranh lên tường"</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.voiceChip} onPress={() => handleVoiceInput('Thêm một cái ghế')}>
-                  <Text style={styles.voiceChipText}>⚠️ "Thêm một cái ghế" (Test vị trí)</Text>
-                </TouchableOpacity>
-              </ScrollView>
             </View>
-          ) : null}
 
-          {/* Input Row */}
-          <View style={styles.inputRow}>
-            <TouchableOpacity
-              style={[styles.photoBtn, isBusy && styles.disabledBtn]}
-              onPress={pickImage}
-              disabled={isBusy || isPicking}
-            >
-              <Text style={styles.photoBtnText}>{isPicking ? 'Đợi…' : '+ Ảnh'}</Text>
-            </TouchableOpacity>
+            {/* Thanh quản lý Thư viện phòng ký ức & Khởi động */}
+            <View style={styles.creatorActionBar}>
+              <TouchableOpacity
+                style={styles.actionPillBtn}
+                onPress={() => setSavedRoomsModalVisible(true)}
+              >
+                <Text style={styles.actionPillText}>📂 Thư viện phòng ({savedRooms.length})</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.textureBtn, usePhotoTexture && styles.textureBtnActive]}
-              disabled={isBusy}
-              onPress={() => setUsePhotoTexture(value => !value)}
-            >
-              <Text style={[styles.textureBtnText, usePhotoTexture && styles.textureBtnTextActive]}>
-                {usePhotoTexture ? 'Texture: Bật' : 'Texture: Tắt'}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.voiceBtn, isListeningVoice && styles.voiceBtnActive]}
-              disabled={isBusy}
-              onPress={toggleVoiceListening}
-              accessibilityRole="button"
-              accessibilityLabel="Bấm để nói"
-            >
-              <Text style={styles.voiceBtnText}>{isListeningVoice ? '🔴 Đang nghe' : '🎙️ Nói'}</Text>
-            </TouchableOpacity>
-
-            <TextInput
-              style={styles.textInput}
-              placeholder="Ví dụ: Phòng học của Thành lúc 12h trưa, bàn ở góc cửa sổ…"
-              placeholderTextColor="#8d9b94"
-              value={inputText}
-              onChangeText={setInputText}
-              multiline
-              maxLength={4000}
-              editable={!isBusy}
-            />
-
-            <TouchableOpacity
-              style={[styles.sendBtn, isBusy && styles.cancelBtn]}
-              accessibilityLabel={isBusy ? 'Hủy yêu cầu' : 'Gửi mô tả phòng'}
-              onPress={handleSendOrCancel}
-              disabled={isPicking}
-            >
-              {isBusy ? (
-                <Text style={styles.sendBtnText}>Hủy</Text>
-              ) : (
-                <Text style={styles.sendBtnText}>Gửi</Text>
+              {currentRoom && (
+                <TouchableOpacity
+                  style={[styles.actionPillBtn, styles.saveRoomPillBtn]}
+                  onPress={() => {
+                    setSaveRoomInputTitle(roomTitle || currentRoom.title || '');
+                    setSaveModalVisible(true);
+                  }}
+                >
+                  <Text style={[styles.actionPillText, styles.saveRoomPillText]}>💾 Lưu phòng này</Text>
+                </TouchableOpacity>
               )}
-            </TouchableOpacity>
-          </View>
 
-          <Text style={styles.hintFooter}>
-            Soạn xong phòng? Bấm "🌟 Bắt đầu cho người bệnh" ở trên để vào chế độ trị liệu!
-          </Text>
-        </View>
+              {!currentRoom && savedRooms.length > 0 && (
+                <TouchableOpacity
+                  style={[styles.actionPillBtn, styles.launchPillBtn]}
+                  onPress={() => selectSavedRoom(savedRooms[0])}
+                >
+                  <Text style={styles.launchPillText}>⚡ Nạp mẫu "{savedRooms[0].title.slice(0, 18)}…"</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {/* === 3D Room Viewer (Tập trung không gian 3D trực quan) === */}
+            <View style={[styles.viewerContainer, isExpanded ? styles.viewerContainerExpanded : styles.viewerContainerNormal]}>
+              <View style={styles.viewerHeader}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.roomTitleText} numberOfLines={1}>{roomTitle}</Text>
+                  {povMode === 'focused' ? (
+                    <Text style={styles.povSubtitleText}>👁️ Đang đứng cạnh: {focusedLabel} (Vuốt để nhìn quanh)</Text>
+                  ) : currentRoom ? (
+                    <Text style={styles.povSubtitleText}>🧠 Bộ nhớ bật • Gõ để chỉnh sửa tiếp đến khi đúng ý</Text>
+                  ) : null}
+                </View>
+                <View style={styles.viewerControls}>
+                  <TouchableOpacity
+                    style={styles.expandBtn}
+                    onPress={() => setIsExpanded(prev => !prev)}
+                    accessibilityLabel="Phóng to hoặc thu nhỏ căn phòng"
+                  >
+                    <Text style={styles.expandBtnText}>{isExpanded ? '🗗 Thu gọn' : '⛶ Mở rộng'}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.resetBtn} disabled={!currentRoom} onPress={() => setNavMode(mode => mode === 'fpv' ? 'overview' : 'fpv')}>
+                    <Text style={styles.resetBtnText}>{navMode === 'fpv' ? 'Toàn cảnh' : 'Bước vào phòng'}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.resetBtn} onPress={resetRoom}>
+                    <Text style={styles.resetBtnText}>Làm mới</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {render3DViewer()}
+            </View>
+
+            {/* Chat & Controls Area */}
+            <View style={[styles.chatSection, isExpanded && styles.chatSectionCollapsed]}>
+              <View style={styles.statusBar}>
+                <Text style={styles.statusText}>{status}</Text>
+              </View>
+
+              {renderMemoryBar()}
+              {renderMessagesList()}
+              {renderSuggestionsList()}
+              {renderAttachmentBar()}
+              {renderVoiceBanner()}
+              {renderInputRow()}
+
+              <Text style={styles.hintFooter}>
+                Soạn xong phòng? Bấm "🌟 Bắt đầu cho người bệnh" ở trên để vào chế độ trị liệu!
+              </Text>
+            </View>
+          </>
+        )}
       </KeyboardAvoidingView>
 
       {/* Settings Modal */}
@@ -2410,5 +2673,103 @@ const styles = StyleSheet.create({
   },
   savedRoomDeleteText: {
     fontSize: 14,
+  },
+
+  // ===== BILINGUAL VOICE & TOGGLES =====
+  langPillBtn: {
+    backgroundColor: '#e8f3ee',
+    borderWidth: 1,
+    borderColor: '#98c0ac',
+    borderRadius: 6,
+    paddingHorizontal: 7,
+    paddingVertical: 8,
+    marginRight: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  langPillText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#1d5440',
+  },
+  voiceLangToggleRow: {
+    flexDirection: 'row',
+    gap: 6,
+    alignItems: 'center',
+  },
+  voiceLangBadge: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#bae6fd',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  voiceLangBadgeActive: {
+    backgroundColor: '#0284c7',
+    borderColor: '#0284c7',
+  },
+  voiceLangBadgeText: {
+    fontSize: 11,
+    color: '#0369a1',
+    fontWeight: '600',
+  },
+  voiceLangBadgeTextActive: {
+    color: '#ffffff',
+    fontWeight: '700',
+  },
+
+  // ===== RESPONSIVE LANDSCAPE LAYOUT (CREATOR) =====
+  landscapeContainer: {
+    flex: 1,
+    backgroundColor: '#f4efe8',
+  },
+  landscapeHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    backgroundColor: '#f4efe8',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0d8cc',
+  },
+  landscapeHeaderActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  landscapeBody: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  landscapeViewerCol: {
+    flex: 1.25,
+    backgroundColor: '#1c2421',
+    borderRightWidth: 1,
+    borderRightColor: '#2d3b36',
+  },
+  landscapeChatCol: {
+    flex: 0.85,
+    backgroundColor: '#f3f6f3',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+
+  // ===== RESPONSIVE LANDSCAPE LAYOUT (PATIENT) =====
+  patientTopBarLandscape: {
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+  },
+  patientMemoryPillsBarLandscape: {
+    bottom: 8,
+    left: 16,
+    right: 16,
+    paddingVertical: 5,
+  },
+  patientMemoryCardLandscape: {
+    maxHeight: '90%',
+    maxWidth: 520,
+    padding: 14,
   },
 });
