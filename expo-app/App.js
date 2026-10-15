@@ -441,8 +441,12 @@ export default function App() {
     if (!/^https?:\/\//i.test(ep)) {
       ep = `http://${ep}`;
     }
+    if (/^https?:\/\/102\.168\./i.test(ep)) {
+      Alert.alert('Gõ nhầm IP', 'Bạn đang nhập 102.168... (phím số 0 cạnh số 9). Hãy sửa lại thành 192.168.1.207:8787 hoặc dùng link HTTPS Cloudflare (https://...trycloudflare.com).');
+      return;
+    }
     if (!validEndpoint(ep)) {
-      Alert.alert('Lỗi', 'Dùng URL HTTPS của backend cloud. HTTP chỉ dành cho IP mạng nội bộ khi cần thử nghiệm.');
+      Alert.alert('Lỗi địa chỉ', 'Dùng URL HTTPS của Cloudflare hoặc IP mạng nội bộ dạng http://192.168.x.x:8787 (ví dụ: http://192.168.1.207:8787).');
       return;
     }
     const probe = new AbortController();
@@ -460,7 +464,7 @@ export default function App() {
       if (health.contractVersion !== 2) throw new Error('Server cũ không tương thích. Hãy chạy server trong thư mục MemoryWeaver.');
       if (!health.configured && !inputApiKey.trim()) throw new Error('Server chưa có khóa Gemini.');
     } catch (error) {
-      Alert.alert('Chưa lưu kết nối', `Không xác nhận được server ${ep}. Mở ${ep}/health trên Chrome điện thoại để kiểm tra.\n${error.message}`);
+      Alert.alert('Chưa lưu kết nối', `Không kết nối được server ${ep}.\n\n• Mạng Wi-Fi: Đảm bảo điện thoại cùng mạng Wi-Fi và nhập đúng IP máy tính (hiện tại là http://192.168.1.207:8787).\n• Khuyên dùng: Dán link Cloudflare https://...trycloudflare.com hiển thị ở cửa sổ CHAY_SERVER.bat.\n\nChi tiết: ${error.message}`);
       return;
     } finally { clearTimeout(probeTimer); }
     try {
@@ -1666,7 +1670,7 @@ export default function App() {
               style={styles.modalInput}
               value={inputEndpoint}
               onChangeText={setInputEndpoint}
-              placeholder="http://192.168.1.17:8787 hoặc https://..."
+              placeholder="http://192.168.1.207:8787 hoặc https://..."
               autoCapitalize="none"
               autoCorrect={false}
             />
@@ -1693,8 +1697,8 @@ export default function App() {
             />
 
             <Text style={styles.modalHelp}>
-              • Mạng nội bộ: Nhập IP Wi-Fi máy tính kèm cổng 8787 và APP_ACCESS_TOKEN.{'\n'}
-              • Server Cloud (Render/Railway): Nhập URL HTTPS của server backend.{'\n'}
+              • Mạng nội bộ: Nhập IP máy tính (http://192.168.1.207:8787).{'\n'}
+              • Cloudflare (Khuyên dùng): Dán link https://...trycloudflare.com từ CHAY_SERVER.bat.{'\n'}
               • Khóa Gemini API: Tùy chọn khi cần server gọi AI qua quota tài khoản riêng.
             </Text>
 
