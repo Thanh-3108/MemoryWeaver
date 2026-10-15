@@ -1253,7 +1253,7 @@ export default function App() {
                 activeOpacity={0.8}
               >
                 <Text style={styles.patientNavToggleText}>
-                  {navMode === 'fpv' ? '🏰 Toàn cảnh' : '🚶 Bước vào phòng'}
+                  {navMode === 'fpv' ? '🏰 Toàn cảnh phòng' : '🕹️ Bước vào trải nghiệm'}
                 </Text>
               </TouchableOpacity>
 
@@ -1296,8 +1296,8 @@ export default function App() {
             {render3DViewer()}
           </View>
 
-          {/* Thanh Neo Kỷ Niệm Thân Quen (Bottom Highlights Carousel) */}
-          {interactiveObjects.length > 0 && (
+          {/* Thanh Neo Kỷ Niệm Thân Quen (Bottom Highlights Carousel) - Ẩn khi đang đi lại bằng Joystick */}
+          {interactiveObjects.length > 0 && navMode !== 'fpv' && (
             <View style={[styles.patientMemoryPillsBar, isLandscape && styles.patientMemoryPillsBarLandscape]}>
               <Text style={styles.patientPillsTitle}>✨ Chạm vào kỷ niệm để gợi nhớ:</Text>
               <ScrollView
@@ -1513,8 +1513,16 @@ export default function App() {
                     >
                       <Text style={styles.expandBtnText}>{isExpanded ? '🗗 Thu gọn' : '⛶ Mở rộng'}</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.resetBtn} disabled={!currentRoom} onPress={() => setNavMode(mode => mode === 'fpv' ? 'overview' : 'fpv')}>
-                      <Text style={styles.resetBtnText}>{navMode === 'fpv' ? 'Toàn cảnh' : 'Bước vào'}</Text>
+                    <TouchableOpacity
+                      style={styles.resetBtn}
+                      disabled={!currentRoom}
+                      onPress={() => setNavMode(mode => {
+                        const next = mode === 'fpv' ? 'overview' : 'fpv';
+                        if (next === 'fpv') setIsExpanded(true);
+                        return next;
+                      })}
+                    >
+                      <Text style={styles.resetBtnText}>{navMode === 'fpv' ? 'Toàn cảnh' : '🕹️ Bước vào'}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.resetBtn} onPress={resetRoom}>
                       <Text style={styles.resetBtnText}>Làm mới</Text>
@@ -1626,8 +1634,16 @@ export default function App() {
                   >
                     <Text style={styles.expandBtnText}>{isExpanded ? '🗗 Thu gọn' : '⛶ Mở rộng'}</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.resetBtn} disabled={!currentRoom} onPress={() => setNavMode(mode => mode === 'fpv' ? 'overview' : 'fpv')}>
-                    <Text style={styles.resetBtnText}>{navMode === 'fpv' ? 'Toàn cảnh' : 'Bước vào phòng'}</Text>
+                  <TouchableOpacity
+                    style={styles.resetBtn}
+                    disabled={!currentRoom}
+                    onPress={() => setNavMode(mode => {
+                      const next = mode === 'fpv' ? 'overview' : 'fpv';
+                      if (next === 'fpv') setIsExpanded(true);
+                      return next;
+                    })}
+                  >
+                    <Text style={styles.resetBtnText}>{navMode === 'fpv' ? 'Toàn cảnh' : '🕹️ Bước vào'}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.resetBtn} onPress={resetRoom}>
                     <Text style={styles.resetBtnText}>Làm mới</Text>

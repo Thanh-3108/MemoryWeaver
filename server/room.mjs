@@ -19,10 +19,11 @@ export const editSchema = obj({ reply: str, roomChanges: obj(roomProperties, [])
   remove: { type: 'array', items: str }
 });
 export const instructions = `Design a stylized 3D room from Vietnamese or English text, photos, or panoramas. It is an approximation, not an exact reconstruction or therapy.
-Only use supported furniture kinds: sofa, table, chair, bed, shelf, cabinet, plant, lamp, rug, picture, window, door, desk, wardrobe, clock, mug, backpack, blackboard, whiteboard, curtain, water_bottle, notebook, air_conditioner, fan, book, lunchbox, television, projector_screen, projector, podium.
+Only use supported furniture kinds: sofa, table, chair, bed, shelf, cabinet, plant, lamp, rug, picture, window, door, desk, wardrobe, clock, mug, backpack, blackboard, whiteboard, curtain, water_bottle, notebook, air_conditioner, fan, book, lunchbox, television, projector_screen, projector, podium, pillar.
 Room width/depth 4..16m; height 2.5..5m; furniture width/height/depth .05..4m (even for small items like books, mugs, or clocks, width/height/depth must be at least 0.05m); x/z -8..8m; y is base elevation, 0 for floor furniture. Yaw -360..360 degrees; colors #RRGGBB; at most 40 objects. Rotated footprints must fit entirely within floor boundaries and y + height must fit below ceiling.
 Wall fixtures (window, whiteboard, blackboard, projector_screen, picture, clock, curtain, air_conditioner): place along one of the 4 perimeter walls, offset inside the room so the bounding box never exceeds room boundaries; elevation y = 1.0..2.2m, with yaw facing inwards into the room.
 Ceiling fixtures (projector, lamp, fan): place with base elevation y = height - height_of_item, oriented toward target surface.
+Floor & Architectural fixtures (pillar, podium): place with base elevation y = 0.
 
 ROOM ARCHETYPES & SPATIAL LAYOUT RULES:
 1. CLASSROOM / LECTURE HALL (Lớp học, Phòng học, Giảng đường, Trường học):
@@ -30,7 +31,13 @@ ROOM ARCHETYPES & SPATIAL LAYOUT RULES:
    - Student Seating: Arrange student desks ('desk') and chairs ('chair') into NEAT PARALLEL ROWS (dãy bàn học sinh) facing the front screen/board (yaw = 0). For example, 2 columns of desk rows (left column x = -1.5m, right column x = 1.5m), with 2 to 4 desks per column from front to back (e.g. z = -0.8m, z = 0.8m, z = 2.4m). Put a chair behind each desk (z_chair = z_desk + 0.55m, yaw = 0).
    - Details: Place student accessories on desks (book, notebook, water_bottle, backpack). On side walls, place large windows (window), clock (clock) on back or front wall, door (door) near a corner, wall fan or air_conditioner.
    - Generate between 15 and 35 objects for classrooms so the space feels complete and authentic, never bare or empty!
-2. LIVING ROOM / BEDROOM / OFFICE:
+2. LIBRARY / READING ROOM (Thư viện, Phòng đọc sách, Thư quán):
+   - Bookshelves ('shelf'): Arrange tall, rich double-sided library bookshelves in parallel rows/aisles (dãy kệ sách thư viện) with clear walking aisles between them (e.g. 2 to 4 parallel shelf units, w: 2.0..3.2m, h: 2.0..2.4m, d: 0.5..0.7m, color dark bronze/charcoal steel '#2C3E50' or warm wood '#5C3A21').
+   - Study Reading Tables ('table') & Chairs ('chair'): Place spacious study tables (w: 1.6..2.4m, d: 1.0..1.4m) in open reading bays between or beside bookshelf aisles. Place 2 to 4 reading chairs around each study table. Place books ('book') and notebooks on tables.
+   - Architectural Pillars ('pillar'): If prominent structural columns are visible (like yellow pillars in library panoramas), place 'pillar' (w: 0.6..0.8m, d: 0.6..0.8m, color warm golden yellow '#F59E0B' or '#EAB308') connecting floor to ceiling.
+   - Flooring & Lighting: Dark carpet / acoustic flooring (floorColor: '#2C3E50' or '#2F3640', floorTextureStyle: 'solid' or 'bamboo_mat'), warm cream/pale yellow walls (wallColor: '#FFFDF0' or '#F7F3E9'), overhead ambient lighting ('lamp').
+   - Generate between 18 and 35 objects for libraries so aisles, study desks, and book collections feel richly populated and authentic!
+3. LIVING ROOM / BEDROOM / OFFICE:
    - Position primary furniture centered or anchored against walls, maintain clear walking paths, orient seating toward focal points.
 
 PANORAMA & WIDE PHOTO PHILOSOPHY:
@@ -57,7 +64,8 @@ const KIND_SYNONYMS = {
   locker: 'cabinet', box: 'lunchbox', trashcan: 'plant', trash_can: 'plant',
   screen: 'projector_screen', projection_screen: 'projector_screen', man_chieu: 'projector_screen',
   slide: 'projector_screen', projector: 'projector', may_chieu: 'projector',
-  podium: 'podium', buc_giang: 'podium', buc: 'podium', lectern: 'podium'
+  podium: 'podium', buc_giang: 'podium', buc: 'podium', lectern: 'podium',
+  pillar: 'pillar', column: 'pillar', cot: 'pillar', tru: 'pillar', tru_nha: 'pillar'
 };
 
 const NAMED_COLORS = {

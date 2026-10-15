@@ -1,5 +1,5 @@
 // Shared by the server and Expo. No network or platform dependencies.
-export const kinds = ['sofa','table','chair','bed','shelf','cabinet','plant','lamp','rug','picture','window','door','desk','wardrobe','clock','mug','backpack','blackboard','whiteboard','curtain','water_bottle','notebook','air_conditioner','fan','book','lunchbox','television','projector_screen','projector','podium'];
+export const kinds = ['sofa','table','chair','bed','shelf','cabinet','plant','lamp','rug','picture','window','door','desk','wardrobe','clock','mug','backpack','blackboard','whiteboard','curtain','water_bottle','notebook','air_conditioner','fan','book','lunchbox','television','projector_screen','projector','podium','pillar'];
 export const roomFields = ['title','wallColor','floorColor','width','depth','height','floorTextureStyle','lightingStyle'];
 export const itemFields = ['kind','label','description','x','y','z','yaw','width','height','depth','color','isInteractable','restrictedDialogue','restrictedReason','parentSupport','source'];
 const fail = message => { throw new Error(message); };

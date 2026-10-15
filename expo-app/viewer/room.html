@@ -103,9 +103,9 @@
     }
 
     #joystick-zone {
-      position: absolute; bottom: 20px; left: 20px;
-      width: 110px; height: 110px;
-      z-index: 180;
+      position: absolute; bottom: 28px; left: 24px;
+      width: 136px; height: 136px;
+      z-index: 999;
       touch-action: none;
       display: none;
       user-select: none;
@@ -113,23 +113,35 @@
     }
     #joystick-base {
       width: 100%; height: 100%;
-      background: rgba(24, 34, 30, 0.6);
-      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.18) 0%, rgba(15, 23, 42, 0.82) 75%);
+      border: 2px solid rgba(52, 211, 153, 0.7);
       border-radius: 50%;
       position: relative;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6), inset 0 0 16px rgba(52, 211, 153, 0.25);
     }
+    .joy-arrow {
+      position: absolute;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.55);
+      font-weight: bold;
+      pointer-events: none;
+      user-select: none;
+    }
+    .joy-up { top: 6px; left: 50%; transform: translateX(-50%); }
+    .joy-down { bottom: 6px; left: 50%; transform: translateX(-50%); }
+    .joy-left { left: 8px; top: 50%; transform: translateY(-50%); }
+    .joy-right { right: 8px; top: 50%; transform: translateY(-50%); }
     #joystick-stick {
-      width: 44px; height: 44px;
-      background: radial-gradient(circle at 35% 35%, #a5d6a7, #388e3c);
-      border: 1.5px solid rgba(255, 255, 255, 0.7);
+      width: 52px; height: 52px;
+      background: radial-gradient(circle at 35% 35%, #34d399, #059669);
+      border: 2.5px solid #ffffff;
       border-radius: 50%;
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       pointer-events: none;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 16px rgba(5, 150, 105, 0.8), inset 0 2px 5px rgba(255, 255, 255, 0.7);
     }
 
     #btn-exit-fpv {
@@ -164,6 +176,10 @@
 
   <div id="joystick-zone">
     <div id="joystick-base">
+      <div class="joy-arrow joy-up">▲</div>
+      <div class="joy-arrow joy-down">▼</div>
+      <div class="joy-arrow joy-left">◀</div>
+      <div class="joy-arrow joy-right">▶</div>
       <div id="joystick-stick"></div>
     </div>
   </div>
@@ -256,13 +272,15 @@
 
     function findSafeSpawn() {
       if (!checkPositionCollision(camera.position.x, camera.position.z)) return true;
-      const w = roomGroup.userData.width, d = roomGroup.userData.depth;
+      const w = roomGroup.userData.width || 6, d = roomGroup.userData.depth || 6;
       for (let z = d / 2 - 0.5; z > -d / 2 + 0.4; z -= 0.4) {
         for (let x = -w / 2 + 0.5; x < w / 2 - 0.4; x += 0.4) {
           if (!checkPositionCollision(x, z)) { camera.position.set(x, PLAYER_HEIGHT, z); return true; }
         }
       }
-      return false;
+      // Vị trí cứu cánh an toàn: đặt ở giữa phòng phía sau
+      camera.position.set(0, PLAYER_HEIGHT, Math.min(d * 0.25, 1.8));
+      return true;
     }
 
     function moveWithSlidewall(deltaX, deltaZ) {
@@ -891,7 +909,7 @@
 
       let stickTouchId = null;
       let center = { x: 0, y: 0 };
-      const maxRadius = 36;
+      const maxRadius = 46;
 
       zone.addEventListener('touchstart', e => {
         if (!e.changedTouches || e.changedTouches.length === 0) return;
@@ -1875,14 +1893,57 @@
             box(-fw * 0.15, fh * 0.5, -fd * 0.53, 0.04, 0.16, 0.04, createMaterial('#C2A368', 0.3, 0.8));
             box(fw * 0.15, fh * 0.5, -fd * 0.53, 0.04, 0.16, 0.04, createMaterial('#C2A368', 0.3, 0.8));
             break;
-          case 'shelf':
-            box(-fw * 0.46, fh * 0.5, 0, fw * 0.08, fh, fd, woodMat);
-            box(fw * 0.46, fh * 0.5, 0, fw * 0.08, fh, fd, woodMat);
-            box(0, fh * 0.5, fd * 0.45, fw, fh, fd * 0.08, woodMat);
-            for (let i = 0; i < 4; i++) {
-              box(0, fh * (0.12 + i * 0.27), 0, fw, fh * 0.06, fd * 0.92, woodMat);
+          case 'shelf': {
+            const shelfSteelMat = createMaterial('#1E293B', 0.4, 0.5); // Khung thép sơn tĩnh điện đen mờ thư viện
+            const shelfPlankMat = woodMat;
+            const signMat = createMaterial('#FACC15', 0.4, 0.1); // Biển phân loại sách màu vàng ("700", "200")
+            const bookColors = ['#1E3A8A', '#991B1B', '#065F46', '#92400E', '#334155', '#D97706', '#1E293B', '#4338CA', '#F8FAFC'];
+            const postW = Math.max(0.04, fw * 0.03);
+            const postD = Math.max(0.04, fd * 0.06);
+
+            // 1. Bốn trụ thép chịu lực góc (Four corner vertical steel posts)
+            box(-fw * 0.48 + postW / 2, fh * 0.5, -fd * 0.46 + postD / 2, postW, fh, postD, shelfSteelMat);
+            box(fw * 0.48 - postW / 2, fh * 0.5, -fd * 0.46 + postD / 2, postW, fh, postD, shelfSteelMat);
+            box(-fw * 0.48 + postW / 2, fh * 0.5, fd * 0.46 - postD / 2, postW, fh, postD, shelfSteelMat);
+            box(fw * 0.48 - postW / 2, fh * 0.5, fd * 0.46 - postD / 2, postW, fh, postD, shelfSteelMat);
+
+            // 2. Tấm nẹp hồi 2 bên đầu kệ kèm biển phân loại sách màu vàng đặc trưng
+            box(-fw * 0.48, fh * 0.5, 0, postW * 0.8, fh * 0.96, fd * 0.88, shelfSteelMat);
+            box(fw * 0.48, fh * 0.5, 0, postW * 0.8, fh * 0.96, fd * 0.88, shelfSteelMat);
+            box(-fw * 0.485, fh * 0.88, 0, 0.02, fh * 0.14, fd * 0.45, signMat);
+            box(fw * 0.485, fh * 0.88, 0, 0.02, fh * 0.14, fd * 0.45, signMat);
+
+            // 3. Vách ngăn lửng chính giữa (Center divider partition - open frame)
+            box(0, fh * 0.5, 0, fw * 0.94, fh * 0.92, 0.02, shelfSteelMat);
+
+            // 4. Các tầng đợt kệ (5 tiers of horizontal shelves)
+            const numTiers = 5;
+            const tierHeight = fh / numTiers;
+            for (let t = 0; t < numTiers; t++) {
+              const shelfY = (t + 0.12) * tierHeight;
+              // Mặt đợt kệ
+              box(0, shelfY, 0, fw * 0.94, 0.035, fd * 0.92, shelfPlankMat);
+
+              // 5. CÁC HÀNG SÁCH PHONG PHÚ ĐA DẠNG TRÊN TỪNG TẦNG (CẢ 2 MẶT TRƯỚC VÀ SAU)
+              const bookH = Math.min(tierHeight * 0.78, 0.28);
+              const bookD = (fd * 0.42);
+              const numBatches = Math.max(3, Math.min(6, Math.floor(fw / 0.45)));
+              const batchW = (fw * 0.88) / numBatches;
+
+              for (let b = 0; b < numBatches; b++) {
+                const bookColor = bookColors[(t * 3 + b * 2) % bookColors.length];
+                const bMat = createMaterial(bookColor, 0.6, 0.05);
+                const bookCenterY = shelfY + 0.018 + bookH * 0.5;
+                const bookCenterX = -fw * 0.42 + (b + 0.5) * batchW;
+
+                // Dãy sách phía trước (-Z)
+                box(bookCenterX, bookCenterY, -fd * 0.23, batchW * 0.92, bookH, bookD * 0.88, bMat);
+                // Dãy sách phía sau (+Z)
+                box(bookCenterX, bookCenterY, fd * 0.23, batchW * 0.92, bookH, bookD * 0.88, bMat);
+              }
             }
             break;
+          }
           case 'cabinet':
             box(0, fh * 0.48, 0, fw, fh * 0.88, fd, woodMat);
             legs(fh * 0.16);
@@ -2209,6 +2270,35 @@
             box(-fw * 0.26, fh * 1.20, -fd * 0.25, 0.028, 0.05, 0.028, micMat);
             break;
           }
+          case 'pillar': {
+            const pillarH = roomGroup.userData.height || 3.0;
+            const radius = Math.max(0.24, Math.min(fw, fd) * 0.45);
+            const pillarMat = createMaterial(item.color || '#F59E0B', 0.4, 0.05);
+            const trimMat = createMaterial('#D97706', 0.5, 0.1);
+            if (typeof THREE.CylinderGeometry === 'function') {
+              const cylGeo = new THREE.CylinderGeometry(radius, radius, pillarH, 16);
+              const mesh = new THREE.Mesh(cylGeo, pillarMat);
+              mesh.position.set(0, pillarH * 0.5, 0);
+              mesh.castShadow = true;
+              mesh.receiveShadow = true;
+              fGroup.add(mesh);
+
+              const baseGeo = new THREE.CylinderGeometry(radius * 1.12, radius * 1.12, 0.14, 16);
+              const baseMesh = new THREE.Mesh(baseGeo, trimMat);
+              baseMesh.position.set(0, 0.07, 0);
+              fGroup.add(baseMesh);
+
+              const capGeo = new THREE.CylinderGeometry(radius * 1.12, radius * 1.12, 0.14, 16);
+              const capMesh = new THREE.Mesh(capGeo, trimMat);
+              capMesh.position.set(0, pillarH - 0.07, 0);
+              fGroup.add(capMesh);
+            } else {
+              box(0, pillarH * 0.5, 0, fw, pillarH, fd, pillarMat);
+              box(0, 0.07, 0, fw * 1.12, 0.14, fd * 1.12, trimMat);
+              box(0, pillarH - 0.07, 0, fw * 1.12, 0.14, fd * 1.12, trimMat);
+            }
+            break;
+          }
           default:
             box(0, fh * 0.5, 0, fw, fh, fd, woodMat);
         }
@@ -2440,6 +2530,8 @@
         desk: ['desk', 2, 2],
         table: ['desk', 2, 2],
         podium: ['desk', 1, 1],
+        shelf: ['desk', 2, 3],
+        book: ['desk', 1, 1],
         chair: ['chair', 1, 1],
         whiteboard: ['board', 1, 1],
         blackboard: ['board', 1, 1],
@@ -2449,7 +2541,8 @@
         tv: ['screen', 1, 1],
         window: ['window', 1, 2],
         curtain: ['window', 1, 2],
-        sofa: ['sofa', 2, 2]
+        sofa: ['sofa', 2, 2],
+        pillar: ['wall', 1, 3]
       };
       furnitureMeshes.forEach(group => {
         const info = group.userData?.furnitureInfo;
