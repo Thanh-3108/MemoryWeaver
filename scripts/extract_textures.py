@@ -2,15 +2,20 @@
 
 Pipeline:
 1. Load image (file path or base64 data URI).
-2. Localize key architectural & furniture surfaces:
-   - Uses AI semantic regions (if provided via --regions from Gemini Vision),
-     OR autonomous Multi-scale Purity Scanning across candidate zones.
-3. For each surface:
-   a. Extract Region of Interest.
-   b. Clutter & Foreground Object Detection (detects pens, notebooks, papers, cables).
-   c. Occlusion Inpainting (Telea method to erase clutter and restore pure underlying texture).
-   d. Perspective Rectification (Homography correction for angled perspective planes).
-   e. Seamless Tiling (mirror-crossfade edge synthesis so 3D repetition has zero seams).
+2. Multi-stage AI Material & Surface Decomposition:
+   - Parses AI semantic regions and material profiles from Gemini Vision.
+   - Detects foreign clutter (laptops, mice, calculators, notebooks, pens, bags, people).
+   - Isolates clean surface patches and samples authentic material colors.
+3. For each architectural & furniture surface:
+   a. Crop clean region of interest if available.
+   b. Clutter & Foreground Inpainting (OpenCV Telea inpainting to remove any stray pen/line/shadow).
+   c. High-Definition Architectural Material Synthesis:
+      - Varnished wood grain for desks and chairs (fine longitudinal fibers, growth rings, clear-coat sheen).
+      - Polished terrazzo / ceramic tiles for floors (subtle mineral flecks, clean grout lines).
+      - Matte wall paint for walls (fine plaster eggshell micro-texture).
+      - Porcelain enamel for whiteboards / screens.
+      - Woven textiles for fabric upholstery.
+   d. Seamless Tiling: Edge mirror-crossfade blending so 3D repetition has zero seams.
 4. Export compact JPEG Data URIs and PBR material metadata in JSON format for Three.js.
 """
 
@@ -43,6 +48,27 @@ except ImportError:
     HAS_CV2 = False
 
 
+def hex_to_rgb(h, default=(200.0, 200.0, 200.0)):
+    """Convert hex string (#RRGGBB) to float32 RGB array."""
+    if not h or not isinstance(h, str):
+        return np.array(default, dtype=np.float32)
+    clean = h.lstrip('#').strip()
+    if len(clean) != 6:
+        return np.array(default, dtype=np.float32)
+    try:
+        return np.array([int(clean[i:i+2], 16) for i in (0, 2, 4)], dtype=np.float32)
+    except Exception:
+        return np.array(default, dtype=np.float32)
+
+
+def rgb_to_hex(rgb):
+    """Convert float or int RGB array to #RRGGBB hex string."""
+    r = int(np.clip(rgb[0], 0, 255))
+    g = int(np.clip(rgb[1], 0, 255))
+    b = int(np.clip(rgb[2], 0, 255))
+    return f"#{r:02X}{g:02X}{b:02X}"
+
+
 def load_input_image(image_input):
     """Load image from file path or base64 string into RGB numpy array and PIL Image."""
     if isinstance(image_input, str):
@@ -59,12 +85,11 @@ def load_input_image(image_input):
     else:
         raise ValueError(f"Unsupported image input type: {type(image_input)}")
 
-    # Check decoded size before allocating RGB/numpy buffers (compressed size is insufficient).
     if pil_img.width * pil_img.height > 16_000_000:
         pil_img.close()
         raise ValueError("Image exceeds 16 megapixels")
     pil_img = ImageOps.exif_transpose(pil_img)
-    # Resize before RGB conversion and numpy allocation.
+
     max_dim = max(pil_img.width, pil_img.height)
     if max_dim > 1600:
         scale = 1600.0 / max_dim
@@ -76,15 +101,8 @@ def load_input_image(image_input):
 
 
 def get_patch_clutter_score(patch_rgb):
-    """Calculate a clutter / obstruction penalty score for a texture patch.
-    
-    A clean surface (like uniform wood grain, wall paint, or floor tile) has:
-    - Low edge density from foreign geometric objects (text, pens, book borders).
-    - Tight color distribution (low standard deviation of Hue and Saturation).
-    High scores mean clutter, books, pens, or hands are present.
-    """
+    """Calculate a clutter / obstruction penalty score for a texture patch."""
     if not HAS_CV2:
-        # Fallback to simple RGB variance
         return float(np.std(patch_rgb))
 
     h, w = patch_rgb.shape[:2]
@@ -93,61 +111,15 @@ def get_patch_clutter_score(patch_rgb):
         return float('inf')
 
     gray = cv2.cvtColor(patch_rgb, cv2.COLOR_RGB2GRAY)
-    # Detect high-frequency sharp clutter edges (pens, notebooks, text)
     edges = cv2.Canny(gray, 60, 160)
     edge_density = np.count_nonzero(edges) / total_pixels
 
-    # In HSV space, wood or tile has consistent Hue. Pens (blue/red/black) cause hue spikes.
     hsv = cv2.cvtColor(patch_rgb, cv2.COLOR_RGB2HSV)
     std_h = np.std(hsv[:, :, 0])
     std_s = np.std(hsv[:, :, 1])
 
-    # Combined penalty score: higher means more clutter
     clutter_score = (edge_density * 5.0) + (std_h / 180.0) + (std_s / 255.0)
     return float(clutter_score)
-
-
-def find_cleanest_patch(img_rgb, search_box, min_patch_size=120, max_patch_size=320):
-    """Scan candidate zone using sliding windows to locate the purest patch with minimum clutter."""
-    h_img, w_img = img_rgb.shape[:2]
-    ymin, xmin, ymax, xmax = search_box
-
-    # Convert normalized or pixel coordinates
-    if max(ymin, xmin, ymax, xmax) <= 1.05:
-        y0, x0 = int(ymin * h_img), int(xmin * w_img)
-        y1, x1 = int(ymax * h_img), int(xmax * w_img)
-    elif max(ymin, xmin, ymax, xmax) <= 1005:
-        y0, x0 = int((ymin / 1000.0) * h_img), int((xmin / 1000.0) * w_img)
-        y1, x1 = int((ymax / 1000.0) * h_img), int((xmax / 1000.0) * w_img)
-    else:
-        y0, x0, y1, x1 = int(ymin), int(xmin), int(ymax), int(xmax)
-
-    y0 = max(0, min(h_img - 20, y0))
-    x0 = max(0, min(w_img - 20, x0))
-    y1 = max(y0 + 20, min(h_img, y1))
-    x1 = max(x0 + 20, min(w_img, x1))
-
-    zone = img_rgb[y0:y1, x0:x1]
-    zh, zw = zone.shape[:2]
-
-    patch_size = min(max_patch_size, min(zh, zw))
-    if patch_size < min_patch_size:
-        return zone if zh >= 20 and zw >= 20 else None
-
-    # Sliding window search
-    stride = max(24, int(patch_size * 0.25))
-    best_patch = None
-    best_score = float('inf')
-
-    for py in range(0, zh - patch_size + 1, stride):
-        for px in range(0, zw - patch_size + 1, stride):
-            cand = zone[py:py + patch_size, px:px + patch_size]
-            score = get_patch_clutter_score(cand)
-            if score < best_score:
-                best_score = score
-                best_patch = cand
-
-    return best_patch if best_patch is not None else zone
 
 
 def inpaint_clutter_and_foreign_objects(patch_rgb):
@@ -161,14 +133,11 @@ def inpaint_clutter_and_foreign_objects(patch_rgb):
     if h < 20 or w < 20:
         return patch_rgb
 
-    # Compute median material color
     flat = patch_rgb.reshape(-1, 3).astype(np.float32)
     median_color = np.median(flat, axis=0)
 
-    # Color deviation map
     color_dist = np.linalg.norm(patch_rgb.astype(np.float32) - median_color, axis=2)
 
-    # Gradient magnitude to detect high-contrast object boundaries
     gray = cv2.cvtColor(patch_rgb, cv2.COLOR_RGB2GRAY)
     grad_x = cv2.Sobel(gray, cv2.CV_32F, 1, 0, ksize=3)
     grad_y = cv2.Sobel(gray, cv2.CV_32F, 0, 1, ksize=3)
@@ -177,40 +146,19 @@ def inpaint_clutter_and_foreign_objects(patch_rgb):
     dist_thresh = np.percentile(color_dist, 82)
     grad_thresh = np.percentile(grad_mag, 85)
 
-    # Clutter pixels: pixels that both deviate significantly in color and have sharp edges
     clutter_candidates = (color_dist > dist_thresh) & (grad_mag > grad_thresh)
 
-    # Morphological dilation to cover full thickness of pens or paper edges
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
     mask = cv2.dilate(clutter_candidates.astype(np.uint8) * 255, kernel)
 
     mask_ratio = np.count_nonzero(mask) / float(h * w)
 
-    # Only inpaint if isolated clutter is detected (avoid inpainting the whole surface)
     if 0.002 < mask_ratio < 0.28:
         bgr = cv2.cvtColor(patch_rgb, cv2.COLOR_RGB2BGR)
         clean_bgr = cv2.inpaint(bgr, mask, inpaintRadius=4, flags=cv2.INPAINT_TELEA)
         return cv2.cvtColor(clean_bgr, cv2.COLOR_BGR2RGB)
 
     return patch_rgb
-
-
-def rectify_perspective(img_rgb, src_quad, target_size=(512, 512)):
-    """Warp quadrilateral region into a front-facing rectified rectangle using homography."""
-    if not HAS_CV2:
-        return None
-    tw, th = target_size
-    dst_quad = np.array([
-        [0, 0],
-        [tw - 1, 0],
-        [tw - 1, th - 1],
-        [0, th - 1]
-    ], dtype=np.float32)
-
-    src_pts = np.array(src_quad, dtype=np.float32)
-    matrix = cv2.getPerspectiveTransform(src_pts, dst_quad)
-    rectified = cv2.warpPerspective(img_rgb, matrix, (tw, th), flags=cv2.INTER_LINEAR)
-    return rectified
 
 
 def make_seamless_tile(patch_rgb, target_size=(512, 512)):
@@ -222,17 +170,16 @@ def make_seamless_tile(patch_rgb, target_size=(512, 512)):
         pil_patch = Image.fromarray(patch_rgb)
         resized = np.array(pil_patch.resize((tw, th), Image.Resampling.BILINEAR))
 
-    # Cross-fade overlap method for seamless repetition
     blend_width = int(tw * 0.12)
     out = resized.copy().astype(np.float32)
 
-    # Horizontal blend: blend right edge into left edge
+    # Horizontal blend
     for x in range(blend_width):
         alpha = x / float(blend_width)
         out[:, x] = (1.0 - alpha) * resized[:, tw - blend_width + x] + alpha * resized[:, x]
         out[:, tw - blend_width + x] = (1.0 - alpha) * resized[:, tw - blend_width + x] + alpha * resized[:, x]
 
-    # Vertical blend: blend bottom edge into top edge
+    # Vertical blend
     for y in range(blend_width):
         alpha = y / float(blend_width)
         out[y, :] = (1.0 - alpha) * out[th - blend_width + y, :] + alpha * out[y, :]
@@ -241,13 +188,116 @@ def make_seamless_tile(patch_rgb, target_size=(512, 512)):
     return np.clip(out, 0, 255).astype(np.uint8)
 
 
+def synthesize_wood_texture(dom_hex='#C48A57', sec_hex='#A16637', size=(512, 512), grain_dir='horizontal', photo_patch=None):
+    """Procedurally synthesize high-definition, realistic varnished wood grain texture."""
+    w, h = size
+    c1 = hex_to_rgb(dom_hex, (196.0, 138.0, 87.0))
+    c2 = hex_to_rgb(sec_hex, (161.0, 102.0, 55.0))
+
+    if photo_patch is not None and photo_patch.shape[0] >= 16 and photo_patch.shape[1] >= 16:
+        patch_median = np.median(photo_patch.reshape(-1, 3), axis=0).astype(np.float32)
+        c1 = 0.7 * c1 + 0.3 * patch_median
+
+    y = np.linspace(0, 1, h)[:, None]
+    x = np.linspace(0, 1, w)[None, :]
+
+    if grain_dir == 'vertical':
+        coord_fiber = x
+        coord_cross = y
+    else:
+        coord_fiber = y
+        coord_cross = x
+
+    rng = np.random.RandomState(42)
+    fibers = np.sin(coord_fiber * 128.0 + np.sin(coord_cross * 8.0) * 3.0) * 0.5 + 0.5
+    rings = np.sin(coord_fiber * 24.0 + np.sin(coord_cross * 4.0) * 4.5) * 0.5 + 0.5
+    noise = rng.normal(0, 0.05, (h, w))
+
+    pattern = np.clip(0.6 * fibers + 0.3 * rings + noise, 0.0, 1.0)[:, :, None]
+    wood = c1[None, None, :] * pattern + c2[None, None, :] * (1.0 - pattern)
+
+    # Subtle polyurethane clear-coat varnish sheen variation
+    sheen = rng.normal(0, 3.0, (h, w, 1))
+    wood = np.clip(wood + sheen, 0, 255).astype(np.uint8)
+    return make_seamless_tile(wood, target_size=size)
+
+
+def synthesize_tile_texture(dom_hex='#EAEAEA', sec_hex='#D0D0D0', size=(512, 512), tile_style='terrazzo', tiles_per_axis=2, photo_patch=None):
+    """Procedurally synthesize high-definition, realistic architectural floor tiles (terrazzo or ceramic)."""
+    w, h = size
+    c_tile = hex_to_rgb(dom_hex, (234.0, 234.0, 234.0))
+    c_grout = hex_to_rgb(sec_hex, (200.0, 200.0, 200.0))
+
+    if photo_patch is not None and photo_patch.shape[0] >= 16 and photo_patch.shape[1] >= 16:
+        patch_median = np.median(photo_patch.reshape(-1, 3), axis=0).astype(np.float32)
+        c_tile = 0.7 * c_tile + 0.3 * patch_median
+
+    rng = np.random.RandomState(101)
+    # Fine stone / terrazzo mineral specks
+    specks = rng.normal(0, 6.0, (h, w, 1))
+    tile_surface = np.clip(c_tile + specks, 0, 255)
+
+    # Clean grout grid lines
+    grout_mask = np.zeros((h, w), dtype=np.float32)
+    tile_w = w // tiles_per_axis
+    tile_h = h // tiles_per_axis
+    grout_width = 2
+
+    for i in range(tiles_per_axis + 1):
+        gx = min(w - 1, i * tile_w)
+        gy = min(h - 1, i * tile_h)
+        grout_mask[:, max(0, gx - grout_width):min(w, gx + grout_width + 1)] = 1.0
+        grout_mask[max(0, gy - grout_width):min(h, gy + grout_width + 1), :] = 1.0
+
+    grout_mask = grout_mask[:, :, None]
+    img = tile_surface * (1.0 - grout_mask) + c_grout * grout_mask
+    return make_seamless_tile(np.clip(img, 0, 255).astype(np.uint8), target_size=size)
+
+
+def synthesize_wall_texture(dom_hex='#E2EBE5', sec_hex='#D2DDD7', size=(512, 512), photo_patch=None):
+    """Procedurally synthesize realistic matte wall paint / plaster texture."""
+    w, h = size
+    c_wall = hex_to_rgb(dom_hex, (226.0, 235.0, 229.0))
+    if photo_patch is not None and photo_patch.shape[0] >= 16 and photo_patch.shape[1] >= 16:
+        patch_median = np.median(photo_patch.reshape(-1, 3), axis=0).astype(np.float32)
+        c_wall = 0.7 * c_wall + 0.3 * patch_median
+
+    rng = np.random.RandomState(88)
+    # Subtle eggshell roller-brush texture
+    micro_stucco = rng.normal(0, 3.5, (h, w, 1))
+    img = np.clip(c_wall + micro_stucco, 0, 255).astype(np.uint8)
+    return make_seamless_tile(img, target_size=size)
+
+
+def synthesize_board_texture(dom_hex='#F2F2F2', sec_hex='#E0E0E0', size=(512, 512)):
+    """Procedurally synthesize smooth whiteboard or projection screen enamel."""
+    w, h = size
+    c_board = hex_to_rgb(dom_hex, (242.0, 242.0, 242.0))
+    rng = np.random.RandomState(55)
+    micro = rng.normal(0, 1.5, (h, w, 1))
+    img = np.clip(c_board + micro, 0, 255).astype(np.uint8)
+    return make_seamless_tile(img, target_size=size)
+
+
+def synthesize_fabric_texture(dom_hex='#A79A8D', sec_hex='#8C8074', size=(512, 512)):
+    """Procedurally synthesize woven fabric upholstery texture."""
+    w, h = size
+    c1 = hex_to_rgb(dom_hex, (167.0, 154.0, 141.0))
+    c2 = hex_to_rgb(sec_hex, (140.0, 128.0, 116.0))
+    y = np.linspace(0, 1, h)[:, None]
+    x = np.linspace(0, 1, w)[None, :]
+    weave = (np.sin(x * 256.0) * np.cos(y * 256.0) * 0.5 + 0.5)[:, :, None]
+    img = c1 * weave + c2 * (1.0 - weave)
+    return make_seamless_tile(np.clip(img, 0, 255).astype(np.uint8), target_size=size)
+
+
 def get_dominant_color_hex(arr_rgb):
     """Compute dominant representative color in hex format (#RRGGBB)."""
     median_rgb = np.median(arr_rgb.reshape(-1, 3), axis=0).astype(int)
     return f"#{median_rgb[0]:02X}{median_rgb[1]:02X}{median_rgb[2]:02X}"
 
 
-def array_to_base64_jpeg(arr_rgb, quality=82):
+def array_to_base64_jpeg(arr_rgb, quality=85):
     """Encode RGB numpy array to compact base64 JPEG data URI."""
     pil_img = Image.fromarray(arr_rgb)
     buf = io.BytesIO()
@@ -256,9 +306,36 @@ def array_to_base64_jpeg(arr_rgb, quality=82):
     return f"data:image/jpeg;base64,{b64_str}"
 
 
+def crop_box_safe(img_rgb, box):
+    """Safely crop bounding box [ymin, xmin, ymax, xmax] in normalized (0..1000) or relative coordinates."""
+    if not box or len(box) != 4:
+        return None
+    h_img, w_img = img_rgb.shape[:2]
+    ymin, xmin, ymax, xmax = box
+
+    if max(ymin, xmin, ymax, xmax) <= 1.05:
+        y0, x0 = int(ymin * h_img), int(xmin * w_img)
+        y1, x1 = int(ymax * h_img), int(xmax * w_img)
+    elif max(ymin, xmin, ymax, xmax) <= 1005:
+        y0, x0 = int((ymin / 1000.0) * h_img), int((xmin / 1000.0) * w_img)
+        y1, x1 = int((ymax / 1000.0) * h_img), int((xmax / 1000.0) * w_img)
+    else:
+        y0, x0, y1, x1 = int(ymin), int(xmin), int(ymax), int(xmax)
+
+    y0 = max(0, min(h_img - 10, y0))
+    x0 = max(0, min(w_img - 10, x0))
+    y1 = max(y0 + 10, min(h_img, y1))
+    x1 = max(x0 + 10, min(w_img, x1))
+
+    if y1 - y0 < 10 or x1 - x0 < 10:
+        return None
+    return img_rgb[y0:y1, x0:x1]
+
+
 def extract_textures(image_input, regions_input=None):
-    """Full extraction pipeline: extracts all key architectural and furniture textures from image,
-    leveraging AI-detected clean patch regions and intelligent clutter inpainting.
+    """Multi-stage Texture Reconstruction Engine:
+    Parses AI semantic decomposition, filters clutter, and synthesizes high-definition,
+    realistic, seamless PBR textures for 3D room surfaces.
     """
     pil_img, img_rgb = load_input_image(image_input)
     h, w = img_rgb.shape[:2]
@@ -282,78 +359,81 @@ def extract_textures(image_input, regions_input=None):
         except Exception:
             ai_regions = {}
 
-    surfaces_data = ai_regions.get("surfaces", []) if isinstance(ai_regions, dict) else []
-    ai_surface_map = {item.get("name"): item for item in surfaces_data if isinstance(item, dict) and item.get("name")}
+    # Extract surface map supporting both dictionary and list formats
+    ai_surface_map = {}
+    surfaces_entry = ai_regions.get("surfaces", {})
+    if isinstance(surfaces_entry, dict):
+        ai_surface_map = surfaces_entry
+    elif isinstance(surfaces_entry, list):
+        for item in surfaces_entry:
+            if isinstance(item, dict) and item.get("name"):
+                ai_surface_map[item["name"]] = item
 
-    # Define standard candidate search zones [ymin, xmin, ymax, xmax] (normalized 0..1000)
-    candidate_zones = {
-        "floor": [650, 150, 980, 850],
-        "wall": [150, 250, 520, 750],
-        "ceiling": [0, 200, 220, 800],
-        "desk": [620, 200, 940, 800],
-        "chair": [650, 100, 920, 420],
-        "board": [180, 250, 480, 750],
-        "window": [180, 20, 680, 280],
-        "sofa": [550, 550, 880, 950]
+    target_surfaces = ["desk", "floor", "wall", "board", "chair", "ceiling", "sofa", "window"]
+
+    surface_defaults = {
+        "desk": {"material_type": "varnished_wood", "dominant_color": "#C48A57", "secondary_color": "#A16637", "roughness": 0.35},
+        "floor": {"material_type": "ceramic_tile", "dominant_color": "#EAEAEA", "secondary_color": "#D0D0D0", "roughness": 0.45},
+        "wall": {"material_type": "matte_wall_paint", "dominant_color": "#E2EBE5", "secondary_color": "#D2DDD7", "roughness": 0.85},
+        "board": {"material_type": "whiteboard_enamel", "dominant_color": "#F2F2F2", "secondary_color": "#E0E0E0", "roughness": 0.20},
+        "chair": {"material_type": "varnished_wood", "dominant_color": "#C48A57", "secondary_color": "#A16637", "roughness": 0.45},
+        "ceiling": {"material_type": "matte_wall_paint", "dominant_color": "#F5F5F0", "secondary_color": "#E8E8E0", "roughness": 0.90},
+        "sofa": {"material_type": "fabric", "dominant_color": "#A79A8D", "secondary_color": "#8C8074", "roughness": 0.75},
+        "window": {"material_type": "glass", "dominant_color": "#B0B5A9", "secondary_color": "#9AA092", "roughness": 0.15},
     }
 
-    surface_roughness_defaults = {
-        "desk": 0.38,
-        "floor": 0.35,
-        "wall": 0.85,
-        "ceiling": 0.90,
-        "chair": 0.55,
-        "board": 0.25,
-        "window": 0.15,
-        "sofa": 0.75
-    }
-
-    # Process each surface
-    for name, default_box in candidate_zones.items():
+    for name in target_surfaces:
         try:
-            ai_info = ai_surface_map.get(name)
-            search_box = None
-            is_ai_guided = False
+            info = ai_surface_map.get(name, {})
+            defaults = surface_defaults.get(name, {})
 
-            if ai_info:
-                # Prefer AI clean patch box if provided
-                if "clean_box_2d" in ai_info and len(ai_info["clean_box_2d"]) == 4:
-                    search_box = ai_info["clean_box_2d"]
-                    is_ai_guided = True
-                elif "clean_patch_box_2d" in ai_info and len(ai_info["clean_patch_box_2d"]) == 4:
-                    search_box = ai_info["clean_patch_box_2d"]
-                    is_ai_guided = True
-                elif "box_2d" in ai_info and len(ai_info["box_2d"]) == 4:
-                    search_box = ai_info["box_2d"]
-                    is_ai_guided = True
+            mat_type = info.get("material_type") or info.get("material") or defaults.get("material_type", "wood")
+            dom_color = info.get("dominant_color") or defaults.get("dominant_color", "#CCCCCC")
+            sec_color = info.get("secondary_color") or defaults.get("secondary_color", "#999999")
+            grain_dir = info.get("grain_direction", "horizontal")
+            roughness = float(info.get("roughness", defaults.get("roughness", 0.5)))
 
-            if search_box is None:
-                search_box = default_box
+            has_clean = info.get("has_clean_patch")
+            clean_box = info.get("clean_patch_box_2d") or info.get("clean_box_2d") or info.get("box_2d")
 
-            # Step 1: Sub-patch purity scan to bypass clutter (pens, books, shadows)
-            patch = find_cleanest_patch(img_rgb, search_box)
-            if patch is None or patch.shape[0] < 24 or patch.shape[1] < 24:
-                fallback_surfaces.append(name)
-                continue
+            # Stage 2: Crop clean patch if available
+            photo_patch = None
+            if has_clean is not False and clean_box:
+                raw_patch = crop_box_safe(img_rgb, clean_box)
+                if raw_patch is not None and raw_patch.shape[0] >= 16 and raw_patch.shape[1] >= 16:
+                    # Inpaint clutter
+                    photo_patch = inpaint_clutter_and_foreign_objects(raw_patch)
+                    if not info.get("dominant_color"):
+                        dom_color = get_dominant_color_hex(photo_patch)
 
-            # Step 2: Intelligent Inpainting of remaining minor clutter (pen lines, stickers, paper corners)
-            clean_patch = inpaint_clutter_and_foreign_objects(patch)
+            # Stage 3: High-Definition Procedural Material Synthesis
+            synth_tile = None
+            tile_size = (512, 512)
 
-            # Step 3: Perspective rectification & seamless repeating tile synthesis
-            target_tile_size = (512, 512) if name in ["floor", "wall", "ceiling", "board"] else (256, 256)
-            seamless_tile = make_seamless_tile(clean_patch, target_size=target_tile_size)
+            if "wood" in mat_type or name in ["desk", "table"]:
+                synth_tile = synthesize_wood_texture(dom_color, sec_color, size=tile_size, grain_dir=grain_dir, photo_patch=photo_patch)
+            elif "tile" in mat_type or "terrazzo" in mat_type or name == "floor":
+                synth_tile = synthesize_tile_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
+            elif "wall" in mat_type or "paint" in mat_type or name in ["wall", "ceiling"]:
+                synth_tile = synthesize_wall_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
+            elif "board" in mat_type or "whiteboard" in mat_type or name == "board":
+                synth_tile = synthesize_board_texture(dom_color, sec_color, size=tile_size)
+            elif "fabric" in mat_type or name == "sofa":
+                synth_tile = synthesize_fabric_texture(dom_color, sec_color, size=tile_size)
+            else:
+                synth_tile = synthesize_wood_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
 
-            # Step 4: Encode to compact JPEG Data URI
-            b64_data = array_to_base64_jpeg(seamless_tile, quality=82)
+            # Encode to compact Base64 JPEG data URI
+            b64_data = array_to_base64_jpeg(synth_tile, quality=86)
             textures[name] = b64_data
 
-            # Step 5: Material properties
-            dom_color = get_dominant_color_hex(clean_patch)
             pbr_materials[name] = {
                 "dominant_color": dom_color,
-                "roughness": ai_info.get("roughness", surface_roughness_defaults.get(name, 0.5)) if ai_info else surface_roughness_defaults.get(name, 0.5),
-                "material_type": ai_info.get("material", "detected") if ai_info else "detected",
-                "method": "ai_guided_clean" if is_ai_guided else "smart_purity_inpaint"
+                "secondary_color": sec_color,
+                "roughness": roughness,
+                "material_type": mat_type,
+                "method": "ai_multi_stage_reconstructed",
+                "has_authentic_patch": photo_patch is not None
             }
 
             detected_surfaces.append(name)
@@ -367,12 +447,12 @@ def extract_textures(image_input, regions_input=None):
         "pbr_materials": pbr_materials,
         "detected_surfaces": detected_surfaces,
         "fallback_surfaces": fallback_surfaces,
-        "pipeline_version": "2.0-ai-smart-inpaint"
+        "pipeline_version": "3.0-ai-multi-stage-reconstruction"
     }
 
 
 def main():
-    parser = argparse.ArgumentParser(description="MemoryWeaver AI Texture Extractor v2.0")
+    parser = argparse.ArgumentParser(description="MemoryWeaver AI Texture Extractor v3.0")
     parser.add_argument("--image", required=True, help="Path to input image file or base64 string")
     parser.add_argument("--output", default=None, help="Output path for texture JSON")
     parser.add_argument("--regions", default=None, help="Optional JSON file or string of AI-detected clean patch coordinates")
@@ -383,7 +463,7 @@ def main():
     if args.output:
         with open(args.output, "w", encoding="utf-8") as f:
             json.dump(result, f, indent=2, ensure_ascii=False)
-        sys.stderr.write(f"[TEXTURE_EXTRACTOR] Đã trích xuất {len(result['detected_surfaces'])} bề mặt (khử tạp vật và tạo tile seamless) vào {args.output}\n")
+        sys.stderr.write(f"[TEXTURE_ENGINE_V3] Đã tạo sinh {len(result['detected_surfaces'])} texture seamless realistic vào {args.output}\n")
     else:
         print(json.dumps(result, ensure_ascii=False))
 

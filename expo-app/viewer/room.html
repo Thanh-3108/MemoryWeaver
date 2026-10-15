@@ -2326,7 +2326,13 @@
         if (target) {
           const fw = Math.max(1, Math.round(info?.width || target[1]));
           const fd = Math.max(1, Math.round(info?.depth || target[2]));
-          group.traverse(child => { if (child.isMesh) apply(child, target[0], fw, fd); });
+          group.traverse(child => {
+            if (child.isMesh) {
+              // Preserve metallic frames and legs from being overwritten by wood or fabric textures
+              if (child.material && typeof child.material.metalness === 'number' && child.material.metalness >= 0.3) return;
+              apply(child, target[0], fw, fd);
+            }
+          });
         }
       });
       render();

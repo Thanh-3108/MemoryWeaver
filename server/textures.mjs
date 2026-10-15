@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const script = fileURLToPath(new URL('../scripts/extract_textures.py', import.meta.url));
-export async function extractTextures(image, signal, apiKey, fetchImpl = fetch) {
+export async function extractTextures(image, signal, apiKey, fetchImpl = fetch, preferredModel) {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'mw-texture-'));
   try {
     const input = path.join(dir, 'image.bin'), output = path.join(dir, 'textures.json');
@@ -16,29 +16,53 @@ export async function extractTextures(image, signal, apiKey, fetchImpl = fetch) 
     if (apiKey && typeof fetchImpl === 'function') {
       try {
         const [, mimeType, base64Data] = image.match(/^data:([^;]+);base64,(.+)$/) || [null, 'image/jpeg', image];
-        const visionPrompt = `You are an expert 3D interior texture scanner. Analyze this indoor room photo to find the cleanest, most pure surface patches of key materials for 3D modeling:
-- 'desk': Table top or desk surface (find a clean exposed wood, laminate, or glass surface with NO pens, books, papers, or cups).
-- 'floor': Floor tiles, wooden planks, or carpet (find clean exposed area with NO furniture legs or shadows).
-- 'wall': Main vertical wall surface (find clean painted area with NO frames or switches).
-- 'chair': Chair seat or backrest material.
-- 'sofa': Sofa upholstery fabric or leather.
-- 'board': Whiteboard or blackboard or framed artwork.
-- 'window': Window glass or curtain fabric.
+        const visionPrompt = `You are an advanced AI 3D Material & Texture Reconstruction Specialist.
+Analyze this indoor photo to extract the TRUE, CLEAN architectural and furniture textures for realistic 3D reconstruction.
 
-For each surface present in the image, provide the normalized coordinates [ymin, xmin, ymax, xmax] (integers 0 to 1000) of the cleanest, purest sub-rectangle of that material, avoiding foreground clutter, objects, and shadows.
+For each surface present in the room:
+1. 'desk' (Table top / desk surface)
+2. 'floor' (Room floor)
+3. 'wall' (Main walls)
+4. 'board' (Blackboard, whiteboard, or presentation screen)
+5. 'chair' (Chair seats / backrests)
+6. 'ceiling' (Ceiling)
+7. 'sofa' (Sofa / upholstery if present)
+8. 'window' (Window / glass / curtain)
 
-Return JSON in this format:
+CRITICAL INSTRUCTIONS:
+- IDENTIFY FOREIGN CLUTTER: Surfaces often have foreign objects (e.g., on desks: laptops, computer mice, calculators, notebooks, pens, books, hands; on floors: shoes, chair legs, backpacks, shadows).
+- If a surface has an area that is 100% CLEAN and exposed with NO clutter:
+  Set 'has_clean_patch': true and provide the exact bounding box [ymin, xmin, ymax, xmax] (0-1000) of that clean patch.
+- If a surface is mostly covered or occluded (like the floor in a crowded classroom):
+  Set 'has_clean_patch': false.
+- In ALL cases, specify:
+  * 'material_type': e.g., 'varnished_wood', 'ceramic_tile', 'terrazzo_tile', 'matte_wall_paint', 'whiteboard_enamel', 'metal', 'fabric'
+  * 'dominant_color': Hex #RRGGBB sampled strictly from the pure material itself (NOT from clutter!).
+  * 'secondary_color': Hex #RRGGBB for grain/veins/grout if applicable.
+  * 'grain_direction': 'horizontal', 'vertical', 'none', or 'isotropic'.
+  * 'roughness': 0.0 to 1.0 (e.g., 0.35 for varnished wood desk, 0.45 for polished tile, 0.85 for matte wall).
+  * 'details': Short description of the real material appearance.
+
+Return strict JSON:
 {
-  "surfaces": [
-    {
-      "name": "desk",
-      "material": "wood",
-      "clean_box_2d": [ymin, xmin, ymax, xmax]
+  "room_type": "string",
+  "surfaces": {
+    "desk": {
+      "has_clean_patch": boolean,
+      "clean_patch_box_2d": [ymin, xmin, ymax, xmax],
+      "material_type": string,
+      "dominant_color": "#RRGGBB",
+      "secondary_color": "#RRGGBB",
+      "grain_direction": string,
+      "roughness": number,
+      "details": string
     }
-  ]
+  }
 }`;
-        const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
-        const visionRes = await fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+        let model = preferredModel || process.env.GEMINI_MODEL || 'gemini-flash-lite-latest';
+        if (model === 'gemini-2.5-flash') model = 'gemini-flash-lite-latest';
+
+        let visionRes = await fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
           method: 'POST', signal,
           headers: { 'x-goog-api-key': apiKey, 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -52,6 +76,24 @@ Return JSON in this format:
             generationConfig: { responseMimeType: 'application/json', maxOutputTokens: 2048 }
           })
         });
+
+        if (!visionRes.ok && model !== 'gemini-flash-lite-latest') {
+          visionRes = await fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent`, {
+            method: 'POST', signal,
+            headers: { 'x-goog-api-key': apiKey, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                role: 'user',
+                parts: [
+                  { text: visionPrompt },
+                  { inlineData: { mimeType: mimeType || 'image/jpeg', data: base64Data } }
+                ]
+              }],
+              generationConfig: { responseMimeType: 'application/json', maxOutputTokens: 2048 }
+            })
+          });
+        }
+
         if (visionRes.ok) {
           const visionJson = await visionRes.json();
           const rawText = visionJson.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -84,8 +126,8 @@ Return JSON in this format:
     return {
       ...data,
       approximate: false,
-      method: hasAiRegions ? 'ai_semantic_localized' : 'smart_purity_inpaint',
-      warning: 'Texture đã được AI phân tích, khử tạp vật (bút, sách vở) và tổng hợp UV seamless cho mô hình 3D.'
+      method: hasAiRegions ? 'ai_multi_stage_reconstructed' : 'smart_purity_inpaint',
+      warning: 'Texture đã được AI phân tích đa tầng, bóc tách khử tạp vật (sách vở, chuột, bút) và tạo sinh vật liệu realistic cho mô hình 3D.'
     };
   } finally { await rm(dir, { recursive: true, force: true }); }
 }
