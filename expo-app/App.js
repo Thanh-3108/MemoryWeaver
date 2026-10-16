@@ -256,7 +256,8 @@ export default function App() {
   const [currentRoom, setCurrentRoom] = useState(null);
   const [navMode, setNavMode] = useState('overview'); // 'overview' | 'fpv'
   const [textures, setTextures] = useState(null);
-  const [usePhotoTexture, setUsePhotoTexture] = useState(false);
+  const [usePhotoTexture, setUsePhotoTexture] = useState(true);
+  const [lastImagePayload, setLastImagePayload] = useState(null);
   const [roomTitle, setRoomTitle] = useState('KHÔNG GIAN CỦA BẠN');
   const [cameraView, setCameraView] = useState('isometric');
   const [povMode, setPovMode] = useState('overview'); // 'overview' | 'focused'
@@ -523,6 +524,26 @@ export default function App() {
     setImageUri(null);
   };
 
+  const handleTogglePhotoTexture = async () => {
+    const nextVal = !usePhotoTexture;
+    setUsePhotoTexture(nextVal);
+    if (nextVal && !textures && lastImagePayload && !isBusy) {
+      setStatus('Đang lấy texture ảnh…');
+      try {
+        const textureResult = await extractTextures({
+          endpoint: serverEndpoint,
+          token: appToken || undefined,
+          image: lastImagePayload,
+          signal: AbortSignal.timeout(30000)
+        });
+        setTextures(textureResult.textures);
+        setStatus('Đã áp texture ước lượng từ ảnh');
+      } catch {
+        setStatus('Phòng đã sẵn sàng • Chưa áp được texture');
+      }
+    }
+  };
+
   const resetRoom = () => {
     if (pickingRef.current) return;
     if (abortControllerRef.current) {
@@ -531,6 +552,7 @@ export default function App() {
     }
     setNavMode('overview');
     setTextures(null);
+    setLastImagePayload(null);
     setCurrentRoom(null);
     setRoomTitle('KHÔNG GIAN CỦA BẠN');
     setCameraView('isometric');
@@ -834,7 +856,10 @@ export default function App() {
       setInputText('');
       clearImage();
 
-      if (imagePayload) setTextures(null);
+      if (imagePayload) {
+        setTextures(null);
+        setLastImagePayload(imagePayload);
+      }
       // Success
       setCurrentRoom(data);
       setRoomTitle(data.title || 'CĂN PHÒNG KÝ ỨC');
@@ -1063,7 +1088,7 @@ export default function App() {
       <TouchableOpacity
         style={[styles.textureBtn, usePhotoTexture && styles.textureBtnActive]}
         disabled={isBusy}
-        onPress={() => setUsePhotoTexture(value => !value)}
+        onPress={handleTogglePhotoTexture}
       >
         <Text style={[styles.textureBtnText, usePhotoTexture && styles.textureBtnTextActive]}>
           {usePhotoTexture ? 'Texture: ON' : 'Texture: OFF'}
@@ -1215,7 +1240,7 @@ export default function App() {
   const render3DViewer = () => (
     <RoomViewer3D
       room={currentRoom}
-      textures={textures}
+      textures={usePhotoTexture ? textures : null}
       navMode={navMode}
       onNavModeChange={setNavMode}
       onNavWarning={message => setStatus(message)}

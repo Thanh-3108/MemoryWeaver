@@ -188,43 +188,102 @@ def make_seamless_tile(patch_rgb, target_size=(512, 512)):
     return np.clip(out, 0, 255).astype(np.uint8)
 
 
-def synthesize_wood_texture(dom_hex='#C48A57', sec_hex='#A16637', size=(512, 512), grain_dir='horizontal', photo_patch=None):
-    """Synthesize high-definition, realistic varnished wood grain texture preserving authentic photo colors."""
-    w, h = size
-    c1 = hex_to_rgb(dom_hex, (196.0, 138.0, 87.0))
-    c2 = hex_to_rgb(sec_hex, (161.0, 102.0, 55.0))
+def sanitize_wood_color(rgb_array):
+    """Ensure wood color is within natural warm timber spectrum,
+    preventing murky green or cool desaturated gray tones caused by camera shadows.
+    """
+    r, g, b = float(rgb_array[0]), float(rgb_array[1]), float(rgb_array[2])
+    # If red is not dominant over blue, or green is overpowering red (muddy olive/gray)
+    if r <= b * 1.05 or g > r * 0.98 or (r + g + b) / 3.0 < 45.0:
+        lum = 0.299 * r + 0.587 * g + 0.114 * b
+        lum = max(75.0, min(210.0, lum))
+        # Warm golden oak/birch ratio: R=1.24, G=0.96, B=0.65
+        target_r = min(255.0, lum * 1.24)
+        target_g = min(255.0, lum * 0.96)
+        target_b = min(255.0, lum * 0.65)
+        return np.array([target_r, target_g, target_b], dtype=np.float32)
+    return np.array([r, g, b], dtype=np.float32)
 
+
+def synthesize_wood_texture(dom_hex='#C48A57', sec_hex='#A16637', size=(512, 512), grain_dir='horizontal', photo_patch=None):
+    """Synthesize high-definition, architectural-grade staggered wood plank texture."""
+    w, h = size
+    c1 = hex_to_rgb(dom_hex, (196.0, 145.0, 95.0))
     if photo_patch is not None and photo_patch.shape[0] >= 16 and photo_patch.shape[1] >= 16:
         patch_median = np.median(photo_patch.reshape(-1, 3), axis=0).astype(np.float32)
         c1 = patch_median
-        c2 = np.clip(patch_median * 0.78, 0.0, 255.0)
 
-    y = np.linspace(0, 1, h)[:, None]
-    x = np.linspace(0, 1, w)[None, :]
+    c1 = sanitize_wood_color(c1)
 
-    if grain_dir == 'vertical':
-        coord_fiber = x
-        coord_cross = y
-    else:
-        coord_fiber = y
-        coord_cross = x
-
+    num_planks = 5
+    img = np.zeros((h, w, 3), dtype=np.float32)
+    plank_h = h // num_planks
     rng = np.random.RandomState(42)
-    fibers = np.sin(coord_fiber * 128.0 + np.sin(coord_cross * 8.0) * 3.0) * 0.5 + 0.5
-    rings = np.sin(coord_fiber * 24.0 + np.sin(coord_cross * 4.0) * 4.5) * 0.5 + 0.5
-    noise = rng.normal(0, 0.04, (h, w))
 
-    pattern = np.clip(0.65 * fibers + 0.25 * rings + noise, 0.0, 1.0)[:, :, None]
-    wood = c1[None, None, :] * pattern + c2[None, None, :] * (1.0 - pattern)
+    for p in range(num_planks):
+        y0 = p * plank_h
+        y1 = (p + 1) * plank_h if p < num_planks - 1 else h
+        ph = y1 - y0
 
-    # Subtle polyurethane clear-coat varnish sheen variation
-    sheen = rng.normal(0, 2.5, (h, w, 1))
-    wood = np.clip(wood + sheen, 0, 255).astype(np.uint8)
-    return make_seamless_tile(wood, target_size=size)
+        # Subtle natural plank-to-plank tone variation (+/- 5%)
+        tone_shift = rng.uniform(-10.0, 10.0, (1, 1, 3))
+        p_base = np.clip(c1 + tone_shift, 30.0, 245.0)
+
+        y_coords = np.linspace(0, 1, ph)[:, None]
+        x_coords = np.linspace(0, 1, w)[None, :]
+
+        # Multi-frequency organic wood grain fibers
+        flow = np.sin(x_coords * 3.5 * np.pi + rng.uniform(-1, 1)) * 0.08
+        fibers = np.sin((y_coords + flow) * 80.0 * np.pi) * 0.5 + 0.5
+        pores = rng.normal(0, 3.5, (ph, w, 1))
+        rings = np.sin((y_coords + flow * 0.5) * 14.0 * np.pi) * 0.5 + 0.5
+
+        pattern = np.clip(0.68 * fibers + 0.28 * rings, 0.0, 1.0)[:, :, None]
+        dark_grain = np.clip(p_base * 0.82, 0.0, 255.0)
+        plank_rgb = p_base[None, None, :] * (1.0 - pattern * 0.25) + dark_grain[None, None, :] * (pattern * 0.25) + pores
+
+        # Micro-bevel between planks for realistic 3D depth
+        if y1 < h:
+            plank_rgb[-2:, :] *= 0.76  # bevel shadow groove
+        if y0 > 0:
+            plank_rgb[:1, :] *= 1.10   # bevel edge highlight
+
+        img[y0:y1, :] = plank_rgb
+
+    return make_seamless_tile(np.clip(img, 0, 255).astype(np.uint8), target_size=size)
+
+
+def synthesize_carpet_texture(dom_hex='#2C3E50', sec_hex='#1E2B37', size=(512, 512), photo_patch=None):
+    """Synthesize luxury architectural acoustic carpet / melange loop-pile texture."""
+    w, h = size
+    c_carpet = hex_to_rgb(dom_hex, (44.0, 62.0, 80.0))
+    if photo_patch is not None and photo_patch.shape[0] >= 16 and photo_patch.shape[1] >= 16:
+        patch_median = np.median(photo_patch.reshape(-1, 3), axis=0).astype(np.float32)
+        c_carpet = patch_median
+
+    rng = np.random.RandomState(99)
+    base = np.clip(c_carpet, 20.0, 230.0)
+
+    # 2D woven loop pile
+    y, x = np.mgrid[0:h, 0:w]
+    grid_weave = (np.sin(x * 0.8) * np.cos(y * 0.8) * 0.5 + 0.5)[:, :, None]
+
+    # Multi-tone melange fibers (fine dark and light flecks)
+    flecks = rng.normal(0, 14.0, (h, w, 3))
+    dark_tone = np.clip(base * 0.82, 0.0, 255.0)
+
+    carpet = base[None, None, :] * (1.0 - grid_weave * 0.25) + dark_tone[None, None, :] * (grid_weave * 0.25) + flecks
+
+    # Subtle acoustic modular tile seams (50x50cm look: 2x2 grid)
+    mid_x, mid_y = w // 2, h // 2
+    carpet[mid_y-1:mid_y+1, :] *= 0.88
+    carpet[:, mid_x-1:mid_x+1] *= 0.88
+
+    return make_seamless_tile(np.clip(carpet, 0, 255).astype(np.uint8), target_size=size)
 
 
 def synthesize_tile_texture(dom_hex='#EAEAEA', sec_hex='#D0D0D0', size=(512, 512), tile_style='terrazzo', tiles_per_axis=2, photo_patch=None):
-    """Synthesize high-definition, realistic architectural floor tiles (terrazzo or ceramic)."""
+    """Synthesize high-definition architectural porcelain / terrazzo tiles."""
     w, h = size
     c_tile = hex_to_rgb(dom_hex, (234.0, 234.0, 234.0))
     c_grout = hex_to_rgb(sec_hex, (200.0, 200.0, 200.0))
@@ -232,18 +291,20 @@ def synthesize_tile_texture(dom_hex='#EAEAEA', sec_hex='#D0D0D0', size=(512, 512
     if photo_patch is not None and photo_patch.shape[0] >= 16 and photo_patch.shape[1] >= 16:
         patch_median = np.median(photo_patch.reshape(-1, 3), axis=0).astype(np.float32)
         c_tile = patch_median
-        c_grout = np.clip(patch_median * 0.88, 0.0, 255.0)
+        c_grout = np.clip(patch_median * 0.86, 0.0, 255.0)
 
     rng = np.random.RandomState(101)
-    # Fine stone / terrazzo mineral specks
-    specks = rng.normal(0, 5.0, (h, w, 1))
-    tile_surface = np.clip(c_tile + specks, 0, 255)
+    specks = rng.normal(0, 4.0, (h, w, 1))
+    # Subtle soft marble vein gradient
+    y, x = np.mgrid[0:h, 0:w]
+    veins = (np.sin(x * 0.03 + np.sin(y * 0.04) * 2.0) * 0.5 + 0.5)[:, :, None]
+    tile_surface = np.clip(c_tile + specks - veins * 6.0, 0, 255)
 
-    # Clean grout grid lines
+    # Clean micro-grout lines
     grout_mask = np.zeros((h, w), dtype=np.float32)
     tile_w = w // tiles_per_axis
     tile_h = h // tiles_per_axis
-    grout_width = 2
+    grout_width = 1
 
     for i in range(tiles_per_axis + 1):
         gx = min(w - 1, i * tile_w)
@@ -256,16 +317,16 @@ def synthesize_tile_texture(dom_hex='#EAEAEA', sec_hex='#D0D0D0', size=(512, 512
     return make_seamless_tile(np.clip(img, 0, 255).astype(np.uint8), target_size=size)
 
 
-def synthesize_wall_texture(dom_hex='#E2EBE5', sec_hex='#D2DDD7', size=(512, 512), photo_patch=None):
-    """Synthesize realistic matte wall paint / plaster texture using authentic wall color."""
+def synthesize_wall_texture(dom_hex='#FFFDF0', sec_hex='#F2EFE6', size=(512, 512), photo_patch=None):
+    """Synthesize realistic architectural matte eggshell wall plaster."""
     w, h = size
-    c_wall = hex_to_rgb(dom_hex, (226.0, 235.0, 229.0))
+    c_wall = hex_to_rgb(dom_hex, (248.0, 246.0, 238.0))
     if photo_patch is not None and photo_patch.shape[0] >= 16 and photo_patch.shape[1] >= 16:
         patch_median = np.median(photo_patch.reshape(-1, 3), axis=0).astype(np.float32)
-        c_wall = patch_median
+        c_wall = np.clip(patch_median, 160.0, 255.0)
 
     rng = np.random.RandomState(88)
-    micro_stucco = rng.normal(0, 3.0, (h, w, 1))
+    micro_stucco = rng.normal(0, 2.0, (h, w, 1))
     img = np.clip(c_wall + micro_stucco, 0, 255).astype(np.uint8)
     return make_seamless_tile(img, target_size=size)
 
@@ -544,6 +605,8 @@ def extract_textures(image_input, regions_input=None):
 
             if name == "screen":
                 synth_tile = synthesize_screen_texture(photo_patch=photo_patch, dom_hex=dom_color, size=(512, 384))
+            elif "carpet" in mat_type or "rug" in mat_type or (name == "floor" and ("carpet" in mat_type or "fabric" in mat_type or ("#2" in dom_color or "#3" in dom_color))):
+                synth_tile = synthesize_carpet_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
             elif "wood" in mat_type or name in ["desk", "table"]:
                 synth_tile = synthesize_wood_texture(dom_color, sec_color, size=tile_size, grain_dir=grain_dir, photo_patch=photo_patch)
             elif "tile" in mat_type or "terrazzo" in mat_type or name == "floor":

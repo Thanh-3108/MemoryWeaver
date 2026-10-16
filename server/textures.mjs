@@ -37,11 +37,13 @@ CRITICAL INSTRUCTIONS:
 - If a surface is mostly covered or occluded (like the floor in a crowded classroom):
   Set 'has_clean_patch': false.
 - In ALL cases, specify:
-  * 'material_type': e.g., 'varnished_wood', 'ceramic_tile', 'terrazzo_tile', 'matte_wall_paint', 'whiteboard_enamel', 'metal', 'fabric'
+  * 'material_type': e.g., 'varnished_wood', 'acoustic_carpet', 'carpet_tile', 'ceramic_tile', 'terrazzo_tile', 'matte_wall_paint', 'whiteboard_enamel', 'metal', 'fabric'
+  * Floor note: In libraries, study halls, or modern offices, floors are often acoustic carpet or carpet tiles; if so, specify 'acoustic_carpet' (NOT ceramic tile).
+  * Desk note: Ensure dominant_color reflects authentic warm natural timber (oak, birch, walnut) without cool shadow or fluorescent green distortion.
   * 'dominant_color': Hex #RRGGBB sampled strictly from the pure material itself (NOT from clutter!).
   * 'secondary_color': Hex #RRGGBB for grain/veins/grout if applicable.
   * 'grain_direction': 'horizontal', 'vertical', 'none', or 'isotropic'.
-  * 'roughness': 0.0 to 1.0 (e.g., 0.35 for varnished wood desk, 0.45 for polished tile, 0.85 for matte wall).
+  * 'roughness': 0.0 to 1.0 (e.g., 0.35 for varnished wood desk, 0.45 for polished tile, 0.85 for matte wall, 0.90 for carpet).
   * 'details': Short description of the real material appearance.
 
 Return strict JSON:
