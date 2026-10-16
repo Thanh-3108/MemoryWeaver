@@ -1670,14 +1670,14 @@
           posZ = (-halfD + cornerMargin <= halfD - cornerMargin)
             ? Math.max(-halfD + cornerMargin, Math.min(halfD - cornerMargin, item.z))
             : 0;
-          yaw = -90; // hướng vào trong theo trục -X
+          yaw = 90; // hướng vào trong theo trục -X
         } else if (minDist === dLeft) {
           wallSide = 'left';
           posX = -halfW + 0.04;
           posZ = (-halfD + cornerMargin <= halfD - cornerMargin)
             ? Math.max(-halfD + cornerMargin, Math.min(halfD - cornerMargin, item.z))
             : 0;
-          yaw = 90; // hướng vào trong theo trục +X
+          yaw = -90; // hướng vào trong theo trục +X
         } else if (minDist === dBack) {
           wallSide = 'back';
           posX = (-halfW + cornerMargin <= halfW - cornerMargin)
@@ -1939,8 +1939,8 @@
 
           if (minWallDist === dBack) wardrobe.yaw = 0; // Lưng áp tường sau (+Z), cánh mở -Z
           else if (minWallDist === dFront) wardrobe.yaw = 180; // Lưng áp tường trước (-Z), cánh mở +Z
-          else if (minWallDist === dLeft) wardrobe.yaw = 90; // Lưng áp tường trái (-X), cánh mở +X
-          else wardrobe.yaw = -90; // Lưng áp tường phải (+X), cánh mở -X
+          else if (minWallDist === dLeft) wardrobe.yaw = -90; // Lưng áp tường trái (-X), cánh mở +X
+          else wardrobe.yaw = 90; // Lưng áp tường phải (+X), cánh mở -X
         });
 
         // B8: Xử lý Tivi (Television) - HƯỚNG MÀN HÌNH VỀ SOFA HOẶC GIƯỜNG NGỦ
@@ -2451,10 +2451,11 @@
 
             if (isCeilingPendant) {
               // Đèn thả trần phòng ăn / phòng khách (Pendant Chandelier)
-              const cordH = Math.max(0.4, fh * 0.65);
-              const cord = box(0, fh - cordH * 0.5, 0, 0.025, cordH, 0.025, stemMat);
-              const shade = box(0, fh - cordH - 0.12, 0, fw, 0.24, fd, shadeMat);
-              const bulb = box(0, fh - cordH - 0.18, 0, fw * 0.35, 0.12, fd * 0.35, bulbMat);
+              // Dây thả nối từ mặt đèn vút lên tận trần nhà (h)
+              const cordH = Math.max(0.3, (h || 3) - (posY + fh * 0.6));
+              const cord = box(0, fh * 0.6 + cordH * 0.5, 0, 0.025, cordH, 0.025, stemMat);
+              const shade = box(0, fh * 0.5, 0, fw, 0.24, fd, shadeMat);
+              const bulb = box(0, fh * 0.42, 0, fw * 0.35, 0.12, fd * 0.35, bulbMat);
               [cord, shade, bulb].forEach(p => { p.userData = { noTexture: true }; });
             } else if (isFloorLamp) {
               // Đèn sàn phòng khách cao ráo (Tall Living Room Floor Lamp)

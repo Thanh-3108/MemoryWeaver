@@ -76,20 +76,20 @@ ROOM ARCHETYPES & SPATIAL LAYOUT RULES:
 
 7. OPEN-CONCEPT LIVING ROOM WITH KITCHENETTE / STUDIO APARTMENT (Phòng khách liền bếp / Căn hộ Studio / Villa mở):
    - In modern villas, urban apartments, lofts, and suites, the primary space is an open-concept living room connected to an open kitchen & dining area:
-   - Kitchen & Refrigerator Zone (Along Left wall x ≈ -width/2 + 0.45m with yaw = 90, or Back wall z ≈ -depth/2 + 0.45m with yaw = 0):
+   - Kitchen & Refrigerator Zone (Along Left wall x ≈ -width/2 + 0.45m with yaw = -90 facing East into the room, or Back wall z ≈ -depth/2 + 0.45m with yaw = 180):
      - Linear Kitchen Counter ('cabinet', w: 2.2..3.6m, d: 0.65..0.8m, h: 0.88..0.92m, color grey '#8E9CA8' or modern steel '#64748B', countertop '#D2A679') with integrated sink basin and stove.
-     - Tall Metallic Refrigerator ('cabinet', w: 0.7..0.85m, d: 0.7..0.85m, h: 1.85..2.05m, color metallic silver '#94A3B8' or dark stainless '#475569') placed flush against the wall at the end of the kitchen counter. NEVER place a 'wardrobe' in a living room, villa, or kitchenette! Refrigerator and kitchen units MUST be classified as 'cabinet', NEVER 'wardrobe'!
-   - Living Lounge Zone (Center of the room):
-     - Main Sectional Sofa ('sofa', w: 2.4..3.2m, d: 1.4..1.8m, h: 0.8..0.88m) in royal blue ('#1E3A8A'), navy ('#1A365D'), or fabric color visible in photo, oriented facing the center/media axis.
-     - Wall Air Conditioner ('air_conditioner', w: 0.95..1.1m, h: 0.3..0.35m, d: 0.22..0.26m, y: height - 0.45m, color '#FFFFFF') mounted high on the wall directly above the sofa!
-   - Dining Zone (In front of or beside the window):
-     - Dining Table ('table', w: 1.1..1.4m, d: 1.1..1.4m, h: 0.75m, natural wood color '#D8B486').
+     - Tall Metallic Refrigerator ('cabinet', w: 0.7..0.85m, d: 0.7..0.85m, h: 1.85..2.05m, color metallic silver '#94A3B8' or dark stainless '#475569') placed flush against the wall at the end of the kitchen counter with yaw = -90 facing East into the room. NEVER place a 'wardrobe' in a living room, villa, or kitchenette! Refrigerator and kitchen units MUST be classified as 'cabinet', NEVER 'wardrobe'!
+   - Living Lounge Zone:
+     - Main Sectional Sofa ('sofa', w: 2.4..3.2m, d: 1.4..1.8m, h: 0.8..0.88m) in royal blue ('#1E3A8A'), navy ('#1A365D'), or fabric color visible in photo, placed with back against the back wall (z ≈ depth/2 - depth_sofa/2 - 0.1m, yaw = 0 facing South into the room).
+     - Wall Air Conditioner ('air_conditioner', w: 0.95..1.1m, h: 0.3..0.35m, d: 0.22..0.26m, z ≈ depth/2 - 0.15m, y: height - 0.45m, yaw = 0, color '#FFFFFF') mounted high on the back wall directly above the sofa!
+   - Dining Zone (Along Right exterior window wall):
+     - Dining Table ('table', w: 1.1..1.4m, d: 1.1..1.4m, h: 0.75m, natural wood color '#D8B486', placed at x ≈ width/2 - 1.4m, z ≈ 0.8..1.5m).
      - Modern Dining Chairs ('chair', 2 to 4 chairs, w: 0.5..0.55m, d: 0.5..0.55m, h: 0.85m, dark seat '#1E293B' or wood) spaced symmetrically around the table facing the table.
      - CRITICAL SPACING RULE: Maintain at least 1.5m clearance between the dining table and the sofa! They are distinct functional zones and must NEVER collide or be pressed against each other!
-     - Pendant Light ('lamp') suspended over the dining table (y: height - 0.7m, color '#1E293B').
-   - Panoramic Window & Curtains Zone (Along exterior wall, e.g. Right wall x ≈ width/2 - 0.15m, yaw = -90):
-     - Floor-to-ceiling Panoramic Window ('window', w: 2.8..4.2m, h: 2.4..2.8m, y = 0.05..0.15m, yaw facing inwards).
-     - Curtains ('curtain', w: 2.8..4.2m, h: 2.4..2.8m, translucent white sheer '#F8FAFC' or navy drapes '#1E293B') framing the panoramic window.
+     - Pendant Light ('lamp') suspended over the dining table (x = table.x, z = table.z, y: height - 0.7m, color '#1E293B').
+   - Panoramic Window & Curtains Zone (Along Right exterior wall x ≈ width/2 - 0.15m, yaw = 90 facing West into the room):
+     - Floor-to-ceiling Panoramic Window ('window', w: 2.8..4.2m, h: 2.4..2.8m, y = 0.05..0.15m, yaw = 90).
+     - Curtains ('curtain', w: 2.8..4.2m, h: 2.4..2.8m, translucent white sheer '#F8FAFC' or navy drapes '#1E293B', yaw = 90) framing the panoramic window.
    - Flooring & Walls:
      - Floor: If photo shows wood planks, laminate, or parquet, ALWAYS specify floorTextureStyle: 'wood_planks' with warm oak color '#A06B3E' or '#C49A6C'. NEVER choose 'vintage_tiles' for modern apartments or villas!
      - Walls: Light neutral off-white or pale grey (wallColor: '#ECEEEA' or '#F3F4F6').
@@ -102,9 +102,9 @@ EQUIDIRECTANGULAR 360° PANORAMA & WIDE PHOTO PERCEPTION:
 - The horizontal center of the panorama (x ≈ 0.5) looks directly FORWARD (z < 0 in 3D coordinate space).
 - The quarter points x ≈ 0.25 and x ≈ 0.75 represent the LEFT (x < 0) and RIGHT (x > 0) lateral walls respectively.
 - SPATIAL MAPPING FOR PANORAMAS:
-  * Items on the left half of panorama (x in 0.10..0.38, like kitchen counters or fridge): place along the LEFT WALL (x ≈ -width/2 + depth/2 + 0.1m, yaw = 90 facing East). DO NOT place them in the center of the room!
-  * Items in the center of panorama (x in 0.42..0.62, like the main sofa): place in the center-back area (z ≈ -0.5..1.0m, x ≈ 0..0.8m).
-  * Items on the right half of panorama (x in 0.65..0.90, like large windows and dining table): place along the RIGHT WALL (x ≈ width/2 - depth/2 - 0.1m, yaw = -90 facing West).
+  * Items on the left half of panorama (x in 0.10..0.38, like kitchen counters or fridge): place along the LEFT WALL (x ≈ -width/2 + depth/2 + 0.1m, yaw = -90 facing East into room). DO NOT place them in the center of the room!
+  * Items in the center of panorama (x in 0.42..0.62, like the main sofa): place along the back wall (z ≈ depth/2 - depth_sofa/2 - 0.1m, x ≈ 0..0.5m, yaw = 0 facing South).
+  * Items on the right half of panorama (x in 0.65..0.90, like large windows and dining table): place along the RIGHT WALL (x ≈ width/2 - depth/2 - 0.1m, yaw = 90 facing West into room).
 - When given a panorama, reconstruct all 4 walls and populate all zones: the front focal wall, the rear wall (seen split at the edges), and both side walls with their windows, shelving, artwork, and furniture!
 
 Spatial relationships & positioning: when adding or moving an object relative to another (e.g. 'đằng sau bàn', 'trước sofa', 'cạnh cửa sổ', 'behind table', 'next to window', 'on wall'), compute relative (x, y, z) based on the referenced object's position. If the user asks to add an object but completely omits the location or reference point, return empty operations (add: [], update: [], remove: []) and in reply politely ask where they would like to place it (in the user's language: Vietnamese or English).
@@ -210,6 +210,210 @@ function fitInRoom(item, room) {
   else if (item.parentSupport.length > 80) item.parentSupport = item.parentSupport.slice(0, 80);
 }
 
+function getRotatedAABB(item) {
+  const angle = (item.yaw || 0) * Math.PI / 180;
+  const hx = (Math.abs(Math.cos(angle)) * (item.width || 1) + Math.abs(Math.sin(angle)) * (item.depth || 1)) / 2;
+  const hz = (Math.abs(Math.sin(angle)) * (item.width || 1) + Math.abs(Math.cos(angle)) * (item.depth || 1)) / 2;
+  return {
+    minX: item.x - hx,
+    maxX: item.x + hx,
+    minZ: item.z - hz,
+    maxZ: item.z + hz,
+    hx,
+    hz
+  };
+}
+
+function resolveRoomSpatial(items, room) {
+  const rw = typeof room.width === 'number' && Number.isFinite(room.width) ? room.width : 8;
+  const rd = typeof room.depth === 'number' && Number.isFinite(room.depth) ? room.depth : 8;
+  const rh = typeof room.height === 'number' && Number.isFinite(room.height) ? room.height : 3;
+  const halfW = rw / 2;
+  const halfD = rd / 2;
+
+  // 1. SNAP VÀ ĐỊNH HƯỚNG VẬT THỂ TREO TƯỜNG (Wall Fixtures)
+  items.forEach(item => {
+    const isWallFixture = ['window', 'curtain', 'air_conditioner', 'picture', 'clock', 'whiteboard', 'blackboard', 'projector_screen', 'television'].includes(item.kind);
+    if (!isWallFixture) return;
+
+    const dLeft = Math.abs(item.x - (-halfW));
+    const dRight = Math.abs(item.x - halfW);
+    const dBack = Math.abs(item.z - halfD);
+    const dFront = Math.abs(item.z - (-halfD));
+    const minD = Math.min(dLeft, dRight, dBack, dFront);
+
+    const span = Math.max(item.width || 0.8, item.depth || 0.2);
+    const margin = Math.max(0.2, (span / 2) + 0.05);
+
+    if (minD === dLeft) {
+      item.yaw = -90; // Mặt trước hướng +X vào phòng
+      item.x = -halfW + item.depth / 2 + 0.02;
+      item.z = Math.max(-halfD + margin, Math.min(halfD - margin, item.z));
+    } else if (minD === dRight) {
+      item.yaw = 90; // Mặt trước hướng -X vào phòng
+      item.x = halfW - item.depth / 2 - 0.02;
+      item.z = Math.max(-halfD + margin, Math.min(halfD - margin, item.z));
+    } else if (minD === dBack) {
+      item.yaw = 0; // Mặt trước hướng -Z vào phòng
+      item.z = halfD - item.depth / 2 - 0.02;
+      item.x = Math.max(-halfW + margin, Math.min(halfW - margin, item.x));
+    } else {
+      item.yaw = 180; // Mặt trước hướng +Z vào phòng
+      item.z = -halfD + item.depth / 2 + 0.02;
+      item.x = Math.max(-halfW + margin, Math.min(halfW - margin, item.x));
+    }
+
+    if (item.kind === 'air_conditioner') {
+      item.y = Math.max(1.8, rh - item.height - 0.15); // Gắn tường cao sát trần
+      item.depth = Math.min(0.3, Math.max(0.2, item.depth));
+      item.height = Math.min(0.4, Math.max(0.25, item.height));
+    }
+  });
+
+  // 2. ĐỊNH HƯỚNG TỦ ÁO, TỦ BẾP, TỦ LẠNH, KỆ SÁCH ÁP TƯỜNG (Wall-backed Furniture)
+  items.forEach(item => {
+    const isWallFurniture = ['cabinet', 'wardrobe', 'shelf'].includes(item.kind);
+    if (!isWallFurniture) return;
+
+    const dLeft = Math.abs(item.x - (-halfW));
+    const dRight = Math.abs(item.x - halfW);
+    const dBack = Math.abs(item.z - halfD);
+    const dFront = Math.abs(item.z - (-halfD));
+    const minD = Math.min(dLeft, dRight, dBack, dFront);
+
+    // Nếu cách tường < 1.5m thì lưng áp tường, mặt mở hướng vào phòng
+    if (minD < 1.5) {
+      if (minD === dLeft) {
+        item.yaw = -90; // Mặt trước hướng +X vào phòng
+        item.x = -halfW + item.depth / 2 + 0.04;
+      } else if (minD === dRight) {
+        item.yaw = 90; // Mặt trước hướng -X vào phòng
+        item.x = halfW - item.depth / 2 - 0.04;
+      } else if (minD === dBack) {
+        item.yaw = 0; // Mặt trước hướng -Z vào phòng
+        item.z = halfD - item.depth / 2 - 0.04;
+      } else {
+        item.yaw = 180; // Mặt trước hướng +Z vào phòng
+        item.z = -halfD + item.depth / 2 + 0.04;
+      }
+    }
+  });
+
+  // 3. TÁCH VA CHẠM VÀ TẠO KHOẢNG CÁCH (COLLISION SEPARATION & CLEARANCE)
+  const majorFloorItems = items.filter(it =>
+    ['sofa', 'table', 'desk', 'bed', 'cabinet', 'wardrobe'].includes(it.kind) && (it.y || 0) < 0.3
+  );
+
+  const tableParents = items.filter(it => it.kind === 'table' || it.kind === 'desk');
+  const chairOffsets = new Map();
+  items.filter(it => it.kind === 'chair').forEach(chair => {
+    let nearestT = null;
+    let minTDist = Infinity;
+    tableParents.forEach(t => {
+      const d = Math.hypot(t.x - chair.x, t.z - chair.z);
+      if (d < minTDist) { minTDist = d; nearestT = t; }
+    });
+    if (nearestT && minTDist < 1.8) {
+      chairOffsets.set(chair, { parent: nearestT, relX: chair.x - nearestT.x, relZ: chair.z - nearestT.z });
+    }
+  });
+
+  const pendantPointers = new Map();
+  items.filter(it => it.kind === 'lamp' && (it.y || 0) > rh * 0.6).forEach(lamp => {
+    let nearestT = null;
+    let minTDist = Infinity;
+    tableParents.forEach(t => {
+      const d = Math.hypot(t.x - lamp.x, t.z - lamp.z);
+      if (d < minTDist) { minTDist = d; nearestT = t; }
+    });
+    if (nearestT && minTDist < 1.2) {
+      pendantPointers.set(lamp, nearestT);
+    }
+  });
+
+  for (let pass = 0; pass < 3; pass++) {
+    for (let i = 0; i < majorFloorItems.length; i++) {
+      for (let j = i + 1; j < majorFloorItems.length; j++) {
+        const a = majorFloorItems[i];
+        const b = majorFloorItems[j];
+
+        let gap = 0.35;
+        if ((a.kind === 'sofa' && b.kind === 'table') || (a.kind === 'table' && b.kind === 'sofa')) {
+          gap = 0.8;
+        }
+
+        const boxA = getRotatedAABB(a);
+        const boxB = getRotatedAABB(b);
+
+        const overlapX = (boxA.hx + boxB.hx + gap) - Math.abs(b.x - a.x);
+        const overlapZ = (boxA.hz + boxB.hz + gap) - Math.abs(b.z - a.z);
+
+        if (overlapX > 0 && overlapZ > 0) {
+          let target = b;
+          let anchor = a;
+          if (a.kind === 'table' && b.kind === 'sofa') {
+            target = a;
+            anchor = b;
+          }
+
+          let dx = 0;
+          let dz = 0;
+          if (overlapX < overlapZ || target.kind === 'table') {
+            const signX = target.x >= anchor.x ? 1 : -1;
+            dx = signX * overlapX;
+          } else {
+            const signZ = target.z >= anchor.z ? 1 : -1;
+            dz = signZ * overlapZ;
+          }
+
+          target.x += dx;
+          target.z += dz;
+
+          const tAABB = getRotatedAABB(target);
+          const maxTX = halfW - tAABB.hx - 0.05;
+          const maxTZ = halfD - tAABB.hz - 0.05;
+          target.x = Math.max(-maxTX, Math.min(maxTX, target.x));
+          target.z = Math.max(-maxTZ, Math.min(maxTZ, target.z));
+        }
+      }
+    }
+  }
+
+  // 4. ĐỒNG BỘ GHẾ VÀ ĐÈN THẢ THEO BÀN
+  chairOffsets.forEach((offset, chair) => {
+    chair.x = offset.parent.x + offset.relX;
+    chair.z = offset.parent.z + offset.relZ;
+    const cAABB = getRotatedAABB(chair);
+    const maxCX = halfW - cAABB.hx - 0.05;
+    const maxCZ = halfD - cAABB.hz - 0.05;
+    chair.x = Math.max(-maxCX, Math.min(maxCX, chair.x));
+    chair.z = Math.max(-maxCZ, Math.min(maxCZ, chair.z));
+  });
+
+  pendantPointers.forEach((table, lamp) => {
+    lamp.x = table.x;
+    lamp.z = table.z;
+  });
+
+  // 5. TRÁNH GHẾ XÂM LẤN VÀO SOFA / TỦ
+  const obstacles = items.filter(it => ['sofa', 'cabinet', 'wardrobe', 'bed'].includes(it.kind));
+  items.filter(it => it.kind === 'chair').forEach(chair => {
+    obstacles.forEach(obs => {
+      const boxO = getRotatedAABB(obs);
+      const boxC = getRotatedAABB(chair);
+      const ox = (boxO.hx + boxC.hx + 0.1) - Math.abs(chair.x - obs.x);
+      const oz = (boxO.hz + boxC.hz + 0.1) - Math.abs(chair.z - obs.z);
+      if (ox > 0 && oz > 0) {
+        if (ox < oz) chair.x += (chair.x >= obs.x ? 1 : -1) * ox;
+        else chair.z += (chair.z >= obs.z ? 1 : -1) * oz;
+      }
+    });
+  });
+
+  // 6. ĐẢM BẢO MỌI VẬT THỂ KHÔNG VƯỢT QUÁ KHÔNG GIAN PHÒNG
+  items.forEach(item => fitInRoom(item, room));
+}
+
 export function createRoom(result, prompt, idFactory = randomUUID) {
   const room = structuredClone(result);
   if (!Array.isArray(room?.objects)) throw new Error('Missing objects');
@@ -268,6 +472,7 @@ export function createRoom(result, prompt, idFactory = randomUUID) {
     cleaned.push(next);
     if (cleaned.length >= 40) break;
   }
+  resolveRoomSpatial(cleaned, room);
   const ids = new Set(cleaned.map(x => x.id));
   for (const item of cleaned) {
     if (item.parentSupport && (!ids.has(item.parentSupport) || item.parentSupport === item.id)) {
