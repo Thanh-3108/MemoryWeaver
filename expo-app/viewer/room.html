@@ -198,6 +198,8 @@
 
   <script>
     let scene, camera, renderer, controls;
+    let hemiLight = null, sun = null, bounceLight = null, fillLight = null;
+    let cachedContactShadowTex = null;
     let roomGroup = null;
     let boxGeometry = null;
     let frameId = null;
@@ -735,48 +737,116 @@
       const ctx = canvas.getContext('2d');
       if (!ctx) return null;
 
-      // Gradient bầu trời xanh ngọc sáng ban ngày
+      // Gradient bầu trời xanh ngọc sáng ban ngày chuẩn nhiếp ảnh
       const grad = ctx.createLinearGradient(0, 0, 0, 512);
-      grad.addColorStop(0, '#38BDF8');
-      grad.addColorStop(0.42, '#7DD3FC');
-      grad.addColorStop(0.72, '#BAE6FD');
-      grad.addColorStop(0.88, '#FEF9C3');
-      grad.addColorStop(1.0, '#DCFCE7');
+      grad.addColorStop(0, '#1E88E5');
+      grad.addColorStop(0.32, '#42A5F5');
+      grad.addColorStop(0.62, '#90CAF9');
+      grad.addColorStop(0.84, '#E0F2FE');
+      grad.addColorStop(1.0, '#FEF9C3');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 512, 512);
 
-      // Vầng sáng mặt trời dịu dàng ở góc trên bên phải
-      const sunGrad = ctx.createRadialGradient(380, 110, 10, 380, 110, 200);
-      sunGrad.addColorStop(0, 'rgba(255, 255, 255, 0.98)');
-      sunGrad.addColorStop(0.25, 'rgba(254, 240, 138, 0.65)');
-      sunGrad.addColorStop(0.65, 'rgba(255, 255, 255, 0.18)');
-      sunGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      // Vầng sáng mặt trời ấm áp và tia sáng lan tỏa (Sunburst flare)
+      const sunGrad = ctx.createRadialGradient(380, 110, 8, 380, 110, 220);
+      sunGrad.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
+      sunGrad.addColorStop(0.2, 'rgba(254, 240, 138, 0.75)');
+      sunGrad.addColorStop(0.55, 'rgba(255, 255, 255, 0.25)');
+      sunGrad.addColorStop(1.0, 'rgba(255, 255, 255, 0)');
       ctx.fillStyle = sunGrad;
       ctx.fillRect(0, 0, 512, 512);
 
-      // Mây trắng mềm mại trôi bồng bềnh
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.52)';
+      // Mây trắng mềm mại tự nhiên
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
       ctx.beginPath();
-      ctx.arc(140, 180, 48, 0, Math.PI * 2);
-      ctx.arc(185, 168, 58, 0, Math.PI * 2);
-      ctx.arc(235, 184, 42, 0, Math.PI * 2);
+      ctx.arc(130, 170, 48, 0, Math.PI * 2);
+      ctx.arc(175, 155, 58, 0, Math.PI * 2);
+      ctx.arc(225, 172, 44, 0, Math.PI * 2);
+      ctx.arc(265, 185, 34, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.beginPath();
-      ctx.arc(310, 220, 38, 0, Math.PI * 2);
-      ctx.arc(350, 210, 48, 0, Math.PI * 2);
-      ctx.arc(390, 224, 32, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Tán cây xanh sân trường và lan can xa mờ ở đáy
-      ctx.fillStyle = 'rgba(34, 139, 34, 0.32)';
-      for (let x = 15; x < 510; x += 52) {
+      // Hàng cây xanh mát và đồi xa ngoài khung cửa sổ (Outdoor foliage & greenery vista)
+      ctx.fillStyle = 'rgba(30, 90, 45, 0.45)';
+      for (let x = 0; x < 520; x += 40) {
         ctx.beginPath();
-        ctx.arc(x, 485, 46 + Math.sin(x * 0.1) * 14, 0, Math.PI * 2);
+        ctx.arc(x, 460, 55 + Math.sin(x * 0.08) * 16, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.fillStyle = '#1B4D2E';
+      for (let x = -20; x < 530; x += 32) {
+        ctx.beginPath();
+        ctx.arc(x, 490, 42 + Math.cos(x * 0.12) * 12, 0, Math.PI * 2);
         ctx.fill();
       }
 
       return canvas;
+    }
+
+    function generateSunlightSpillCanvas() {
+      if (!hasCanvasSupport) return null;
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+
+      const grad = ctx.createLinearGradient(0, 0, 0, 256);
+      grad.addColorStop(0, 'rgba(255, 248, 220, 0.85)');
+      grad.addColorStop(0.3, 'rgba(255, 242, 195, 0.55)');
+      grad.addColorStop(0.7, 'rgba(255, 235, 175, 0.20)');
+      grad.addColorStop(1.0, 'rgba(255, 230, 160, 0.0)');
+
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(15, 0);
+      ctx.lineTo(241, 0);
+      ctx.lineTo(256, 256);
+      ctx.lineTo(0, 256);
+      ctx.closePath();
+      ctx.fill();
+
+      return canvas;
+    }
+
+    function getContactShadowTexture() {
+      if (cachedContactShadowTex) return cachedContactShadowTex;
+      if (!hasCanvasSupport) return null;
+      const canvas = document.createElement('canvas');
+      canvas.width = 128;
+      canvas.height = 128;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+
+      const grad = ctx.createRadialGradient(64, 64, 4, 64, 64, 62);
+      grad.addColorStop(0, 'rgba(12, 16, 14, 0.72)');
+      grad.addColorStop(0.35, 'rgba(12, 16, 14, 0.42)');
+      grad.addColorStop(0.7, 'rgba(12, 16, 14, 0.15)');
+      grad.addColorStop(1.0, 'rgba(12, 16, 14, 0.0)');
+
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 128, 128);
+
+      cachedContactShadowTex = new THREE.CanvasTexture(canvas);
+      return cachedContactShadowTex;
+    }
+
+    function addGroundContactShadow(group, w, d, opacity = 0.42) {
+      const tex = getContactShadowTexture();
+      if (!tex) return;
+      const padW = Math.max(0.18, w * 1.08);
+      const padD = Math.max(0.18, d * 1.08);
+      const geo = new THREE.PlaneGeometry(padW, padD);
+      geo.rotateX(-Math.PI / 2);
+      const mat = new THREE.MeshBasicMaterial({
+        map: tex,
+        transparent: true,
+        opacity: opacity,
+        depthWrite: false
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(0, 0.005, 0);
+      mesh.renderOrder = 1;
+      group.add(mesh);
     }
 
     function createMaterial(hex, roughness = 0.7, metalness = 0.1) {
@@ -810,13 +880,14 @@
       renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
       renderer.setSize(window.innerWidth || 400, window.innerHeight || 300);
+      if (THREE.sRGBEncoding) renderer.outputEncoding = THREE.sRGBEncoding;
+      renderer.physicallyCorrectLights = true;
       renderer.shadowMap.enabled = true;
-      renderer.shadowMap.autoUpdate = false;
-      renderer.shadowMap.needsUpdate = true;
+      renderer.shadowMap.autoUpdate = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       if (THREE.ACESFilmicToneMapping) {
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.05;
+        renderer.toneMappingExposure = 1.06;
       }
       if (container && container.appendChild) {
         container.appendChild(renderer.domElement);
@@ -838,19 +909,30 @@
         render();
       });
 
-      const hemiLight = new THREE.HemisphereLight(0xfff5ea, 0x22302a, 0.75);
+      // 1. Ánh sáng bầu trời và mặt đất (Sky & Ground Ambient Hemisphere Light)
+      hemiLight = new THREE.HemisphereLight(0xF4F8FD, 0x2A261F, 1.15);
       scene.add(hemiLight);
 
-      const sun = new THREE.DirectionalLight(0xfff3da, 0.85);
+      // 2. Nguồn sáng chính Mặt trời / Cửa sổ ban ngày (Primary Directional Sun Source)
+      sun = new THREE.DirectionalLight(0xFFF6E8, 2.0);
       sun.position.set(9, 16, 7);
       sun.castShadow = true;
-      sun.shadow.mapSize.width = 512;
-      sun.shadow.mapSize.height = 512;
-      sun.shadow.bias = -0.0005;
+      sun.shadow.mapSize.width = 1024;
+      sun.shadow.mapSize.height = 1024;
+      sun.shadow.bias = -0.0003;
+      sun.shadow.radius = 2.4;
       scene.add(sun);
 
-      const fillLight = new THREE.DirectionalLight(0xc9d8d1, 0.35);
-      fillLight.position.set(-8, 10, -8);
+      // 3. Phản xạ gián tiếp từ sàn nhà lên trần (Secondary Floor Radiosity Diffuse Bounce)
+      bounceLight = new THREE.DirectionalLight(0xE8D5B7, 0.75);
+      bounceLight.position.set(0, -2, 0);
+      bounceLight.target.position.set(0, 3, 0);
+      scene.add(bounceLight);
+      scene.add(bounceLight.target);
+
+      // 4. Ánh sáng tán xạ môi trường mát dịu (Soft Ambient Fill Light)
+      fillLight = new THREE.DirectionalLight(0xD8E6F5, 0.55);
+      fillLight.position.set(-8, 11, -8);
       scene.add(fillLight);
 
       window.addEventListener('resize', onWindowResize);
@@ -1424,6 +1506,42 @@
         ? room.surfaceReconstruction.regions
         : [];
 
+      // Lighting Physics: Thích ứng frustum đổ bóng theo diện tích phòng thực tế
+      if (sun && sun.shadow && sun.shadow.camera) {
+        const maxR = Math.max(w, d);
+        sun.shadow.camera.left = -maxR * 0.85;
+        sun.shadow.camera.right = maxR * 0.85;
+        sun.shadow.camera.top = maxR * 0.85;
+        sun.shadow.camera.bottom = -maxR * 0.85;
+        sun.shadow.camera.near = 1.0;
+        sun.shadow.camera.far = 45.0;
+        sun.shadow.camera.updateProjectionMatrix();
+      }
+      if (bounceLight && room.floorColor) {
+        bounceLight.color.set(room.floorColor).lerp(new THREE.Color(0xFFE8D0), 0.5);
+      }
+
+      // Đảm bảo luôn có ít nhất một khung cửa sổ kính đón nắng tự nhiên
+      const hasWindow = (room.objects || []).some(it => it.kind === 'window');
+      if (!hasWindow) {
+        const autoWinW = Math.min(3.4, Math.max(2.4, w * 0.45));
+        const autoWinH = Math.min(2.2, Math.max(1.8, h * 0.65));
+        (room.objects = room.objects || []).push({
+          id: 'auto_window_exterior',
+          kind: 'window',
+          label: 'Cửa sổ kính lớn đón nắng tự nhiên',
+          description: 'Cửa sổ kính đón ánh nắng ban ngày và tầm nhìn thoáng đãng ngoài trời.',
+          x: w / 2 - 0.05,
+          y: 1.0,
+          z: 0,
+          width: autoWinW,
+          height: autoWinH,
+          depth: 0.15,
+          yaw: -90,
+          color: '#F8FAFC'
+        });
+      }
+
       fitCameraToRoom();
 
       // SÀN NHÀ THEO PHONG CÁCH (VINTAGE TILES / WOOD PLANKS / SOLID TILES)
@@ -1893,10 +2011,16 @@
               box((i - 1) * fw * 0.25, fh * 0.57, -fd * 0.05, fw * 0.24, fh * 0.08, fd * 0.67, creamMat);
             }
             break;
-          case 'table':
+          case 'table': {
+            const tableWoodCanvas = generateWoodCanvas(item.color || '#D4B088');
+            const tableWoodMat = tableWoodCanvas
+              ? new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(tableWoodCanvas), roughness: 0.45, metalness: 0.05 })
+              : woodMat;
             legs(fh * 0.88);
-            box(0, fh * 0.94, 0, fw, fh * 0.12, fd, woodMat);
+            box(0, fh * 0.94, 0, fw, fh * 0.12, fd, tableWoodMat);
+            addGroundContactShadow(fGroup, fw, fd, 0.46);
             break;
+          }
           case 'desk': {
             const metalMat = createMaterial('#64748B', 0.45, 0.4);
             const woodCanvas = generateWoodCanvas(item.color || '#D8BA92');
@@ -1917,6 +2041,7 @@
             // Hộc bàn học sinh để sách vở
             box(0, fh * 0.72, 0, fw * 0.92, fh * 0.04, fd * 0.86, deskWoodMat);
             box(0, fh * 0.78, fd * 0.42, fw * 0.92, fh * 0.14, 0.02, metalMat);
+            addGroundContactShadow(fGroup, fw, fd, 0.46);
             break;
           }
           case 'chair': {
@@ -1965,6 +2090,7 @@
             box(0, backY, fd * 0.40, fw * 0.86, backH, 0.04, chairWoodMat);
             // Đệm tựa lưng êm ái phía trong (+Z tựa lưng, phía trong hướng -Z về phía người ngồi)
             box(0, backY, fd * 0.375, fw * 0.80, backH * 0.88, 0.025, cushionMat);
+            addGroundContactShadow(fGroup, fw * 0.92, fd * 0.92, 0.38);
             break;
           }
           case 'bed':
@@ -1974,12 +2100,14 @@
             box(0, fh * 0.52, -fd * 0.14, fw * 0.94, fh * 0.14, fd * 0.58, bodyMat);
             box(-fw * 0.24, fh * 0.58, fd * 0.32, fw * 0.36, fh * 0.12, fd * 0.22, creamMat);
             box(fw * 0.24, fh * 0.58, fd * 0.32, fw * 0.36, fh * 0.12, fd * 0.22, creamMat);
+            addGroundContactShadow(fGroup, fw * 1.02, fd * 1.02, 0.48);
             break;
           case 'wardrobe':
             box(0, fh * 0.5, 0, fw, fh, fd, woodMat);
             box(0, fh * 0.5, -fd * 0.51, fw * 0.04, fh * 0.92, 0.04, woodMat);
             box(-fw * 0.15, fh * 0.5, -fd * 0.53, 0.04, 0.16, 0.04, createMaterial('#C2A368', 0.3, 0.8));
             box(fw * 0.15, fh * 0.5, -fd * 0.53, 0.04, 0.16, 0.04, createMaterial('#C2A368', 0.3, 0.8));
+            addGroundContactShadow(fGroup, fw * 1.02, fd * 1.02, 0.50);
             break;
           case 'shelf': {
             const shelfSteelMat = createMaterial('#1E293B', 0.4, 0.5); // Khung thép sơn tĩnh điện đen mờ thư viện
@@ -2030,6 +2158,7 @@
                 box(bookCenterX, bookCenterY, fd * 0.23, batchW * 0.92, bookH, bookD * 0.88, bMat);
               }
             }
+            addGroundContactShadow(fGroup, fw * 1.02, fd * 1.05, 0.52);
             break;
           }
           case 'cabinet':
@@ -2038,6 +2167,7 @@
             box(0, fh * 0.5, -fd * 0.51, fw * 0.04, fh * 0.78, 0.04, woodMat);
             box(-fw * 0.15, fh * 0.56, -fd * 0.53, 0.04, 0.14, 0.04, createMaterial('#C2A368', 0.3, 0.8));
             box(fw * 0.15, fh * 0.56, -fd * 0.53, 0.04, 0.14, 0.04, createMaterial('#C2A368', 0.3, 0.8));
+            addGroundContactShadow(fGroup, fw * 1.02, fd * 1.02, 0.48);
             break;
           case 'plant':
             box(0, fh * 0.22, 0, fw * 0.55, fh * 0.44, fd * 0.55, createMaterial('#C4815B'));
@@ -2045,6 +2175,7 @@
             box(0, fh * 0.58, 0, fw * 0.14, fh * 0.34, fd * 0.14, woodMat);
             box(0, fh * 0.78, 0, fw * 0.92, fh * 0.44, fd * 0.92, bodyMat);
             box(0, fh * 0.92, 0, fw * 0.68, fh * 0.28, fd * 0.68, createMaterial('#2B543D'));
+            addGroundContactShadow(fGroup, fw * 0.55, fd * 0.55, 0.42);
             break;
           case 'lamp':
             box(0, fh * 0.04, 0, fw * 0.65, fh * 0.08, fd * 0.65, woodMat);
@@ -2066,63 +2197,100 @@
             box(0, 1.8, -0.08, fw * 0.84, fh * 0.82, 0.04, bodyMat);
             break;
           case 'window': {
-            const winSpan = Math.max(fw, fd, 2.2);
-            const winHeight = Math.max(fh, 1.8);
-            const winY = 1.75;
-            const frameThick = 0.07;
-            const frameMat = createMaterial('#F8FAFC', 0.4, 0.1);
-            const sillMat = createMaterial('#E2E8F0', 0.5, 0.05);
+            const winSpan = Math.max(fw, fd, 2.4);
+            const winHeight = Math.max(fh, 1.85);
+            const winY = item.y > 0 ? (item.y + winHeight * 0.5) : 1.75;
+            const frameThick = 0.075;
+            const frameDepth = 0.12;
+            const frameMat = createMaterial(item.color || '#F1F5F9', 0.35, 0.1);
+            const sillMat = createMaterial('#E2E8F0', 0.45, 0.05);
 
-            // 1. Khung cửa sổ viền ngoài (Outer Casement Frame)
+            // 1. Khung cửa sổ viền ngoài nổi khối kiến trúc (Outer Casement Frame)
             // Khung trên
-            box(0, winY + winHeight * 0.5 - frameThick * 0.5, 0, winSpan, frameThick, 0.10, frameMat);
-            // Bệ cửa sổ nhô ra ở dưới
-            box(0, winY - winHeight * 0.5 + frameThick * 0.5, -0.03, winSpan + 0.16, frameThick * 1.3, 0.18, sillMat);
+            box(0, winY + winHeight * 0.5 - frameThick * 0.5, 0, winSpan, frameThick, frameDepth, frameMat);
+            // Bệ cửa sổ nhô ra đón nắng (Projecting Window Sill Ledge)
+            box(0, winY - winHeight * 0.5 + frameThick * 0.5, -0.05, winSpan + 0.22, frameThick * 1.4, frameDepth + 0.10, sillMat);
             // Khung trái & phải
-            box(-winSpan * 0.5 + frameThick * 0.5, winY, 0, frameThick, winHeight, 0.10, frameMat);
-            box(winSpan * 0.5 - frameThick * 0.5, winY, 0, frameThick, winHeight, 0.10, frameMat);
+            box(-winSpan * 0.5 + frameThick * 0.5, winY, 0, frameThick, winHeight, frameDepth, frameMat);
+            box(winSpan * 0.5 - frameThick * 0.5, winY, 0, frameThick, winHeight, frameDepth, frameMat);
 
-            // 2. Chia 2 cánh kính lớn và ô thoáng trên (Mullions & Transom)
-            box(0, winY, 0, frameThick * 0.8, winHeight - frameThick * 2, 0.08, frameMat);
+            // 2. Chia khung kính (Mullions & Transom): 3 ô kính lớn hiện đại hoặc 2 ô
+            const numPanes = winSpan > 2.8 ? 3 : 2;
+            const paneW = (winSpan - frameThick * (numPanes + 1)) / numPanes;
+            for (let i = 1; i < numPanes; i++) {
+              const mx = -winSpan * 0.5 + frameThick + i * paneW + (i - 0.5) * frameThick;
+              box(mx, winY, 0, frameThick * 0.7, winHeight - frameThick * 2, frameDepth * 0.85, frameMat);
+            }
+            // Khung ngang ô thoáng trên (Transom)
             const transomY = winY + winHeight * 0.28;
-            box(0, transomY, 0, winSpan - frameThick * 2, frameThick * 0.7, 0.08, frameMat);
+            box(0, transomY, 0, winSpan - frameThick * 2, frameThick * 0.7, frameDepth * 0.85, frameMat);
 
-            // 3. Mặt kính trong suốt cao cấp phản xạ nhẹ
+            // 3. Mặt kính PBR phản xạ ánh sáng (Physical Glass)
             const glassMat = new THREE.MeshStandardMaterial({
-              color: 0xD0EFFF,
+              color: 0xE8F4FC,
               transparent: true,
-              opacity: 0.36,
-              roughness: 0.06,
-              metalness: 0.2
+              opacity: 0.30,
+              roughness: 0.03,
+              metalness: 0.30
             });
-            box(0, winY, 0.01, winSpan - frameThick * 2, winHeight - frameThick * 2, 0.015, glassMat, false);
+            box(0, winY, 0.005, winSpan - frameThick * 2, winHeight - frameThick * 2, 0.012, glassMat, false);
 
-            // 4. Hậu cảnh ngoài trời chân thực (Daylight Sky & Outdoor Horizon)
+            // 4. Hậu cảnh ngoài trời chân thực (Atmospheric Sky & Trees Vista)
             const skyCanvas = generateOutdoorSkyCanvas();
             let skyMat;
             if (skyCanvas) {
-              skyMat = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(skyCanvas) });
+              const skyTex = new THREE.CanvasTexture(skyCanvas);
+              if (THREE.sRGBEncoding) skyTex.encoding = THREE.sRGBEncoding;
+              skyMat = new THREE.MeshBasicMaterial({ map: skyTex, depthWrite: false });
             } else {
-              skyMat = new THREE.MeshBasicMaterial({ color: 0xBAE6FD });
+              skyMat = new THREE.MeshBasicMaterial({ color: 0xBAE6FD, depthWrite: false });
             }
-            box(0, winY, 0.055, winSpan * 1.02, winHeight * 1.02, 0.01, skyMat, false);
+            box(0, winY, 0.02, winSpan * 0.99, winHeight * 0.99, 0.005, skyMat, false);
 
-            // 5. Nguồn sáng ánh nắng ấm áp chiếu từ cửa sổ vào lòng phòng
-            const sunLight = new THREE.DirectionalLight(0xFFFBEB, 0.85);
-            sunLight.position.set(0, winY + 0.6, 0.6);
-            sunLight.target.position.set(0, 0, -3.5);
-            if (extraLights < 2) { fGroup.add(sunLight); fGroup.add(sunLight.target); extraLights++; }
+            // 5. LIGHTING PHYSICS: Vệt nắng chiếu sàn nhà (Ray-Traced Sunbeam Floor Spill)
+            const spillLength = Math.min(3.4, (roomGroup.userData.depth || 6) * 0.55);
+            const spillCanvas = generateSunlightSpillCanvas();
+            if (spillCanvas) {
+              const spillTex = new THREE.CanvasTexture(spillCanvas);
+              const spillGeo = new THREE.PlaneGeometry(winSpan * 0.95, spillLength);
+              spillGeo.rotateX(-Math.PI / 2);
+              const spillMat = new THREE.MeshBasicMaterial({
+                map: spillTex,
+                transparent: true,
+                opacity: 0.28,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+              });
+              const spillMesh = new THREE.Mesh(spillGeo, spillMat);
+              spillMesh.position.set(0, 0.007, -spillLength * 0.5 - 0.05);
+              fGroup.add(spillMesh);
+            }
 
-            // 6. Rèm cuốn màu ngà buông lửng đón nắng
-            const blindBoxMat = createMaterial('#CBD5E1', 0.4, 0.4);
-            box(0, winY + winHeight * 0.5 + 0.04, -0.04, winSpan * 0.98, 0.08, 0.08, blindBoxMat);
-            const blindCanvas = generateRollerBlindCanvas(item.color || '#EDE8D5');
+            // 6. Ánh sáng xuyên phòng có đổ bóng (Directional Daylight Stream)
+            const windowLight = new THREE.DirectionalLight(0xFFF7DE, 1.5);
+            windowLight.position.set(0, winY + 0.8, 0.3);
+            windowLight.target.position.set(0, 0, -spillLength * 1.1);
+            windowLight.castShadow = true;
+            windowLight.shadow.mapSize.width = 1024;
+            windowLight.shadow.mapSize.height = 1024;
+            windowLight.shadow.bias = -0.0003;
+            windowLight.shadow.radius = 2.2;
+            if (extraLights < 2) {
+              fGroup.add(windowLight);
+              fGroup.add(windowLight.target);
+              extraLights++;
+            }
+
+            // 7. Rèm cuốn màu kem hiện đại (Modern Roller Blinds)
+            const blindBoxMat = createMaterial('#CBD5E1', 0.4, 0.3);
+            box(0, winY + winHeight * 0.5 + 0.04, -0.05, winSpan * 0.98, 0.08, 0.09, blindBoxMat);
+            const blindCanvas = generateRollerBlindCanvas(item.color || '#F7F3E7');
             const blindFabricMat = blindCanvas
               ? new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(blindCanvas), roughness: 0.85, metalness: 0.0, side: THREE.DoubleSide })
-              : createMaterial('#EDE8D5', 0.85, 0.0);
-            const blindDrop = winHeight * 0.38;
-            box(0, winY + winHeight * 0.5 - blindDrop * 0.5, -0.03, winSpan * 0.95, blindDrop, 0.015, blindFabricMat);
-            box(0, winY + winHeight * 0.5 - blindDrop, -0.03, winSpan * 0.95, 0.03, 0.03, blindBoxMat);
+              : createMaterial('#F7F3E7', 0.85, 0.0);
+            const blindDrop = winHeight * 0.32;
+            box(0, winY + winHeight * 0.5 - blindDrop * 0.5, -0.045, winSpan * 0.95, blindDrop, 0.015, blindFabricMat);
+            box(0, winY + winHeight * 0.5 - blindDrop, -0.045, winSpan * 0.95, 0.03, 0.03, blindBoxMat);
             break;
           }
           case 'door': {
@@ -2385,6 +2553,7 @@
               box(0, 0.07, 0, fw * 1.12, 0.14, fd * 1.12, trimMat);
               box(0, pillarH - 0.07, 0, fw * 1.12, 0.14, fd * 1.12, trimMat);
             }
+            addGroundContactShadow(fGroup, radius * 2.3, radius * 2.3, 0.55);
             break;
           }
           default:
@@ -2440,6 +2609,27 @@
       makeBox(ceilingFixture, 0, 0, 0, 0.36, 0.06, 0.36, createMaterial('#DDD5C5', 0.6, 0.2), false);
       makeBox(ceilingFixture, 0, -0.05, 0, 1.25, 0.05, 0.2, createMaterial('#FFFFF5', 0.2, 0.1), false);
       roomGroup.add(ceilingFixture);
+
+      // KIẾN TRÚC TRẦN TIÊU ÂM LAM GỖ THƯ VIỆN (ACOUSTIC TIMBER PERGOLA BAFFLES)
+      const isLibraryOrStudy = (room.objects || []).some(it => it.kind === 'shelf' || it.kind === 'pillar' || it.kind === 'desk');
+      if (isLibraryOrStudy) {
+        const pergolaGroup = new THREE.Group();
+        const timberMat = createMaterial('#BA7E4C', 0.55, 0.05);
+        const slatCount = 9;
+        const slatLen = Math.min(3.6, w * 0.65);
+        const slatH = 0.16;
+        const slatThick = 0.04;
+        const slatSpacing = 0.28;
+        for (let s = 0; s < slatCount; s++) {
+          const sz = - (slatCount - 1) * slatSpacing * 0.5 + s * slatSpacing;
+          makeBox(pergolaGroup, 0, h - slatH * 0.5 - 0.04, sz, slatLen, slatH, slatThick, timberMat, false);
+        }
+        // Đèn rọi ấm áp âm trần giữa các lam gỗ
+        const warmSpot = new THREE.PointLight(0xFFE4A0, 0.85, 6.0, 1.5);
+        warmSpot.position.set(0, h - 0.22, 0);
+        pergolaGroup.add(warmSpot);
+        roomGroup.add(pergolaGroup);
+      }
 
       wallMeshes.push(frontWall, rightWall, ceilingMesh);
 
