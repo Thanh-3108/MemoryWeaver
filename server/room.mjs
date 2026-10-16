@@ -72,15 +72,39 @@ ROOM ARCHETYPES & SPATIAL LAYOUT RULES:
    - Main Work Desk ('desk', w: 1.4..1.8m, d: 0.7..0.85m, h: 0.75m) positioned facing the room or in front of a window.
    - Office Ergonomic Chair ('chair') behind the desk (yaw facing the desk).
    - Tall Bookshelf ('shelf', w: 1.2..2.0m, h: 1.8..2.2m) against a wall.
-   - Laptop / Notebook ('notebook'), desk lamp ('lamp'), books ('book'), and water bottle on the desk.
+    - Laptop / Notebook ('notebook'), desk lamp ('lamp'), books ('book'), and water bottle on the desk.
 
-WINDOWS & NATURAL LIGHTING PHYSICS (CRITICAL FOR ALL ROOMS): Real rooms have windows. When reconstructing a room from photos or text, inspect perimeter walls for windows or daylight. Always include 1 to 3 large windows ('window', w: 2.0..3.5m, h: 1.6..2.2m, y: 1.0..1.2m) placed along an exterior perimeter wall with yaw facing inwards into the room.
+7. OPEN-CONCEPT LIVING ROOM WITH KITCHENETTE / STUDIO APARTMENT (Phòng khách liền bếp / Căn hộ Studio / Villa mở):
+   - In modern villas, urban apartments, lofts, and suites, the primary space is an open-concept living room connected to an open kitchen & dining area:
+   - Kitchen & Refrigerator Zone (Along Left wall x ≈ -width/2 + 0.45m with yaw = 90, or Back wall z ≈ -depth/2 + 0.45m with yaw = 0):
+     - Linear Kitchen Counter ('cabinet', w: 2.2..3.6m, d: 0.65..0.8m, h: 0.88..0.92m, color grey '#8E9CA8' or modern steel '#64748B', countertop '#D2A679') with integrated sink basin and stove.
+     - Tall Metallic Refrigerator ('cabinet', w: 0.7..0.85m, d: 0.7..0.85m, h: 1.85..2.05m, color metallic silver '#94A3B8' or dark stainless '#475569') placed flush against the wall at the end of the kitchen counter. NEVER place a 'wardrobe' in a living room, villa, or kitchenette! Refrigerator and kitchen units MUST be classified as 'cabinet', NEVER 'wardrobe'!
+   - Living Lounge Zone (Center of the room):
+     - Main Sectional Sofa ('sofa', w: 2.4..3.2m, d: 1.4..1.8m, h: 0.8..0.88m) in royal blue ('#1E3A8A'), navy ('#1A365D'), or fabric color visible in photo, oriented facing the center/media axis.
+     - Wall Air Conditioner ('air_conditioner', w: 0.95..1.1m, h: 0.3..0.35m, d: 0.22..0.26m, y: height - 0.45m, color '#FFFFFF') mounted high on the wall directly above the sofa!
+   - Dining Zone (In front of or beside the window):
+     - Dining Table ('table', w: 1.1..1.4m, d: 1.1..1.4m, h: 0.75m, natural wood color '#D8B486').
+     - Modern Dining Chairs ('chair', 2 to 4 chairs, w: 0.5..0.55m, d: 0.5..0.55m, h: 0.85m, dark seat '#1E293B' or wood) spaced symmetrically around the table facing the table.
+     - CRITICAL SPACING RULE: Maintain at least 1.5m clearance between the dining table and the sofa! They are distinct functional zones and must NEVER collide or be pressed against each other!
+     - Pendant Light ('lamp') suspended over the dining table (y: height - 0.7m, color '#1E293B').
+   - Panoramic Window & Curtains Zone (Along exterior wall, e.g. Right wall x ≈ width/2 - 0.15m, yaw = -90):
+     - Floor-to-ceiling Panoramic Window ('window', w: 2.8..4.2m, h: 2.4..2.8m, y = 0.05..0.15m, yaw facing inwards).
+     - Curtains ('curtain', w: 2.8..4.2m, h: 2.4..2.8m, translucent white sheer '#F8FAFC' or navy drapes '#1E293B') framing the panoramic window.
+   - Flooring & Walls:
+     - Floor: If photo shows wood planks, laminate, or parquet, ALWAYS specify floorTextureStyle: 'wood_planks' with warm oak color '#A06B3E' or '#C49A6C'. NEVER choose 'vintage_tiles' for modern apartments or villas!
+     - Walls: Light neutral off-white or pale grey (wallColor: '#ECEEEA' or '#F3F4F6').
+
+WINDOWS & NATURAL LIGHTING PHYSICS (CRITICAL FOR ALL ROOMS): Real rooms have windows. When reconstructing a room from photos or text, inspect perimeter walls for windows or daylight. Always include 1 to 3 large windows ('window', w: 2.0..3.5m, h: 1.6..2.2m, y: 1.0..1.2m) placed along an exterior perimeter wall with yaw facing inwards into the room. For modern apartments, villas, and balconies with floor-to-ceiling glass, set elevation y = 0.05..0.15m and height = 2.4..2.8m.
 
 EQUIDIRECTANGULAR 360° PANORAMA & WIDE PHOTO PERCEPTION:
 - 360° Equirectangular images have a 2:1 aspect ratio representing a full spherical 360° horizontal x 180° vertical field of view around the central camera.
 - The extreme left edge (x ≈ 0) and extreme right edge (x ≈ 1) of the photo connect seamlessly and represent the view directly BEHIND the camera (z > 0 in 3D coordinate space).
 - The horizontal center of the panorama (x ≈ 0.5) looks directly FORWARD (z < 0 in 3D coordinate space).
 - The quarter points x ≈ 0.25 and x ≈ 0.75 represent the LEFT (x < 0) and RIGHT (x > 0) lateral walls respectively.
+- SPATIAL MAPPING FOR PANORAMAS:
+  * Items on the left half of panorama (x in 0.10..0.38, like kitchen counters or fridge): place along the LEFT WALL (x ≈ -width/2 + depth/2 + 0.1m, yaw = 90 facing East). DO NOT place them in the center of the room!
+  * Items in the center of panorama (x in 0.42..0.62, like the main sofa): place in the center-back area (z ≈ -0.5..1.0m, x ≈ 0..0.8m).
+  * Items on the right half of panorama (x in 0.65..0.90, like large windows and dining table): place along the RIGHT WALL (x ≈ width/2 - depth/2 - 0.1m, yaw = -90 facing West).
 - When given a panorama, reconstruct all 4 walls and populate all zones: the front focal wall, the rear wall (seen split at the edges), and both side walls with their windows, shelving, artwork, and furniture!
 
 Spatial relationships & positioning: when adding or moving an object relative to another (e.g. 'đằng sau bàn', 'trước sofa', 'cạnh cửa sổ', 'behind table', 'next to window', 'on wall'), compute relative (x, y, z) based on the referenced object's position. If the user asks to add an object but completely omits the location or reference point, return empty operations (add: [], update: [], remove: []) and in reply politely ask where they would like to place it (in the user's language: Vietnamese or English).
@@ -105,7 +129,9 @@ const KIND_SYNONYMS = {
   screen: 'projector_screen', projection_screen: 'projector_screen', man_chieu: 'projector_screen',
   slide: 'projector_screen', projector: 'projector', may_chieu: 'projector',
   podium: 'podium', buc_giang: 'podium', buc: 'podium', lectern: 'podium',
-  pillar: 'pillar', column: 'pillar', cot: 'pillar', tru: 'pillar', tru_nha: 'pillar'
+  pillar: 'pillar', column: 'pillar', cot: 'pillar', tru: 'pillar', tru_nha: 'pillar',
+  refrigerator: 'cabinet', fridge: 'cabinet', tu_lanh: 'cabinet',
+  kitchen: 'cabinet', kitchen_counter: 'cabinet', tu_bep: 'cabinet', bep: 'cabinet', sink: 'cabinet'
 };
 
 const NAMED_COLORS = {
@@ -230,6 +256,12 @@ export function createRoom(result, prompt, idFactory = randomUUID) {
     if (!raw || typeof raw !== 'object') continue;
     const next = { ...raw, id: idFactory() };
     if (!kinds.includes(next.kind) && KIND_SYNONYMS[next.kind]) next.kind = KIND_SYNONYMS[next.kind];
+    if (next.kind === 'wardrobe') {
+      const lower = (next.label || '').toLowerCase();
+      if (lower.includes('lạnh') || lower.includes('fridge') || lower.includes('refrigerator') || lower.includes('bếp') || lower.includes('kitchen') || lower.includes('counter')) {
+        next.kind = 'cabinet';
+      }
+    }
     if (!kinds.includes(next.kind)) continue;
     fitInRoom(next, room);
     provenance(next, prompt);

@@ -2110,11 +2110,14 @@
               cushion.userData.isCushion = true;
             }
 
-            // Gối tựa trang trí (Throw Pillows)
-            const pillowMat = createMaterial('#E0D5C1', 0.85, 0.0);
-            const pLeft = box(-fw * 0.5 + armW + 0.14, sofaBaseY + sofaSeatH + 0.18, fd * 0.22, 0.26, 0.26, 0.14, pillowMat);
-            const pRight = box(fw * 0.5 - armW - 0.14, sofaBaseY + sofaSeatH + 0.18, fd * 0.22, 0.26, 0.26, 0.14, pillowMat);
-            [pLeft, pRight].forEach(p => { p.userData = { isCushion: true, noTexture: true }; });
+            // Gối tựa trang trí phong cách hiện đại (Accent Throw Pillows: Vàng mù tạt, Xanh nhạt, Cam ấm)
+            const yellowPillowMat = createMaterial('#EAB308', 0.85, 0.0);
+            const bluePillowMat = createMaterial('#38BDF8', 0.85, 0.0);
+            const orangePillowMat = createMaterial('#EA580C', 0.85, 0.0);
+            const p1 = box(-fw * 0.35, sofaBaseY + sofaSeatH + 0.18, fd * 0.22, 0.28, 0.28, 0.14, yellowPillowMat);
+            const p2 = box(0, sofaBaseY + sofaSeatH + 0.18, fd * 0.22, 0.28, 0.28, 0.14, bluePillowMat);
+            const p3 = box(fw * 0.35, sofaBaseY + sofaSeatH + 0.18, fd * 0.22, 0.28, 0.28, 0.14, orangePillowMat);
+            [p1, p2, p3].forEach(p => { p.userData = { isCushion: true, noTexture: true }; });
 
             addGroundContactShadow(fGroup, fw * 1.05, fd * 1.05, 0.50);
             break;
@@ -2280,6 +2283,22 @@
             break;
           }
           case 'wardrobe': {
+            const isFridge = (fh >= 1.65 && fw <= 1.15 && fd <= 1.0) ||
+              (item.label && (item.label.toLowerCase().includes('lạnh') || item.label.toLowerCase().includes('fridge') || item.label.toLowerCase().includes('refrigerator')));
+            if (isFridge) {
+              const fridgeMat = createMaterial('#94A3B8', 0.28, 0.65);
+              const trimMat = createMaterial('#1E293B', 0.5, 0.2);
+              const handleMat = createMaterial('#CBD5E1', 0.2, 0.85);
+
+              box(0, fh * 0.5, 0, fw, fh, fd, fridgeMat);
+              const splitY = fh * 0.42;
+              box(0, splitY, -fd * 0.505, fw * 0.98, 0.02, 0.015, trimMat);
+              box(0, splitY + 0.05, -fd * 0.51, fw * 0.75, 0.035, 0.02, handleMat);
+              box(0, splitY - 0.05, -fd * 0.51, fw * 0.75, 0.035, 0.02, handleMat);
+              legs(0.04);
+              addGroundContactShadow(fGroup, fw * 1.04, fd * 1.04, 0.52);
+              break;
+            }
             const handleMat = createMaterial('#C2A368', 0.25, 0.85); // Tay nắm hợp kim đồng
             const wardrobeBody = box(0, fh * 0.5, 0, fw, fh, fd, woodMat);
             wardrobeBody.userData.isWoodPlank = true;
@@ -2353,14 +2372,68 @@
             addGroundContactShadow(fGroup, fw * 1.02, fd * 1.05, 0.52);
             break;
           }
-          case 'cabinet':
-            box(0, fh * 0.48, 0, fw, fh * 0.88, fd, woodMat);
-            legs(fh * 0.16);
-            box(0, fh * 0.5, -fd * 0.51, fw * 0.04, fh * 0.78, 0.04, woodMat);
-            box(-fw * 0.15, fh * 0.56, -fd * 0.53, 0.04, 0.14, 0.04, createMaterial('#C2A368', 0.3, 0.8));
-            box(fw * 0.15, fh * 0.56, -fd * 0.53, 0.04, 0.14, 0.04, createMaterial('#C2A368', 0.3, 0.8));
+          case 'cabinet': {
+            const isFridge = (fh >= 1.65 && fw <= 1.15 && fd <= 1.0) ||
+              (item.label && (item.label.toLowerCase().includes('lạnh') || item.label.toLowerCase().includes('fridge') || item.label.toLowerCase().includes('refrigerator')));
+            const isKitchenCounter = (fw >= 1.6 && fh <= 1.25) ||
+              (item.label && (item.label.toLowerCase().includes('bếp') || item.label.toLowerCase().includes('kitchen') || item.label.toLowerCase().includes('counter') || item.label.toLowerCase().includes('kệ bếp')));
+
+            if (isFridge) {
+              const fridgeMat = createMaterial('#94A3B8', 0.28, 0.65);
+              const trimMat = createMaterial('#1E293B', 0.5, 0.2);
+              const handleMat = createMaterial('#CBD5E1', 0.2, 0.85);
+
+              box(0, fh * 0.5, 0, fw, fh, fd, fridgeMat);
+              const splitY = fh * 0.42;
+              box(0, splitY, -fd * 0.505, fw * 0.98, 0.02, 0.015, trimMat);
+              box(0, splitY + 0.05, -fd * 0.51, fw * 0.75, 0.035, 0.02, handleMat);
+              box(0, splitY - 0.05, -fd * 0.51, fw * 0.75, 0.035, 0.02, handleMat);
+              legs(0.04);
+            } else if (isKitchenCounter) {
+              const counterTopCanvas = generateWoodCanvas('#D2A679');
+              const topMat = counterTopCanvas
+                ? new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(counterTopCanvas), roughness: 0.4, metalness: 0.05 })
+                : createMaterial('#E2E8F0', 0.3, 0.1);
+              const baseCabinetMat = createMaterial(item.color || '#64748B', 0.5, 0.1);
+              const sinkMat = createMaterial('#CBD5E1', 0.25, 0.8);
+              const faucetMat = createMaterial('#1E293B', 0.2, 0.85);
+
+              // Khối tủ bếp dưới
+              box(0, fh * 0.44, 0, fw, fh * 0.88, fd, baseCabinetMat);
+
+              // Mặt bếp đá/gỗ nhô ra nhẹ
+              const counterTop = box(0, fh * 0.94, -0.01, fw * 1.02, fh * 0.12, fd * 1.04, topMat);
+              counterTop.userData.isWoodPlank = true;
+
+              // Chậu rửa inox âm bàn
+              const sinkW = Math.min(0.7, fw * 0.35);
+              const sinkD = Math.min(0.45, fd * 0.7);
+              const sink = box(-fw * 0.22, fh * 0.99, 0, sinkW, 0.025, sinkD, sinkMat);
+              sink.userData = { isMetal: true, noTexture: true };
+
+              // Vòi nước kim loại
+              const fBase = box(-fw * 0.22, fh + 0.08, fd * 0.22, 0.04, 0.16, 0.04, faucetMat);
+              const fSpout = box(-fw * 0.22, fh + 0.18, fd * 0.12, 0.03, 0.04, 0.18, faucetMat);
+              [fBase, fSpout].forEach(m => { m.userData = { isMetal: true, noTexture: true }; });
+
+              // Tay nắm các khoang tủ
+              const numDoors = Math.max(2, Math.floor(fw / 0.65));
+              const doorW = fw / numDoors;
+              for (let i = 0; i < numDoors; i++) {
+                const dx = -fw * 0.5 + (i + 0.5) * doorW;
+                const hBar = box(dx, fh * 0.78, -fd * 0.51, doorW * 0.35, 0.025, 0.02, sinkMat);
+                hBar.userData = { isMetal: true, noTexture: true };
+              }
+            } else {
+              box(0, fh * 0.48, 0, fw, fh * 0.88, fd, woodMat);
+              legs(fh * 0.16);
+              box(0, fh * 0.5, -fd * 0.51, fw * 0.04, fh * 0.78, 0.04, woodMat);
+              box(-fw * 0.15, fh * 0.56, -fd * 0.53, 0.04, 0.14, 0.04, createMaterial('#C2A368', 0.3, 0.8));
+              box(fw * 0.15, fh * 0.56, -fd * 0.53, 0.04, 0.14, 0.04, createMaterial('#C2A368', 0.3, 0.8));
+            }
             addGroundContactShadow(fGroup, fw * 1.02, fd * 1.02, 0.48);
             break;
+          }
           case 'plant':
             box(0, fh * 0.22, 0, fw * 0.55, fh * 0.44, fd * 0.55, createMaterial('#C4815B'));
             box(0, fh * 0.42, 0, fw * 0.5, fh * 0.06, fd * 0.5, createMaterial('#38281F'));
@@ -2414,27 +2487,34 @@
             break;
           }
           case 'picture':
-            box(0, 1.8, 0, fw, fh, 0.06, woodMat);
-            box(0, 1.8, -0.08, fw * 0.84, fh * 0.82, 0.04, bodyMat);
+            box(0, fh * 0.5, 0, fw, fh, 0.06, woodMat);
+            box(0, fh * 0.5, -0.04, fw * 0.84, fh * 0.82, 0.04, bodyMat);
             break;
           case 'window': {
-            const sillY = Math.max(0.85, Math.min(1.05, (typeof item.y === 'number' && item.y > 0.3 && item.y < 2.0) ? item.y : 0.95));
-            const maxWinH = Math.max(1.2, h - sillY - 0.35);
-            const winHeight = Math.min(maxWinH, Math.max(1.3, fh || 1.6));
+            const isFloorToCeiling = (typeof item.y === 'number' && item.y <= 0.4) || (fh >= 2.0) ||
+              (item.label && (item.label.toLowerCase().includes('ban công') || item.label.toLowerCase().includes('balcony') || item.label.toLowerCase().includes('panoramic') || item.label.toLowerCase().includes('lớn') || item.label.toLowerCase().includes('sát sàn')));
+            const sillY = isFloorToCeiling ? Math.max(0.02, (typeof item.y === 'number' ? item.y : 0.05)) : Math.max(0.85, Math.min(1.05, (typeof item.y === 'number' && item.y > 0.3 && item.y < 2.0) ? item.y : 0.95));
+            const maxWinH = Math.max(1.2, h - sillY - 0.15);
+            const winHeight = isFloorToCeiling ? Math.min(maxWinH, Math.max(2.2, fh || (h - 0.25))) : Math.min(maxWinH, Math.max(1.3, fh || 1.6));
             const winSpan = Math.max(fw, fd, 2.4);
             const winY = sillY + winHeight * 0.5;
-            const frameThick = 0.075;
-            const frameDepth = 0.12;
-            const frameMat = createMaterial(item.color || '#F1F5F9', 0.35, 0.1);
+            const frameThick = 0.06;
+            const frameDepth = 0.10;
+            const frameMat = createMaterial(item.color || (isFloorToCeiling ? '#1E293B' : '#F1F5F9'), 0.35, 0.1);
             const sillMat = createMaterial('#E2E8F0', 0.45, 0.05);
 
             // 1. Khung cửa sổ viền ngoài nổi khối kiến trúc (Outer Casement Frame)
             // Khung trên
             const topFrame = box(0, winY + winHeight * 0.5 - frameThick * 0.5, 0, winSpan, frameThick, frameDepth, frameMat);
             topFrame.userData.noTexture = true;
-            // Bệ cửa sổ nhô ra đón nắng (Projecting Window Sill Ledge)
-            const sillBox = box(0, sillY + frameThick * 0.5, -0.05, winSpan + 0.22, frameThick * 1.4, frameDepth + 0.10, sillMat);
-            sillBox.userData.noTexture = true;
+            // Bệ cửa sổ nhô ra đón nắng (nếu không phải cửa sổ chạm sàn)
+            if (!isFloorToCeiling) {
+              const sillBox = box(0, sillY + frameThick * 0.5, -0.05, winSpan + 0.22, frameThick * 1.4, frameDepth + 0.10, sillMat);
+              sillBox.userData.noTexture = true;
+            } else {
+              const floorTrack = box(0, sillY + 0.015, 0, winSpan, 0.03, frameDepth, frameMat);
+              floorTrack.userData.noTexture = true;
+            }
             // Khung trái & phải
             const leftFrame = box(-winSpan * 0.5 + frameThick * 0.5, winY, 0, frameThick, winHeight, frameDepth, frameMat);
             leftFrame.userData.noTexture = true;
@@ -2513,19 +2593,29 @@
               extraLights++;
             }
 
-            // 7. Rèm cuốn màu kem hiện đại (Modern Roller Blinds)
-            const blindBoxMat = createMaterial('#CBD5E1', 0.4, 0.3);
-            const blindHousing = box(0, winY + winHeight * 0.5 + 0.04, -0.05, winSpan * 0.98, 0.08, 0.09, blindBoxMat);
-            blindHousing.userData.noTexture = true;
-            const blindCanvas = generateRollerBlindCanvas(item.color || '#F7F3E7');
-            const blindFabricMat = blindCanvas
-              ? new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(blindCanvas), roughness: 0.85, metalness: 0.0, side: THREE.DoubleSide })
-              : createMaterial('#F7F3E7', 0.85, 0.0);
-            const blindDrop = winHeight * 0.32;
-            const blindFabric = box(0, winY + winHeight * 0.5 - blindDrop * 0.5, -0.045, winSpan * 0.95, blindDrop, 0.015, blindFabricMat);
-            blindFabric.userData.noTexture = true;
-            const blindWeight = box(0, winY + winHeight * 0.5 - blindDrop, -0.045, winSpan * 0.95, 0.03, 0.03, blindBoxMat);
-            blindWeight.userData.noTexture = true;
+            // 7. Rèm (Rèm cuốn cho cửa sổ thường, Rèm voan buông + drapes cho cửa chạm sàn)
+            if (!isFloorToCeiling) {
+              const blindBoxMat = createMaterial('#CBD5E1', 0.4, 0.3);
+              const blindHousing = box(0, winY + winHeight * 0.5 + 0.04, -0.05, winSpan * 0.98, 0.08, 0.09, blindBoxMat);
+              blindHousing.userData.noTexture = true;
+              const blindCanvas = generateRollerBlindCanvas(item.color || '#F7F3E7');
+              const blindFabricMat = blindCanvas
+                ? new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(blindCanvas), roughness: 0.85, metalness: 0.0, side: THREE.DoubleSide })
+                : createMaterial('#F7F3E7', 0.85, 0.0);
+              const blindDrop = winHeight * 0.32;
+              const blindFabric = box(0, winY + winHeight * 0.5 - blindDrop * 0.5, -0.045, winSpan * 0.95, blindDrop, 0.015, blindFabricMat);
+              blindFabric.userData.noTexture = true;
+              const blindWeight = box(0, winY + winHeight * 0.5 - blindDrop, -0.045, winSpan * 0.95, 0.03, 0.03, blindBoxMat);
+              blindWeight.userData.noTexture = true;
+            } else {
+              const sheerMat = new THREE.MeshStandardMaterial({ color: 0xF8FAFC, transparent: true, opacity: 0.38, roughness: 0.9, metalness: 0.0 });
+              const drapeMat = createMaterial('#1E293B', 0.85, 0.0);
+              const sheerCurtain = box(0, winY, -0.03, winSpan * 0.76, winHeight * 0.98, 0.015, sheerMat);
+              sheerCurtain.userData.noTexture = true;
+              const drapeL = box(-winSpan * 0.43, winY, -0.04, winSpan * 0.16, winHeight * 0.98, 0.04, drapeMat);
+              const drapeR = box(winSpan * 0.43, winY, -0.04, winSpan * 0.16, winHeight * 0.98, 0.04, drapeMat);
+              [drapeL, drapeR].forEach(d => { d.userData.noTexture = true; });
+            }
             break;
           }
           case 'door': {
@@ -2610,12 +2700,13 @@
               ? new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(blindCanvas), roughness: 0.85, metalness: 0.0, side: THREE.DoubleSide })
               : createMaterial(item.color || '#EDE8D5', 0.85, 0.0);
             blindMat.side = THREE.DoubleSide;
-            // Hộp kỹ thuật rèm cuốn trên đỉnh
-            box(0, 1.8 + curH * 0.46, 0, curSpan, 0.08, 0.08, railMat);
+            const cCenterY = (typeof item.y === 'number' && item.y > 0.1) ? (fh * 0.5) : (curH * 0.5);
+            // Hộp kỹ thuật rèm trên đỉnh
+            box(0, cCenterY + curH * 0.48, 0, curSpan, 0.06, 0.06, railMat);
             // Tấm vải rèm buông
-            box(0, 1.8, -0.02, curSpan * 0.96, curH * 0.88, 0.015, blindMat);
+            box(0, cCenterY, -0.02, curSpan * 0.96, curH * 0.94, 0.015, blindMat);
             // Thanh nẹp đối trọng ở đáy
-            box(0, 1.8 - curH * 0.44, -0.02, curSpan * 0.96, 0.035, 0.03, railMat);
+            box(0, cCenterY - curH * 0.46, -0.02, curSpan * 0.96, 0.03, 0.025, railMat);
             break;
           }
           case 'water_bottle': {
@@ -2641,14 +2732,18 @@
             } else {
               acFaceMat = createMaterial('#F8FAFC', 0.35, 0.05);
             }
-            box(0, 2.8, 0, fw, fh, fd, acFaceMat);
+            box(0, fh * 0.5, 0, fw, fh, fd, acFaceMat);
+            // Khe cửa gió thổi máy lạnh hướng xuống
+            const louverMat = createMaterial('#E2E8F0', 0.4, 0.1);
+            const louver = box(0, fh * 0.15, -fd * 0.45, fw * 0.88, 0.025, fd * 0.2, louverMat);
+            louver.userData.noTexture = true;
             break;
           }
           case 'fan': {
             const fanMat = createMaterial('#334155', 0.4, 0.3);
-            box(0, 2.7, 0, 0.15, 0.15, 0.15, fanMat);
-            box(0, 2.7, -0.1, fw, 0.03, 0.12, fanMat);
-            box(0, 2.7, -0.1, 0.12, fw, 0.03, fanMat);
+            box(0, fh * 0.5, 0, 0.15, 0.15, 0.15, fanMat);
+            box(0, fh * 0.5, -0.1, fw, 0.03, 0.12, fanMat);
+            box(0, fh * 0.5, -0.1, 0.12, fw, 0.03, fanMat);
             break;
           }
           case 'book':
