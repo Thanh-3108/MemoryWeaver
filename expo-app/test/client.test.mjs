@@ -3,7 +3,17 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import * as THREE from 'three';
-import { requestRoom, requestSegmentation, validEndpoint, validateRoom, sanitizeHex } from '../lib/room-api.js';
+import {
+  requestRoom,
+  requestSegmentation,
+  validEndpoint,
+  validateRoom,
+  sanitizeHex,
+  fetchLatestSync,
+  publishSync,
+  sendSyncMessage,
+  acknowledgeSync
+} from '../lib/room-api.js';
 const room = validateRoom(JSON.parse(fs.readFileSync(new URL('../../server/test-room.json', import.meta.url))));
 test('LAN endpoints and secure URLs only', () => {
   assert.ok(validEndpoint('http://192.168.1.17:8787'));
@@ -99,4 +109,30 @@ test('quota and cancellation are not relabeled as a network failure', async () =
   await assert.rejects(requestRoom({ ...base, fetchImpl: async () => Response.json({ error: 'Quota' }, { status: 502 }) }), { message: 'Quota' });
   const abort = new DOMException('Canceled', 'AbortError');
   await assert.rejects(requestRoom({ ...base, fetchImpl: async () => { throw abort; } }), e => e === abort);
+});
+
+test('live sync helpers fetch, publish, send messages, and acknowledge', async () => {
+  const base = { endpoint: 'http://192.168.1.17:8787', token: 'secret' };
+  let calledUrl = '';
+  let calledBody = null;
+  const mockFetch = async (url, options) => {
+    calledUrl = url;
+    calledBody = options?.body ? JSON.parse(options.body) : null;
+    return Response.json({ ok: true, version: 10, ...(url.includes('/latest') ? { reminders: [] } : {}) });
+  };
+
+  const latest = await fetchLatestSync({ ...base, fetchImpl: mockFetch });
+  assert.ok(calledUrl.endsWith('/api/sync/latest'));
+  assert.equal(latest.ok, true);
+
+  await publishSync({ ...base, room, reminders: [{ id: '1' }], fetchImpl: mockFetch });
+  assert.ok(calledUrl.endsWith('/api/sync/publish'));
+  assert.equal(calledBody.room.title, room.title);
+
+  await sendSyncMessage({ ...base, text: 'Uống thuốc', fetchImpl: mockFetch });
+  assert.ok(calledUrl.endsWith('/api/sync/message'));
+  assert.equal(calledBody.text, 'Uống thuốc');
+
+  await acknowledgeSync({ ...base, fetchImpl: mockFetch });
+  assert.ok(calledUrl.endsWith('/api/sync/acknowledge'));
 });

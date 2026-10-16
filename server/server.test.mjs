@@ -172,3 +172,47 @@ test('texture route requires auth/image, skips Gemini, and reports unavailable w
     assert.equal(r.status, 503); assert.equal((await r.json()).code, 'TEXTURE_UNAVAILABLE'); assert.equal(calls, 1);
   });
 });
+
+test('live sync allows caregiver to publish room/reminders and send messages to patient', async () => {
+  await withServer({ fetchImpl: () => { throw Error('Unexpected AI'); } }, async url => {
+    // 1. Initial latest check
+    const r1 = await fetch(url + '/api/sync/latest', { headers: { Authorization: 'Bearer secret' } });
+    assert.equal(r1.status, 200);
+    const d1 = await r1.json();
+    assert.equal(d1.ok, true);
+    assert.equal(d1.version, 1);
+    assert.ok(Array.isArray(d1.reminders));
+
+    // 2. Publish room update
+    const p1 = await post(url, { room: fixture, reminders: [{ id: 'rem-99', time: '09:00', label: 'Uống nước', icon: '💧' }] }, '/api/sync/publish');
+    assert.equal(p1.status, 200);
+    const p1Data = await p1.json();
+    assert.equal(p1Data.ok, true);
+    assert.equal(p1Data.version, 2);
+
+    // 3. Send message
+    const m1 = await post(url, { text: 'Bà ơi uống thuốc nhé!', type: 'medicine' }, '/api/sync/message');
+    assert.equal(m1.status, 200);
+    const m1Data = await m1.json();
+    assert.equal(m1Data.version, 3);
+    assert.equal(m1Data.activeNotification.text, 'Bà ơi uống thuốc nhé!');
+
+    // 4. Latest retrieves updated room and notification
+    const r2 = await fetch(url + '/api/sync/latest', { headers: { Authorization: 'Bearer secret' } });
+    const d2 = await r2.json();
+    assert.equal(d2.version, 3);
+    assert.equal(d2.room.title, fixture.title);
+    assert.equal(d2.activeNotification.text, 'Bà ơi uống thuốc nhé!');
+
+    // 5. Patient acknowledges notification
+    const a1 = await post(url, {}, '/api/sync/acknowledge');
+    assert.equal(a1.status, 200);
+    const a1Data = await a1.json();
+    assert.equal(a1Data.version, 4);
+
+    const r3 = await fetch(url + '/api/sync/latest', { headers: { Authorization: 'Bearer secret' } });
+    const d3 = await r3.json();
+    assert.equal(d3.version, 4);
+    assert.equal(d3.activeNotification, null);
+  });
+});

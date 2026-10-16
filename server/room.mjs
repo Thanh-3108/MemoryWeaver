@@ -206,7 +206,26 @@ const KIND_SYNONYMS = {
   box: 'lunchbox', lunchbox: 'lunchbox', hop_com: 'lunchbox', hop_but: 'lunchbox',
   clock: 'clock', dong_ho: 'clock', wall_clock: 'clock',
   plant: 'plant', cay_canh: 'plant', chau_cay: 'plant', hoa: 'plant', flower_pot: 'plant',
-  trashcan: 'plant', trash_bin: 'plant', thung_rac: 'plant'
+  trashcan: 'plant', trash_bin: 'plant', thung_rac: 'plant',
+
+  // Medical, Care & Routine Props
+  medicine_box: 'lunchbox', hop_thuoc: 'lunchbox', tu_thuoc: 'cabinet', medicine_cabinet: 'cabinet',
+  pill_box: 'lunchbox', pills: 'lunchbox', thuoc: 'lunchbox', lo_thuoc: 'water_bottle', pill_bottle: 'water_bottle',
+  thermometer: 'book', nhiet_ke: 'book', water_dispenser: 'cabinet', cay_nuoc: 'cabinet',
+  binh_thuy: 'water_bottle', phich_nuoc: 'water_bottle', kettle: 'water_bottle', am_nuoc: 'water_bottle',
+  teapot: 'water_bottle', am_tra: 'water_bottle',
+
+  // Tableware, Kitchen Dining Props
+  microwave: 'cabinet', lo_vi_song: 'cabinet', dish: 'lunchbox', plate: 'lunchbox', dia: 'lunchbox',
+  bowl: 'mug', bat: 'mug', chen: 'mug', bat_an: 'mug', to_canh: 'mug', spoon: 'book', thia: 'book',
+  fork: 'book', chopsticks: 'book', dua: 'book', tray: 'lunchbox', khay_tra: 'lunchbox',
+
+  // Living & Bedroom Comfort Props
+  pillow: 'rug', goi: 'rug', goi_om: 'rug', cushion: 'rug', dem_ngoi: 'rug',
+  blanket: 'rug', chan: 'rug', men: 'rug', quilt: 'rug',
+  tablecloth: 'rug', khan_trai_ban: 'rug',
+  radio: 'plant', dai_radio: 'plant', speaker: 'plant', loa: 'plant',
+  vase: 'plant', binh_hoa: 'plant', lo_hoa: 'plant'
 };
 
 const NAMED_COLORS = {
@@ -483,6 +502,12 @@ function resolveRoomSpatial(items, room) {
   chairOffsets.forEach((offset, chair) => {
     chair.x = offset.parent.x + offset.relX;
     chair.z = offset.parent.z + offset.relZ;
+    // Quay mặt ghế hướng về tâm bàn
+    const dx = offset.parent.x - chair.x;
+    const dz = offset.parent.z - chair.z;
+    if (Math.hypot(dx, dz) > 0.05) {
+      chair.yaw = Math.round(Math.atan2(dx, dz) * 180 / Math.PI);
+    }
     const cAABB = getRotatedAABB(chair);
     const maxCX = halfW - cAABB.hx - 0.05;
     const maxCZ = halfD - cAABB.hz - 0.05;
@@ -510,7 +535,36 @@ function resolveRoomSpatial(items, room) {
     });
   });
 
-  // 6. ĐẢM BẢO MỌI VẬT THỂ KHÔNG VƯỢT QUÁ KHÔNG GIAN PHÒNG
+  // 6. TỰ ĐỘNG ĐẶT VẬT DỤNG NHỎ LÊN MẶT BÀN / MẶT TỦ (Tabletop Prop Snapping)
+  const SMALL_PROPS = ['book', 'water_bottle', 'mug', 'lunchbox', 'laptop'];
+  const surfaces = items.filter(it => ['table', 'desk', 'cabinet'].includes(it.kind));
+  items.filter(it => SMALL_PROPS.includes(it.kind)).forEach(prop => {
+    let nearestSurf = null;
+    let minSurfDist = Infinity;
+    surfaces.forEach(s => {
+      const sBox = getRotatedAABB(s);
+      if (prop.x >= sBox.minX - 0.35 && prop.x <= sBox.maxX + 0.35 &&
+          prop.z >= sBox.minZ - 0.35 && prop.z <= sBox.maxZ + 0.35) {
+        const d = Math.hypot(s.x - prop.x, s.z - prop.z);
+        if (d < minSurfDist) {
+          minSurfDist = d;
+          nearestSurf = s;
+        }
+      }
+    });
+
+    if (nearestSurf) {
+      // Đặt nằm trên mặt bàn/tủ
+      prop.y = (nearestSurf.y || 0) + nearestSurf.height;
+      // Giới hạn x, z nằm gọn trong diện tích mặt bàn
+      const sBox = getRotatedAABB(nearestSurf);
+      const margin = 0.06;
+      prop.x = Math.max(sBox.minX + margin, Math.min(sBox.maxX - margin, prop.x));
+      prop.z = Math.max(sBox.minZ + margin, Math.min(sBox.maxZ - margin, prop.z));
+    }
+  });
+
+  // 7. ĐẢM BẢO MỌI VẬT THỂ KHÔNG VƯỢT QUÁ KHÔNG GIAN PHÒNG
   items.forEach(item => fitInRoom(item, room));
 }
 

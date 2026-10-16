@@ -10,6 +10,7 @@ import {
   Modal,
   Image,
   KeyboardAvoidingView,
+  Keyboard,
   Platform,
   Alert,
   NativeModules,
@@ -22,7 +23,16 @@ import * as ImagePicker from 'expo-image-picker';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import * as SecureStore from 'expo-secure-store';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
-import { requestRoom, validEndpoint, requestDiagnosis, extractTextures } from './lib/room-api';
+import {
+  requestRoom,
+  validEndpoint,
+  requestDiagnosis,
+  extractTextures,
+  fetchLatestSync,
+  publishSync,
+  sendSyncMessage,
+  acknowledgeSync
+} from './lib/room-api';
 import RoomViewer3D from './components/RoomViewer3D';
 
 const { VoiceRecognition } = NativeModules;
@@ -292,6 +302,127 @@ export default function App() {
   const [savedRoomsModalVisible, setSavedRoomsModalVisible] = useState(false);
   const [saveModalVisible, setSaveModalVisible] = useState(false);
   const [saveRoomInputTitle, setSaveRoomInputTitle] = useState('');
+
+  // Live Sync & Caregiver Monitoring State
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const currentRoomRef = useRef(currentRoom);
+  currentRoomRef.current = currentRoom;
+
+  const [caregiverModalVisible, setCaregiverModalVisible] = useState(false);
+  const [activeLiveNotification, setActiveLiveNotification] = useState(null);
+  const [syncStatusMsg, setSyncStatusMsg] = useState('');
+  const [customMsgInput, setCustomMsgInput] = useState('');
+  const [syncReminders, setSyncReminders] = useState([
+    { id: 'rem-1', time: '08:00', label: 'Uống thuốc sáng', type: 'medicine', icon: '💊', message: 'Bác ơi, đến giờ uống thuốc buổi sáng rồi ạ.' },
+    { id: 'rem-2', time: '11:30', label: 'Ăn cơm trưa & uống nước', type: 'meal', icon: '🍚', message: 'Đến giờ ăn trưa rồi bác ơi, chúc bác ngon miệng!' },
+    { id: 'rem-3', time: '14:30', label: 'Uống một cốc nước ấm', type: 'water', icon: '💧', message: 'Bác nhớ uống một cốc nước ấm cho khỏe người nhé.' },
+    { id: 'rem-4', time: '20:00', label: 'Uống thuốc tối & nghỉ ngơi', type: 'medicine', icon: '💊', message: 'Đến giờ uống thuốc tối và chuẩn bị đi ngủ rồi bác ạ.' }
+  ]);
+
+  // Keyboard Visibility Listener
+  useEffect(() => {
+    if (!Keyboard || typeof Keyboard.addListener !== 'function') return;
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const showSub = Keyboard.addListener(showEvent, () => setIsKeyboardVisible(true));
+    const hideSub = Keyboard.addListener(hideEvent, () => setIsKeyboardVisible(false));
+    return () => {
+      showSub?.remove?.();
+      hideSub?.remove?.();
+    };
+  }, []);
+
+  // Live Sync Poller for Patient Mode
+  useEffect(() => {
+    if (role !== 'patient' || !serverEndpoint || typeof fetchLatestSync !== 'function') return;
+    let isMounted = true;
+    const pollSync = async () => {
+      try {
+        const data = await fetchLatestSync({ endpoint: serverEndpoint, token: appToken });
+        if (!isMounted || !data?.ok) return;
+        if (data.room && (!currentRoomRef.current || JSON.stringify(data.room) !== JSON.stringify(currentRoomRef.current))) {
+          setCurrentRoom(data.room);
+          setRoomTitle(data.room.title || 'Không gian ký ức');
+        }
+        if (data.activeNotification) {
+          setActiveLiveNotification(data.activeNotification);
+        } else {
+          setActiveLiveNotification(null);
+        }
+      } catch (_) {}
+    };
+    pollSync();
+    const interval = setInterval(pollSync, 4000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [role, serverEndpoint, appToken]);
+
+  const handleAcknowledgeNotification = async () => {
+    setActiveLiveNotification(null);
+    if (serverEndpoint && typeof acknowledgeSync === 'function') {
+      try {
+        await acknowledgeSync({ endpoint: serverEndpoint, token: appToken });
+      } catch (_) {}
+    }
+  };
+
+  const handlePublishToPatient = async () => {
+    if (!currentRoom) {
+      Alert.alert('Chưa có phòng', 'Hãy tạo hoặc chọn một căn phòng trước khi xuất bản sang máy Người Bệnh.');
+      return;
+    }
+    try {
+      setSyncStatusMsg('Đang xuất bản...');
+      await publishSync({
+        endpoint: serverEndpoint,
+        token: appToken,
+        room: currentRoom,
+        reminders: syncReminders
+      });
+      setSyncStatusMsg('✅ Đã đồng bộ phòng thành công sang máy Người Bệnh!');
+    } catch (err) {
+      setSyncStatusMsg(`❌ Lỗi đồng bộ: ${err.message}`);
+    }
+  };
+
+  const handleSendReminderPing = async (reminder) => {
+    try {
+      setSyncStatusMsg(`Đang gửi "${reminder.label}"...`);
+      await sendSyncMessage({
+        endpoint: serverEndpoint,
+        token: appToken,
+        text: reminder.message,
+        type: reminder.type,
+        title: reminder.label,
+        icon: reminder.icon
+      });
+      setSyncStatusMsg(`✅ Đã gửi nhắc "${reminder.label}" tới Người Bệnh!`);
+    } catch (err) {
+      setSyncStatusMsg(`❌ Không gửi được: ${err.message}`);
+    }
+  };
+
+  const handleSendCustomMessage = async () => {
+    const text = customMsgInput.trim();
+    if (!text) return;
+    try {
+      setSyncStatusMsg('Đang gửi thông báo...');
+      await sendSyncMessage({
+        endpoint: serverEndpoint,
+        token: appToken,
+        text,
+        type: 'custom',
+        title: 'Lời nhắn từ người chăm sóc',
+        icon: '💌'
+      });
+      setCustomMsgInput('');
+      setSyncStatusMsg('✅ Đã gửi lời nhắn tới Người Bệnh!');
+    } catch (err) {
+      setSyncStatusMsg(`❌ Không gửi được: ${err.message}`);
+    }
+  };
 
   const scrollViewRef = useRef(null);
   const abortControllerRef = useRef(null);
@@ -1136,16 +1267,28 @@ export default function App() {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity
-          style={[styles.sendBtn, isBusy && styles.cancelBtn]}
-          accessibilityLabel={isBusy ? 'Hủy yêu cầu' : 'Gửi mô tả phòng'}
-          onPress={handleSendOrCancel}
-          disabled={isPicking}
-        >
-          <Text style={styles.sendBtnText}>
-            {isBusy ? (voiceLang === 'en' ? 'Cancel' : 'Hủy') : (voiceLang === 'en' ? 'Send' : 'Gửi')}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.actionRightGroup}>
+          {isKeyboardVisible && (
+            <TouchableOpacity
+              style={styles.dismissKeyboardBtn}
+              onPress={() => Keyboard.dismiss()}
+              accessibilityLabel="Đóng bàn phím"
+            >
+              <Text style={styles.dismissKeyboardBtnText}>⌄ Đóng</Text>
+            </TouchableOpacity>
+          )}
+
+          <TouchableOpacity
+            style={[styles.sendBtn, isBusy && styles.cancelBtn]}
+            accessibilityLabel={isBusy ? 'Hủy yêu cầu' : 'Gửi mô tả phòng'}
+            onPress={handleSendOrCancel}
+            disabled={isPicking}
+          >
+            <Text style={styles.sendBtnText}>
+              {isBusy ? (voiceLang === 'en' ? 'Cancel' : 'Hủy') : (voiceLang === 'en' ? 'Send' : 'Gửi')}
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -1323,6 +1466,26 @@ export default function App() {
             </View>
           </View>
 
+          {/* Gợi nhắc trực tiếp từ Người Chăm Sóc */}
+          {activeLiveNotification && (
+            <View style={styles.patientReminderCard}>
+              <View style={styles.patientReminderHeader}>
+                <Text style={styles.patientReminderIcon}>{activeLiveNotification.icon || '🔔'}</Text>
+                <View style={{ flex: 1, marginHorizontal: 8 }}>
+                  <Text style={styles.patientReminderTitle}>{activeLiveNotification.title || 'Lời nhắc nhở'}</Text>
+                  <Text style={styles.patientReminderText}>{activeLiveNotification.text}</Text>
+                </View>
+              </View>
+              <TouchableOpacity
+                style={styles.patientReminderDismissBtn}
+                onPress={handleAcknowledgeNotification}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.patientReminderDismissText}>✓ Dạ, tôi nhớ rồi</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
           {/* Khung hiển thị 3D tràn viền */}
           <View style={styles.patientViewerWrap}>
             {render3DViewer()}
@@ -1495,6 +1658,13 @@ export default function App() {
                   <Text style={styles.actionPillText}>📂 Thư viện ({savedRooms.length})</Text>
                 </TouchableOpacity>
 
+                <TouchableOpacity
+                  style={[styles.actionPillBtn, styles.liveSyncPillBtn]}
+                  onPress={() => setCaregiverModalVisible(true)}
+                >
+                  <Text style={[styles.actionPillText, styles.liveSyncPillText]}>📡 Live</Text>
+                </TouchableOpacity>
+
                 {currentRoom && (
                   <TouchableOpacity
                     style={[styles.actionPillBtn, styles.saveRoomPillBtn]}
@@ -1626,6 +1796,13 @@ export default function App() {
                 <Text style={styles.actionPillText}>📂 Thư viện phòng ({savedRooms.length})</Text>
               </TouchableOpacity>
 
+              <TouchableOpacity
+                style={[styles.actionPillBtn, styles.liveSyncPillBtn]}
+                onPress={() => setCaregiverModalVisible(true)}
+              >
+                <Text style={[styles.actionPillText, styles.liveSyncPillText]}>📡 Đồng bộ Live ({syncReminders.length})</Text>
+              </TouchableOpacity>
+
               {currentRoom && (
                 <TouchableOpacity
                   style={[styles.actionPillBtn, styles.saveRoomPillBtn]}
@@ -1649,62 +1826,78 @@ export default function App() {
             </View>
 
             {/* === 3D Room Viewer (Tập trung không gian 3D trực quan) === */}
-            <View style={[styles.viewerContainer, isExpanded ? styles.viewerContainerExpanded : styles.viewerContainerNormal]}>
-              <View style={styles.viewerHeader}>
-                <View style={{ flex: 1, marginRight: 8 }}>
-                  <Text style={styles.roomTitleText} numberOfLines={1}>{roomTitle}</Text>
-                  {povMode === 'focused' ? (
-                    <Text style={styles.povSubtitleText} numberOfLines={1}>👁️ Đang đứng cạnh: {focusedLabel} (Vuốt để nhìn quanh)</Text>
-                  ) : currentRoom ? (
-                    <Text style={styles.povSubtitleText} numberOfLines={1}>🧠 Đã lưu vị trí • Tiếp tục gõ để tinh chỉnh</Text>
-                  ) : null}
+            {isKeyboardVisible ? (
+              <TouchableOpacity
+                style={styles.keyboardCollapsedViewerBar}
+                onPress={() => Keyboard.dismiss()}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.keyboardCollapsedViewerText}>
+                  📐 3D tạm thu gọn khi soạn thảo • <Text style={{ fontWeight: '700', textDecorationLine: 'underline' }}>Chạm để thu bàn phím ⌄</Text>
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <View style={[styles.viewerContainer, isExpanded ? styles.viewerContainerExpanded : styles.viewerContainerNormal]}>
+                <View style={styles.viewerHeader}>
+                  <View style={{ flex: 1, marginRight: 8 }}>
+                    <Text style={styles.roomTitleText} numberOfLines={1}>{roomTitle}</Text>
+                    {povMode === 'focused' ? (
+                      <Text style={styles.povSubtitleText} numberOfLines={1}>👁️ Đang đứng cạnh: {focusedLabel} (Vuốt để nhìn quanh)</Text>
+                    ) : currentRoom ? (
+                      <Text style={styles.povSubtitleText} numberOfLines={1}>🧠 Đã lưu vị trí • Tiếp tục gõ để tinh chỉnh</Text>
+                    ) : null}
+                  </View>
+                  <View style={styles.viewerControls}>
+                    <TouchableOpacity
+                      style={styles.expandBtn}
+                      onPress={() => setIsExpanded(prev => !prev)}
+                      accessibilityLabel="Phóng to hoặc thu nhỏ căn phòng"
+                    >
+                      <Text style={styles.expandBtnText}>{isExpanded ? '🗗 Thu' : '⛶ Mở'}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.resetBtn, !currentRoom && styles.disabledControlBtn]}
+                      disabled={!currentRoom}
+                      onPress={() => setNavMode(mode => {
+                        const next = mode === 'fpv' ? 'overview' : 'fpv';
+                        if (next === 'fpv') setIsExpanded(true);
+                        return next;
+                      })}
+                    >
+                      <Text style={styles.resetBtnText}>{navMode === 'fpv' ? 'Toàn cảnh' : '🕹️ Vào'}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.resetBtn} onPress={resetRoom}>
+                      <Text style={styles.resetBtnText}>↺ Mới</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <View style={styles.viewerControls}>
-                  <TouchableOpacity
-                    style={styles.expandBtn}
-                    onPress={() => setIsExpanded(prev => !prev)}
-                    accessibilityLabel="Phóng to hoặc thu nhỏ căn phòng"
-                  >
-                    <Text style={styles.expandBtnText}>{isExpanded ? '🗗 Thu' : '⛶ Mở'}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.resetBtn, !currentRoom && styles.disabledControlBtn]}
-                    disabled={!currentRoom}
-                    onPress={() => setNavMode(mode => {
-                      const next = mode === 'fpv' ? 'overview' : 'fpv';
-                      if (next === 'fpv') setIsExpanded(true);
-                      return next;
-                    })}
-                  >
-                    <Text style={styles.resetBtnText}>{navMode === 'fpv' ? 'Toàn cảnh' : '🕹️ Vào'}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.resetBtn} onPress={resetRoom}>
-                    <Text style={styles.resetBtnText}>↺ Mới</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
 
-              {render3DViewer()}
-            </View>
+                {render3DViewer()}
+              </View>
+            )}
 
             {/* Chat & Controls Area */}
-            <View style={[styles.chatSection, isExpanded && styles.chatSectionCollapsed]}>
-              <View style={styles.statusBar}>
-                <Text style={styles.statusText}>{status}</Text>
-              </View>
+            <View style={[styles.chatSection, isExpanded && styles.chatSectionCollapsed, isKeyboardVisible && styles.chatSectionTyping]}>
+              {!isKeyboardVisible && (
+                <View style={styles.statusBar}>
+                  <Text style={styles.statusText}>{status}</Text>
+                </View>
+              )}
 
               {renderMemoryBar()}
-              {renderMessagesList()}
-              {renderSuggestionsList()}
+              {!isKeyboardVisible && renderMessagesList()}
+              {!isKeyboardVisible && renderSuggestionsList()}
               {renderAttachmentBar()}
               {renderVoiceBanner()}
               {renderInputRow()}
 
-              <Text style={styles.hintFooter}>
-                {currentRoom
-                  ? '🌟 Phòng đã sẵn sàng! Bấm "Bắt đầu cho người bệnh" ở trên để vào chế độ trị liệu.'
-                  : '💡 Gõ mô tả hoặc bấm "+ Ảnh" để gửi ảnh kỷ niệm, AI sẽ tự động dựng phòng 3D.'}
-              </Text>
+              {!isKeyboardVisible && (
+                <Text style={styles.hintFooter}>
+                  {currentRoom
+                    ? '🌟 Phòng đã sẵn sàng! Bấm "Bắt đầu cho người bệnh" ở trên để vào chế độ trị liệu.'
+                    : '💡 Gõ mô tả hoặc bấm "+ Ảnh" để gửi ảnh kỷ niệm, AI sẽ tự động dựng phòng 3D.'}
+                </Text>
+              )}
             </View>
           </>
         )}
@@ -1848,6 +2041,122 @@ export default function App() {
                 <Text style={styles.closeBtnText}>Hủy</Text>
               </TouchableOpacity>
             </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal Điều Khiển Live & Gợi Nhắc Của Người Chăm Sóc */}
+      <Modal
+        onRequestClose={() => setCaregiverModalVisible(false)}
+        visible={caregiverModalVisible}
+        animationType="slide"
+        transparent
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { maxHeight: '88%' }]}>
+            <Text style={styles.modalTitle}>📡 Đồng Bộ Live & Gợi Nhắc</Text>
+            <Text style={styles.modalHelp}>
+              Điều khiển từ xa: Xuất bản căn phòng 3D và gửi thông báo nhắc nhở đến thiết bị Người Bệnh.
+            </Text>
+
+            {syncStatusMsg ? (
+              <View style={styles.syncStatusBanner}>
+                <Text style={styles.syncStatusBannerText}>{syncStatusMsg}</Text>
+              </View>
+            ) : null}
+
+            <ScrollView style={{ maxHeight: 380 }} showsVerticalScrollIndicator={false}>
+              {/* 1. Xuất bản phòng 3D */}
+              <View style={styles.caregiverSectionBox}>
+                <Text style={styles.caregiverSectionTitle}>🏠 1. Xuất bản không gian 3D hiện tại</Text>
+                <Text style={styles.caregiverSectionDesc}>
+                  Phòng đang mở: <Text style={{ fontWeight: '700', color: '#165b40' }}>{roomTitle || currentRoom?.title || '(Chưa có phòng)'}</Text>
+                </Text>
+                <TouchableOpacity
+                  style={[styles.publishRoomBtn, !currentRoom && styles.disabledControlBtn]}
+                  disabled={!currentRoom}
+                  onPress={handlePublishToPatient}
+                >
+                  <Text style={styles.publishRoomBtnText}>🚀 Đồng bộ phòng này sang máy Người Bệnh</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* 2. Gợi nhắc nhanh theo thời gian biểu */}
+              <View style={styles.caregiverSectionBox}>
+                <Text style={styles.caregiverSectionTitle}>⏰ 2. Gợi nhắc theo lịch trình hàng ngày</Text>
+                <Text style={styles.caregiverSectionDesc}>Bấm "Gửi ngay" để hiện lời nhắc lớn trên máy người bệnh:</Text>
+                {syncReminders.map(rem => (
+                  <View key={rem.id} style={styles.caregiverReminderItem}>
+                    <View style={{ flex: 1, marginRight: 8 }}>
+                      <Text style={styles.caregiverReminderLabel}>{rem.icon} {rem.time} • {rem.label}</Text>
+                      <Text style={styles.caregiverReminderMsg} numberOfLines={2}>"{rem.message}"</Text>
+                    </View>
+                    <TouchableOpacity
+                      style={styles.caregiverSendPingBtn}
+                      onPress={() => handleSendReminderPing(rem)}
+                    >
+                      <Text style={styles.caregiverSendPingText}>Gửi ngay</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+
+              {/* 3. Gửi thông báo / tin nhắn tức thì */}
+              <View style={styles.caregiverSectionBox}>
+                <Text style={styles.caregiverSectionTitle}>⚡ 3. Gửi thông báo tức thì tùy chỉnh</Text>
+                <View style={styles.caregiverQuickPingRow}>
+                  <TouchableOpacity
+                    style={styles.caregiverQuickPingChip}
+                    onPress={() => handleSendReminderPing({ label: 'Uống thuốc', icon: '💊', message: 'Bác ơi, đến giờ uống thuốc rồi ạ!', type: 'medicine' })}
+                  >
+                    <Text style={styles.caregiverQuickPingText}>💊 Báo uống thuốc</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.caregiverQuickPingChip}
+                    onPress={() => handleSendReminderPing({ label: 'Uống nước', icon: '💧', message: 'Bác uống một cốc nước ấm cho khỏe nhé.', type: 'water' })}
+                  >
+                    <Text style={styles.caregiverQuickPingText}>💧 Nhắc uống nước</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.caregiverQuickPingChip}
+                    onPress={() => handleSendReminderPing({ label: 'Ăn cơm', icon: '🍚', message: 'Đến giờ ăn trưa/tối rồi bác ơi!', type: 'meal' })}
+                  >
+                    <Text style={styles.caregiverQuickPingText}>🍚 Đến giờ ăn</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.caregiverQuickPingChip}
+                    onPress={() => handleSendReminderPing({ label: 'Hỏi thăm', icon: '❤️', message: 'Bác có thấy căn phòng này thân thuộc không?', type: 'custom' })}
+                  >
+                    <Text style={styles.caregiverQuickPingText}>❤️ Lời hỏi thăm</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.caregiverCustomMsgRow}>
+                  <TextInput
+                    style={styles.caregiverMsgInput}
+                    placeholder="Nhập lời nhắc hoặc tin nhắn tức thì..."
+                    value={customMsgInput}
+                    onChangeText={setCustomMsgInput}
+                  />
+                  <TouchableOpacity
+                    style={styles.caregiverMsgSendBtn}
+                    onPress={handleSendCustomMessage}
+                  >
+                    <Text style={styles.caregiverMsgSendText}>Gửi</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </ScrollView>
+
+            <TouchableOpacity
+              style={[styles.modalBtn, styles.closeBtn, { marginTop: 14 }]}
+              onPress={() => {
+                setSyncStatusMsg('');
+                setCaregiverModalVisible(false);
+              }}
+            >
+              <Text style={styles.closeBtnText}>Đóng</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -2852,5 +3161,226 @@ const styles = StyleSheet.create({
     maxHeight: '90%',
     maxWidth: 520,
     padding: 14,
+  },
+
+  // ===== Bàn phím & Tối ưu Soạn Thảo (Keyboard Visibility Fix) =====
+  keyboardCollapsedViewerBar: {
+    backgroundColor: '#1c2421',
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#2b3833',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  keyboardCollapsedViewerText: {
+    color: '#95d1bd',
+    fontSize: 12,
+  },
+  chatSectionTyping: {
+    flex: 1,
+  },
+  actionRightGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  dismissKeyboardBtn: {
+    backgroundColor: '#e2ece6',
+    borderColor: '#b4c9bf',
+    borderWidth: 1,
+    paddingHorizontal: 9,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  dismissKeyboardBtnText: {
+    color: '#2d5a49',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+
+  // ===== Caregiver Live Sync Hub =====
+  liveSyncPillBtn: {
+    backgroundColor: '#e6f4ea',
+    borderColor: '#34a853',
+    borderWidth: 1.2,
+  },
+  liveSyncPillText: {
+    color: '#137333',
+    fontWeight: '700',
+  },
+  syncStatusBanner: {
+    backgroundColor: '#e6f4ea',
+    borderColor: '#a8dab5',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 10,
+    alignItems: 'center',
+  },
+  syncStatusBannerText: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: '#137333',
+  },
+  caregiverSectionBox: {
+    backgroundColor: '#f8faf9',
+    borderColor: '#dbe4df',
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 12,
+  },
+  caregiverSectionTitle: {
+    fontSize: 13.5,
+    fontWeight: '700',
+    color: '#1e382b',
+    marginBottom: 4,
+  },
+  caregiverSectionDesc: {
+    fontSize: 11.5,
+    color: '#52665b',
+    marginBottom: 10,
+  },
+  publishRoomBtn: {
+    backgroundColor: '#1b4d3e',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  publishRoomBtnText: {
+    color: '#ffffff',
+    fontSize: 12.5,
+    fontWeight: '700',
+  },
+  caregiverReminderItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#ffffff',
+    borderColor: '#e5ece8',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 6,
+  },
+  caregiverReminderLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#203d30',
+  },
+  caregiverReminderMsg: {
+    fontSize: 11,
+    color: '#556b60',
+    marginTop: 2,
+    fontStyle: 'italic',
+  },
+  caregiverSendPingBtn: {
+    backgroundColor: '#34a853',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  caregiverSendPingText: {
+    color: '#ffffff',
+    fontSize: 11.5,
+    fontWeight: '700',
+  },
+  caregiverQuickPingRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginBottom: 10,
+  },
+  caregiverQuickPingChip: {
+    backgroundColor: '#ffffff',
+    borderColor: '#c6d8cf',
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 6,
+  },
+  caregiverQuickPingText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#2a4d3d',
+  },
+  caregiverCustomMsgRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  caregiverMsgInput: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    borderColor: '#cfded6',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    fontSize: 12,
+    color: '#1a2e24',
+  },
+  caregiverMsgSendBtn: {
+    backgroundColor: '#1b4d3e',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  caregiverMsgSendText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+
+  // ===== Patient Mode Gentle Reminder Banner =====
+  patientReminderCard: {
+    backgroundColor: '#fffdf5',
+    borderColor: '#e8c976',
+    borderWidth: 2,
+    borderRadius: 12,
+    marginHorizontal: 12,
+    marginTop: 8,
+    marginBottom: 4,
+    padding: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  patientReminderHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  patientReminderIcon: {
+    fontSize: 28,
+  },
+  patientReminderTitle: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#7a4e0a',
+    letterSpacing: 0.3,
+  },
+  patientReminderText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#2e2617',
+    marginTop: 2,
+    lineHeight: 20,
+  },
+  patientReminderDismissBtn: {
+    backgroundColor: '#2e7d32',
+    paddingVertical: 9,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  patientReminderDismissText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '700',
   },
 });

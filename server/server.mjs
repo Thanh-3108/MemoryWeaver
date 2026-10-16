@@ -27,6 +27,19 @@ export function createServer({ apiKey = process.env.GEMINI_API_KEY, token = proc
   model = process.env.GEMINI_MODEL || 'gemini-flash-lite-latest', fetchImpl = fetch, textureImpl = extractTextures,
   requestTimeoutMs = 150_000 } = {}) {
   let active = 0;
+  let liveSessionState = {
+    version: 1,
+    updatedAt: new Date().toISOString(),
+    room: null,
+    reminders: [
+      { id: 'rem-1', time: '08:00', label: 'Uống thuốc sáng', type: 'medicine', icon: '💊', message: 'Bác ơi, đến giờ uống thuốc buổi sáng rồi ạ.' },
+      { id: 'rem-2', time: '11:30', label: 'Ăn cơm trưa & uống nước', type: 'meal', icon: '🍚', message: 'Đến giờ ăn trưa rồi bác ơi, chúc bác ngon miệng!' },
+      { id: 'rem-3', time: '14:30', label: 'Uống một cốc nước ấm', type: 'water', icon: '💧', message: 'Bác nhớ uống một cốc nước ấm cho khỏe người nhé.' },
+      { id: 'rem-4', time: '20:00', label: 'Uống thuốc tối & nghỉ ngơi', type: 'medicine', icon: '💊', message: 'Đến giờ uống thuốc tối và chuẩn bị đi ngủ rồi bác ạ.' }
+    ],
+    activeNotification: null
+  };
+
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -65,13 +78,72 @@ export function createServer({ apiKey = process.env.GEMINI_API_KEY, token = proc
         ] }, req);
     }
     const connectionCheck = req.method === 'GET' && pathname === '/api/connection';
-    if (!connectionCheck && (req.method !== 'POST' || !['/api/room','/api/segment','/api/extract-textures','/api/transcribe'].includes(pathname))) return send(res, 404, { error: 'Không tìm thấy API.' }, req);
+    const isSyncGet = req.method === 'GET' && pathname === '/api/sync/latest';
+    const isSyncPost = req.method === 'POST' && ['/api/sync/publish', '/api/sync/message', '/api/sync/acknowledge'].includes(pathname);
+    const isAiPost = req.method === 'POST' && ['/api/room','/api/segment','/api/extract-textures','/api/transcribe'].includes(pathname);
+
+    if (!connectionCheck && !isSyncGet && !isSyncPost && !isAiPost) return send(res, 404, { error: 'Không tìm thấy API.' }, req);
     if (token) {
       const got = Buffer.from(req.headers.authorization || '');
       const expected = Buffer.from(`Bearer ${token}`);
       if (got.length !== expected.length || !timingSafeEqual(got, expected)) return send(res, 401, { error: 'Mã truy cập server chưa đúng.' }, req);
     }
     if (connectionCheck) return send(res, 200, { ok: true, configured: Boolean(effectiveApiKey), provider: 'gemini', contractVersion: 2 }, req);
+    if (isSyncGet) return send(res, 200, { ok: true, ...liveSessionState }, req);
+
+    if (isSyncPost) {
+      let length = 0; const chunks = [];
+      for await (const chunk of req) {
+        length += chunk.length;
+        if (length > 3_000_000) { send(res, 413, { error: 'Dữ liệu quá lớn.' }); return; }
+        chunks.push(chunk);
+      }
+      let rawJson;
+      try { rawJson = JSON.parse(Buffer.concat(chunks).toString('utf8')); }
+      catch { return send(res, 400, { error: 'Dữ liệu JSON không hợp lệ.' }); }
+
+      if (pathname === '/api/sync/publish') {
+        if (rawJson.room) liveSessionState.room = rawJson.room;
+        if (Array.isArray(rawJson.reminders)) liveSessionState.reminders = rawJson.reminders;
+        if (rawJson.message) {
+          liveSessionState.activeNotification = {
+            id: Date.now().toString(),
+            text: rawJson.message.text || String(rawJson.message),
+            type: rawJson.message.type || 'reminder',
+            title: rawJson.message.title || 'Gợi nhắc từ người chăm sóc',
+            icon: rawJson.message.icon || '🔔',
+            createdAt: new Date().toISOString()
+          };
+        }
+        liveSessionState.version++;
+        liveSessionState.updatedAt = new Date().toISOString();
+        return send(res, 200, { ok: true, version: liveSessionState.version, updatedAt: liveSessionState.updatedAt }, req);
+      }
+
+      if (pathname === '/api/sync/message') {
+        const text = rawJson.text || rawJson.message || '';
+        if (!text) return send(res, 400, { error: 'Cần có nội dung thông báo.' }, req);
+        liveSessionState.activeNotification = {
+          id: Date.now().toString(),
+          text,
+          type: rawJson.type || 'reminder',
+          title: rawJson.title || 'Gợi nhắc từ người chăm sóc',
+          icon: rawJson.icon || '🔔',
+          createdAt: new Date().toISOString()
+        };
+        liveSessionState.version++;
+        liveSessionState.updatedAt = new Date().toISOString();
+        return send(res, 200, { ok: true, version: liveSessionState.version, activeNotification: liveSessionState.activeNotification }, req);
+      }
+
+      if (pathname === '/api/sync/acknowledge') {
+        liveSessionState.activeNotification = null;
+        liveSessionState.version++;
+        liveSessionState.updatedAt = new Date().toISOString();
+        return send(res, 200, { ok: true, version: liveSessionState.version }, req);
+      }
+    }
+
     if (pathname === '/api/segment') return send(res, 503, { code: 'PIPELINE_UNAVAILABLE', error: pipelineStatus().reason }, req);
     if (pathname === '/api/room' && !effectiveApiKey) return send(res, 503, { error: 'Server chưa cấu hình GEMINI_API_KEY. Bạn có thể nhập khóa API trong Cài đặt của ứng dụng.' }, req);
     if (!req.headers['content-type']?.startsWith('application/json')) return send(res, 415, { error: 'Yêu cầu JSON.' }, req);
