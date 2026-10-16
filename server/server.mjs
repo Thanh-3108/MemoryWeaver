@@ -109,7 +109,7 @@ export function createServer({ apiKey = process.env.GEMINI_API_KEY, token = proc
               contents: [{
                 role: 'user',
                 parts: [
-                  { text: 'Hãy nghe đoạn âm thanh này và chuyển thành văn bản tiếng Việt chính xác những gì người nói đã nói. Chỉ trả về đúng câu nói đó, không thêm bất kỳ bình luận hay định dạng nào khác.' },
+                  { text: 'Hãy nghe đoạn âm thanh này và chuyển thành văn bản chính xác nguyên văn những gì người nói đã nói. Người nói có thể nói tiếng Việt, tiếng Anh, hoặc chêm xen kẽ cả tiếng Việt lẫn tiếng Anh (code-switching, ví dụ chêm các từ nội thất như sofa, table, armchair, air conditioner, window, kitchen counter, fridge, master bedroom, living room, vintage, minimal). Hãy giữ nguyên chính xác cả từ tiếng Việt và từ tiếng Anh như người nói đã phát âm, tuyệt đối không dịch sang tiếng khác. Chỉ trả về đúng văn bản câu nói, không thêm bình luận hay định dạng nào khác.' },
                   { inlineData: { mimeType: mime, data: cleanB64 } }
                 ]
               }],

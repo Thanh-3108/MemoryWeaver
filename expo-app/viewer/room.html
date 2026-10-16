@@ -152,6 +152,14 @@
     }
     #btn-exit-fpv:active { transform: scale(0.96); background: #2f453c; }
 
+    #btn-sound-toggle {
+      background: rgba(24, 34, 30, 0.88); border: 1px solid rgba(255, 255, 255, 0.28);
+      color: #e4efe9; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+      cursor: pointer; backdrop-filter: blur(8px); box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+      pointer-events: auto; transition: all 0.2s ease;
+    }
+    #btn-sound-toggle:active { transform: scale(0.96); background: #2f453c; }
+
     #fpv-hint-badge {
       background: rgba(24, 34, 30, 0.88); border: 1px solid rgba(129, 199, 132, 0.35);
       color: #a5d6a7; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
@@ -167,6 +175,7 @@
   <div id="top-nav-bar">
     <button id="btn-back-overview" onclick="window.resetCameraOverview()">⬅️ Toàn cảnh phòng</button>
     <button id="btn-exit-fpv" onclick="window.setNavMode('overview')">🏰 Thoát góc nhìn thứ nhất</button>
+    <button id="btn-sound-toggle" onclick="window.toggleRoomAudio()">🔊 Âm thanh</button>
     <div id="pov-hint-badge">👀 Xoay quanh nhìn phòng</div>
     <div id="fpv-hint-badge">🕹️ Cần gạt: Bước đi • Vuốt phải: Nhìn quanh</div>
   </div>
@@ -370,6 +379,12 @@
         const deltaZ = -cosY * normFwd - sinY * normRgt;
 
         moveWithSlidewall(deltaX, deltaZ);
+
+        footstepDistance += Math.hypot(deltaX, deltaZ);
+        if (footstepDistance > 1.1) {
+          footstepDistance = 0;
+          playFootstepAudio();
+        }
       }
 
       // Maintain eye level height
@@ -386,6 +401,146 @@
     }
 
     const hasCanvasSupport = typeof document !== 'undefined' && typeof document.createElement === 'function';
+    const hasAudioSupport = typeof window !== 'undefined' && (typeof window.AudioContext !== 'undefined' || typeof window.webkitAudioContext !== 'undefined');
+
+    let audioCtx = null;
+    let audioMuted = false;
+    let ambientGain = null;
+    let footstepDistance = 0;
+
+    function initRoomAudio() {
+      if (audioCtx || !hasAudioSupport) return;
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+        if (audioCtx.state === 'suspended') {
+          const resumeAudio = () => {
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            window.removeEventListener('pointerdown', resumeAudio);
+            window.removeEventListener('keydown', resumeAudio);
+          };
+          window.addEventListener('pointerdown', resumeAudio);
+          window.addEventListener('keydown', resumeAudio);
+        }
+        setupAmbientSound();
+      } catch (e) {
+        console.warn('Audio init failed:', e);
+      }
+    }
+
+    function setupAmbientSound() {
+      if (!audioCtx) return;
+      try {
+        const bufferSize = audioCtx.sampleRate * 2;
+        const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          b3 = 0.86650 * b3 + white * 0.3104856;
+          b4 = 0.55000 * b4 + white * 0.5329522;
+          b5 = -0.7616 * b5 - white * 0.0168980;
+          output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.04;
+          b6 = white * 0.115926;
+        }
+
+        const whiteNoise = audioCtx.createBufferSource();
+        whiteNoise.buffer = noiseBuffer;
+        whiteNoise.loop = true;
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(260, audioCtx.currentTime);
+
+        ambientGain = audioCtx.createGain();
+        ambientGain.gain.setValueAtTime(audioMuted ? 0 : 0.08, audioCtx.currentTime);
+
+        whiteNoise.connect(filter);
+        filter.connect(ambientGain);
+        ambientGain.connect(audioCtx.destination);
+        whiteNoise.start(0);
+      } catch (e) {}
+    }
+
+    function playFootstepAudio() {
+      if (!audioCtx || audioMuted) return;
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const filter = audioCtx.createBiquadFilter();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(80 + Math.random() * 25, now);
+        osc.frequency.exponentialRampToValueAtTime(32, now + 0.08);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(220, now);
+
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.1);
+      } catch (e) {}
+    }
+
+    function playInteractChime() {
+      if (!audioCtx || audioMuted) return;
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const now = audioCtx.currentTime;
+
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const chimeGain = audioCtx.createGain();
+
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(523.25, now);
+        osc1.frequency.exponentialRampToValueAtTime(659.25, now + 0.18);
+
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(659.25, now);
+        osc2.frequency.exponentialRampToValueAtTime(783.99, now + 0.18);
+
+        chimeGain.gain.setValueAtTime(0.08, now);
+        chimeGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+
+        osc1.connect(chimeGain);
+        osc2.connect(chimeGain);
+        chimeGain.connect(audioCtx.destination);
+
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + 0.48);
+        osc2.stop(now + 0.48);
+      } catch (e) {}
+    }
+
+    window.toggleRoomAudio = function() {
+      if (!audioCtx) {
+        initRoomAudio();
+        audioMuted = false;
+      } else {
+        audioMuted = !audioMuted;
+        if (ambientGain) {
+          ambientGain.gain.setValueAtTime(audioMuted ? 0 : 0.08, audioCtx.currentTime);
+        }
+      }
+      const btn = document.getElementById('btn-sound-toggle');
+      if (btn) {
+        btn.innerHTML = audioMuted ? '🔇 Đã tắt âm' : '🔊 Âm thanh';
+        btn.style.color = audioMuted ? '#94a3b8' : '#a5d6a7';
+      }
+    };
 
     // --- BỘ TẠO TEXTURE PROCEDURAL CHÂN THỰC ---
     function generateVintageTileCanvas(baseColorHex) {
@@ -530,6 +685,267 @@
       for (let x = 0; x < 256; x += 4) ctx.fillRect(x, 0, 2, 256);
       ctx.fillStyle = 'rgba(0,0,0,0.08)';
       for (let y = 0; y < 256; y += 4) ctx.fillRect(0, y, 256, 2);
+      return canvas;
+    }
+
+    function generateWoodPlanksCanvas(woodHex) {
+      if (!hasCanvasSupport) return null;
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+
+      ctx.fillStyle = woodHex || '#8B5A2B';
+      ctx.fillRect(0, 0, 512, 512);
+
+      const numRows = 8;
+      const rowHeight = 512 / numRows;
+
+      for (let r = 0; r < numRows; r++) {
+        const y0 = r * rowHeight;
+        const xOffset = ((r * 187) % 256);
+        const plankLen = 256;
+
+        for (let px = -256 + xOffset; px < 512 + 256; px += plankLen) {
+          const shadeShift = ((r * 31 + px) % 17) - 8;
+          ctx.fillStyle = shadeShift > 0 ? `rgba(255,255,255,${shadeShift * 0.008})` : `rgba(0,0,0,${-shadeShift * 0.012})`;
+          ctx.fillRect(px, y0, plankLen, rowHeight);
+
+          ctx.strokeStyle = 'rgba(0,0,0,0.07)';
+          ctx.lineWidth = 1.2;
+          for (let gy = y0 + 6; gy < y0 + rowHeight - 4; gy += 6 + (r % 3)) {
+            ctx.beginPath();
+            ctx.moveTo(px, gy);
+            const midY = gy + Math.sin((px + r * 50) * 0.03) * 2;
+            ctx.quadraticCurveTo(px + plankLen * 0.5, midY, px + plankLen, gy);
+            ctx.stroke();
+          }
+
+          ctx.fillStyle = 'rgba(20,10,5,0.45)';
+          ctx.fillRect(px, y0, 2.5, rowHeight);
+          ctx.fillStyle = 'rgba(255,255,255,0.15)';
+          ctx.fillRect(px + 2.5, y0, 1.2, rowHeight);
+        }
+
+        ctx.fillStyle = 'rgba(20,10,5,0.55)';
+        ctx.fillRect(0, y0, 512, 3);
+        ctx.fillStyle = 'rgba(255,255,255,0.2)';
+        ctx.fillRect(0, y0 + 3, 512, 1.2);
+      }
+
+      const imgData = ctx.getImageData(0, 0, 512, 512);
+      const d = imgData.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const n = (Math.random() - 0.5) * 12;
+        d[i] = Math.min(255, Math.max(0, d[i] + n));
+        d[i+1] = Math.min(255, Math.max(0, d[i+1] + n));
+        d[i+2] = Math.min(255, Math.max(0, d[i+2] + n));
+      }
+      ctx.putImageData(imgData, 0, 0);
+      return canvas;
+    }
+
+    function generateMarbleCanvas(baseHex) {
+      if (!hasCanvasSupport) return null;
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+
+      ctx.fillStyle = baseHex || '#F5F5F0';
+      ctx.fillRect(0, 0, 512, 512);
+
+      const veinColors = ['rgba(110,120,130,0.22)', 'rgba(80,85,95,0.28)', 'rgba(160,150,130,0.18)', 'rgba(40,45,50,0.35)'];
+      for (let v = 0; v < 6; v++) {
+        ctx.strokeStyle = veinColors[v % veinColors.length];
+        ctx.lineWidth = 1.5 + (v % 3) * 1.5;
+        ctx.beginPath();
+        let sx = (v * 90) % 512;
+        let sy = 0;
+        ctx.moveTo(sx, sy);
+        while (sy < 512) {
+          const nxtX = sx + (Math.sin(sy * 0.04 + v) * 45) + (Math.random() * 20 - 10);
+          const nxtY = sy + 30 + Math.random() * 30;
+          ctx.lineTo(nxtX, nxtY);
+          sy = nxtY;
+          sx = nxtX;
+        }
+        ctx.stroke();
+      }
+
+      const grad = ctx.createRadialGradient(256, 256, 50, 256, 256, 320);
+      grad.addColorStop(0, 'rgba(255,255,255,0.15)');
+      grad.addColorStop(1, 'rgba(0,0,0,0.05)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 512, 512);
+
+      return canvas;
+    }
+
+    function generateRugCanvas(baseHex) {
+      if (!hasCanvasSupport) return null;
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 384;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+
+      const primary = baseHex || '#8A3B2C';
+      const secondary = '#EAD8B1';
+      const accent = '#2C4A5E';
+
+      ctx.fillStyle = primary;
+      ctx.fillRect(0, 0, 512, 384);
+
+      ctx.strokeStyle = secondary;
+      ctx.lineWidth = 14;
+      ctx.strokeRect(16, 16, 480, 352);
+
+      ctx.strokeStyle = accent;
+      ctx.lineWidth = 6;
+      ctx.strokeRect(32, 32, 448, 320);
+
+      ctx.save();
+      ctx.translate(256, 192);
+      ctx.fillStyle = secondary;
+      ctx.beginPath();
+      ctx.moveTo(0, -90);
+      ctx.lineTo(120, 0);
+      ctx.lineTo(0, 90);
+      ctx.lineTo(-120, 0);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = accent;
+      ctx.beginPath();
+      ctx.moveTo(0, -60);
+      ctx.lineTo(80, 0);
+      ctx.lineTo(0, 60);
+      ctx.lineTo(-80, 0);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = primary;
+      ctx.beginPath();
+      ctx.arc(0, 0, 28, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      ctx.fillStyle = '#FAF7F0';
+      for (let x = 8; x < 504; x += 4) {
+        ctx.fillRect(x, 0, 2, 8);
+        ctx.fillRect(x, 376, 2, 8);
+      }
+
+      ctx.fillStyle = 'rgba(0,0,0,0.06)';
+      for (let y = 0; y < 384; y += 3) ctx.fillRect(0, y, 512, 1);
+      ctx.fillStyle = 'rgba(255,255,255,0.04)';
+      for (let x = 0; x < 512; x += 3) ctx.fillRect(x, 0, 1, 384);
+
+      return canvas;
+    }
+
+    function generateArtworkCanvas() {
+      if (!hasCanvasSupport) return null;
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 384;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+
+      ctx.fillStyle = '#4A3525';
+      ctx.fillRect(0, 0, 512, 384);
+      ctx.fillStyle = '#C5A059';
+      ctx.fillRect(10, 10, 492, 364);
+
+      ctx.fillStyle = '#F5F2EB';
+      ctx.fillRect(20, 20, 472, 344);
+
+      const pw = 432;
+      const ph = 304;
+      const px = 40;
+      const py = 40;
+
+      const skyGrad = ctx.createLinearGradient(px, py, px, py + ph * 0.65);
+      skyGrad.addColorStop(0, '#537895');
+      skyGrad.addColorStop(0.5, '#E9A176');
+      skyGrad.addColorStop(1, '#F3C583');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(px, py, pw, ph * 0.65);
+
+      ctx.fillStyle = '#FFF7D6';
+      ctx.beginPath();
+      ctx.arc(px + pw * 0.68, py + ph * 0.35, 34, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#4E4965';
+      ctx.beginPath();
+      ctx.moveTo(px, py + ph * 0.65);
+      ctx.lineTo(px + 80, py + ph * 0.38);
+      ctx.lineTo(px + 180, py + ph * 0.55);
+      ctx.lineTo(px + 290, py + ph * 0.32);
+      ctx.lineTo(px + 400, py + ph * 0.52);
+      ctx.lineTo(px + pw, py + ph * 0.65);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#2C3A47';
+      ctx.beginPath();
+      ctx.moveTo(px, py + ph * 0.65);
+      ctx.lineTo(px + 120, py + ph * 0.46);
+      ctx.lineTo(px + 230, py + ph * 0.60);
+      ctx.lineTo(px + 340, py + ph * 0.42);
+      ctx.lineTo(px + pw, py + ph * 0.65);
+      ctx.closePath();
+      ctx.fill();
+
+      const waterGrad = ctx.createLinearGradient(px, py + ph * 0.65, px, py + ph);
+      waterGrad.addColorStop(0, '#1E3C40');
+      waterGrad.addColorStop(1, '#132226');
+      ctx.fillStyle = waterGrad;
+      ctx.fillRect(px, py + ph * 0.65, pw, ph * 0.35);
+
+      ctx.fillStyle = 'rgba(255, 235, 180, 0.4)';
+      for (let wy = py + ph * 0.67; wy < py + ph - 8; wy += 9) {
+        const wWidth = 40 + Math.sin(wy) * 25;
+        ctx.fillRect(px + pw * 0.68 - wWidth * 0.5, wy, wWidth, 2.5);
+      }
+
+      return canvas;
+    }
+
+    function generateBambooMatCanvas(baseHex) {
+      if (!hasCanvasSupport) return null;
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+
+      ctx.fillStyle = baseHex || '#C2A368';
+      ctx.fillRect(0, 0, 512, 512);
+
+      const slatH = 12;
+      for (let y = 0; y < 512; y += slatH) {
+        const shade = ((y * 13) % 19) - 9;
+        ctx.fillStyle = shade > 0 ? `rgba(255,255,255,${shade * 0.01})` : `rgba(0,0,0,${-shade * 0.015})`;
+        ctx.fillRect(0, y, 512, slatH);
+
+        ctx.fillStyle = 'rgba(60,40,20,0.45)';
+        ctx.fillRect(0, y, 512, 1.5);
+        ctx.fillStyle = 'rgba(255,255,255,0.18)';
+        ctx.fillRect(0, y + 1.5, 512, 1);
+      }
+
+      for (let x = 64; x < 512; x += 96) {
+        ctx.fillStyle = '#3E2723';
+        ctx.fillRect(x, 0, 3, 512);
+        ctx.fillStyle = '#8D6E63';
+        ctx.fillRect(x + 1, 0, 1, 512);
+      }
+
       return canvas;
     }
 
@@ -1136,6 +1552,7 @@
     }
 
     function onPointerDown(e) {
+      if (!audioCtx) initRoomAudio();
       touchStartTime = Date.now();
       touchStartPos = { x: e.clientX, y: e.clientY };
     }
@@ -1183,6 +1600,7 @@
               return;
             }
             highlightFurniture(targetObj);
+            playInteractChime();
             window.ReactNativeWebView?.postMessage(JSON.stringify({
               type: 'SELECT_FURNITURE',
               label: info.label,
@@ -1218,6 +1636,7 @@
 
             highlightFurniture(cur);
             focusOnFurniture(cur);
+            playInteractChime();
             window.ReactNativeWebView?.postMessage(JSON.stringify({
               type: 'SELECT_FURNITURE',
               label: info.label,
@@ -1559,13 +1978,31 @@
           floorMat = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.65, metalness: 0.05 });
         }
       } else if (fStyle === 'wood_planks') {
-        const woodFloorCanvas = generateWoodCanvas(room.floorColor || '#8B6A47');
+        const woodFloorCanvas = generateWoodPlanksCanvas(room.floorColor || '#8B6A47');
         if (woodFloorCanvas) {
           const floorTex = new THREE.CanvasTexture(woodFloorCanvas);
           floorTex.wrapS = THREE.RepeatWrapping;
           floorTex.wrapT = THREE.RepeatWrapping;
           floorTex.repeat.set(Math.max(2, Math.round(w * 0.8)), Math.max(2, Math.round(d * 0.8)));
-          floorMat = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.6, metalness: 0.05 });
+          floorMat = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.55, metalness: 0.05 });
+        }
+      } else if (fStyle === 'bamboo_mat') {
+        const bambooCanvas = generateBambooMatCanvas(room.floorColor || '#C2A368');
+        if (bambooCanvas) {
+          const floorTex = new THREE.CanvasTexture(bambooCanvas);
+          floorTex.wrapS = THREE.RepeatWrapping;
+          floorTex.wrapT = THREE.RepeatWrapping;
+          floorTex.repeat.set(Math.max(2, Math.round(w * 0.9)), Math.max(2, Math.round(d * 0.9)));
+          floorMat = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.65, metalness: 0.02 });
+        }
+      } else if (fStyle === 'marble') {
+        const marbleCanvas = generateMarbleCanvas(room.floorColor || '#F5F5F0');
+        if (marbleCanvas) {
+          const floorTex = new THREE.CanvasTexture(marbleCanvas);
+          floorTex.wrapS = THREE.RepeatWrapping;
+          floorTex.wrapT = THREE.RepeatWrapping;
+          floorTex.repeat.set(Math.max(2, Math.round(w * 0.6)), Math.max(2, Math.round(d * 0.6)));
+          floorMat = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.3, metalness: 0.08 });
         }
       } else {
         // 'solid' - gạch men lớp học / phòng hiện đại sạch sẽ với độ bóng nhẹ
@@ -1925,8 +2362,8 @@
 
           if (minWallDist === dBack) bed.yaw = 0; // Đầu giường áp tường sau (+Z), chân giường hướng -Z
           else if (minWallDist === dFront) bed.yaw = 180; // Đầu giường áp tường trước (-Z), chân giường hướng +Z
-          else if (minWallDist === dLeft) bed.yaw = 90; // Đầu giường áp tường trái (-X), chân giường hướng +X
-          else bed.yaw = -90; // Đầu giường áp tường phải (+X), chân giường hướng -X
+          else if (minWallDist === dLeft) bed.yaw = -90; // Đầu giường áp tường trái (-X), chân giường hướng +X
+          else bed.yaw = 90; // Đầu giường áp tường phải (+X), chân giường hướng -X
         });
 
         // B7: Xử lý Tủ quần áo (Wardrobe) & Tủ cao (Cabinet) - LƯNG ÁP TƯỜNG, CỬA MỞ VÀO PHÒNG
@@ -2482,15 +2919,27 @@
           case 'rug': {
             const rugW = Math.max(fw, 1.8);
             const rugD = Math.max(fd, 1.4);
-            const rugMat = bodyMat;
+            let rugMat = bodyMat;
+            const rugCanvas = generateRugCanvas(item.color || '#8A3B2C');
+            if (rugCanvas) {
+              const rugTex = new THREE.CanvasTexture(rugCanvas);
+              rugMat = new THREE.MeshStandardMaterial({ map: rugTex, roughness: 0.85, metalness: 0.02 });
+            }
             const rMesh = box(0, 0.008, 0, rugW, 0.016, rugD, rugMat);
             rMesh.userData = { isRug: true };
             break;
           }
-          case 'picture':
+          case 'picture': {
             box(0, fh * 0.5, 0, fw, fh, 0.06, woodMat);
-            box(0, fh * 0.5, -0.04, fw * 0.84, fh * 0.82, 0.04, bodyMat);
+            let artMat = bodyMat;
+            const artCanvas = generateArtworkCanvas();
+            if (artCanvas) {
+              const artTex = new THREE.CanvasTexture(artCanvas);
+              artMat = new THREE.MeshStandardMaterial({ map: artTex, roughness: 0.5, metalness: 0.05 });
+            }
+            box(0, fh * 0.5, -0.04, fw * 0.84, fh * 0.82, 0.04, artMat);
             break;
+          }
           case 'window': {
             const isFloorToCeiling = (typeof item.y === 'number' && item.y <= 0.4) || (fh >= 2.0) ||
               (item.label && (item.label.toLowerCase().includes('ban công') || item.label.toLowerCase().includes('balcony') || item.label.toLowerCase().includes('panoramic') || item.label.toLowerCase().includes('lớn') || item.label.toLowerCase().includes('sát sàn')));
