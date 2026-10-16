@@ -917,7 +917,6 @@ export default function App() {
 
   const handleSelectFurniture = (label, description) => {
     if (role === 'patient') {
-      setFocusLabel(label);
       setActiveMemoryModal({
         label,
         description,
@@ -1346,7 +1345,6 @@ export default function App() {
                       activeMemoryModal?.label === obj.label && styles.patientMemoryPillActive
                     ]}
                     onPress={() => {
-                      setFocusLabel(obj.label);
                       setActiveMemoryModal({
                         label: obj.label,
                         description: obj.description,
@@ -1382,6 +1380,7 @@ export default function App() {
                     style={styles.patientCardCloseBtn}
                     onPress={() => {
                       setSpeakingText(null);
+                      setFocusLabel('');
                       setActiveMemoryModal(null);
                     }}
                   >
@@ -1418,6 +1417,7 @@ export default function App() {
                     style={styles.patientFocusBtn}
                     onPress={() => {
                       setFocusLabel(activeMemoryModal.label);
+                      setTimeout(() => setFocusLabel(''), 600);
                     }}
                   >
                     <Text style={styles.patientFocusBtnText}>👁️ Đến ngắm cự ly gần</Text>

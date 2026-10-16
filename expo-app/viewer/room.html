@@ -1635,7 +1635,6 @@
             }
 
             highlightFurniture(cur);
-            focusOnFurniture(cur);
             playInteractChime();
             window.ReactNativeWebView?.postMessage(JSON.stringify({
               type: 'SELECT_FURNITURE',
@@ -1718,14 +1717,25 @@
     }
 
     function focusOnFurniture(group) {
-      if (!roomGroup) return;
+      if (!roomGroup || !group) return;
+
+      if (navMode === 'fpv') {
+        // Trong FPV, chỉ xoay hướng nhìn về phía đồ vật mà không cướp vị trí hay khóa di chuyển của người dùng
+        const dx = group.position.x - camera.position.x;
+        const dz = group.position.z - camera.position.z;
+        fpvYaw = Math.atan2(-dx, -dz);
+        fpvPitch = -0.15;
+        render();
+        return;
+      }
+
       isFocusedPov = true;
       const btn = document.getElementById('btn-back-overview');
       const hint = document.getElementById('pov-hint-badge');
       if (btn && btn.style) btn.style.display = 'block';
       if (hint && hint.style) {
         hint.style.display = 'block';
-        hint.textContent = '👁️ Điểm nhìn tại ' + (group.userData?.furnitureInfo?.label || 'vị trí') + ' • Kéo để quay nhìn xung quanh';
+        hint.textContent = '👁️ Đang ngắm: ' + (group.userData?.furnitureInfo?.label || 'đồ vật') + ' • Kéo để xoay quanh vật thể';
       }
 
       // Hide floating badges in POV mode so camera view is clean and unobstructed
@@ -1736,27 +1746,33 @@
       const gx = group.position.x;
       const gz = group.position.z;
       const gh = group.userData?.furnitureInfo?.height || 1.0;
+      const gy = (group.position.y || 0) + gh * 0.45;
 
-      // Vị trí người ngồi/đứng tại bàn (tầm mắt ~1.15m - 1.25m)
-      const eyeHeight = Math.max(1.15, gh + 0.35);
-      const camPos = new THREE.Vector3(gx, eyeHeight, gz);
+      // Tâm quay là chính vật thể để người dùng có thể xoay 360 độ ngắm đồ vật
+      const targetLook = new THREE.Vector3(gx, gy, gz);
 
-      // Điểm nhìn hướng ra giữa phòng / không gian lớp học để nhìn các góc khác
-      let lookDir = new THREE.Vector3(-gx, 0, -gz);
-      if (lookDir.length() < 0.2) lookDir.set(0, 0, -1);
-      lookDir.normalize();
+      // Camera đặt ở khoảng cách thoải mái hướng vào vật thể từ góc nhìn hiện tại
+      let dir = new THREE.Vector3().subVectors(camera.position, targetLook);
+      dir.y = 0;
+      if (dir.length() < 0.1) dir.set(1, 0, 1);
+      dir.normalize();
 
-      const lookDist = 2.4;
-      const targetLook = new THREE.Vector3(
-        gx + lookDir.x * lookDist,
-        eyeHeight * 0.85,
-        gz + lookDir.z * lookDist
+      const objSpan = Math.max(0.8, Math.max(group.userData?.furnitureInfo?.width || 1, group.userData?.furnitureInfo?.depth || 1));
+      const dist = Math.max(1.8, Math.min(3.6, objSpan * 1.6));
+      const camPos = new THREE.Vector3(
+        gx + dir.x * dist,
+        gy + Math.max(0.65, gh * 0.55),
+        gz + dir.z * dist
       );
 
-      animateCameraTo(camPos, targetLook, lookDist, () => {
-        controls.enableRotate = true;
-        controls.minPolarAngle = Math.PI * 0.22;
-        controls.maxPolarAngle = Math.PI * 0.58;
+      animateCameraTo(camPos, targetLook, dist, () => {
+        if (controls) {
+          controls.enableRotate = true;
+          controls.enableZoom = true;
+          controls.enablePan = true;
+          controls.minPolarAngle = Math.PI * 0.05;
+          controls.maxPolarAngle = Math.PI * 0.48;
+        }
         window.ReactNativeWebView?.postMessage(JSON.stringify({
           type: 'POV_STATE',
           mode: 'focused',
@@ -1785,9 +1801,13 @@
       const { overviewPos, overviewLook } = fitCameraToRoom();
 
       animateCameraTo(overviewPos, overviewLook, desiredOrbitDistance, () => {
-        controls.enableRotate = true;
-        controls.minPolarAngle = Math.PI * 0.05;
-        controls.maxPolarAngle = Math.PI * 0.48;
+        if (controls) {
+          controls.enableRotate = true;
+          controls.enableZoom = true;
+          controls.enablePan = true;
+          controls.minPolarAngle = Math.PI * 0.05;
+          controls.maxPolarAngle = Math.PI * 0.48;
+        }
         window.ReactNativeWebView?.postMessage(JSON.stringify({ type: 'POV_STATE', mode: 'overview' }));
       });
     };
