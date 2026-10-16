@@ -82,7 +82,20 @@ const DEFAULT_SAVED_PRESETS = [
           depth: 0.65,
           color: '#C49A6C',
           isInteractable: true,
-          routineLabel: 'Giờ ăn trưa 12:00'
+          routineLabel: 'Giờ ăn trưa 12:00',
+          interaction: {
+            type: 'desk_drawer',
+            actionTitle: 'Kéo ngăn bàn học',
+            drawerFeeling: 'Kéo ngăn bàn ra, bạn nhìn thấy cây bút máy Kim Tinh và cuốn sổ ghi chép thuở học trò.',
+            insideItems: ['Cây bút máy Kim Tinh mực tím', 'Vở chép bài thơ bạn yêu thích', 'Thước kẻ gỗ khắc tên bạn']
+          },
+          memoryFragment: {
+            id: 'frag-class-desk',
+            title: 'Mảnh ký ức: Thời cắp sách chăm chỉ',
+            questPrompt: 'Đến bên chiếc bàn học góc cửa sổ và kéo ngăn hộc bàn',
+            story: 'Những năm tháng học trò miệt mài bên trang sách, luôn là niềm tự hào của cả gia đình.',
+            senseOfSelf: 'Bạn là người ham học hỏi, cần cù và có nền tảng tri thức vững vàng.'
+          }
         },
         {
           id: 'chair-thanh',
@@ -97,7 +110,9 @@ const DEFAULT_SAVED_PRESETS = [
           height: 0.82,
           depth: 0.45,
           color: '#A67B4F',
-          isInteractable: true
+          isInteractable: true,
+          interaction: { type: 'bed_rest', actionTitle: 'Ngồi nghỉ ngơi', bedFeeling: 'Ngồi lên chiếc ghế gỗ thân thuộc, lắng nghe thanh âm bình yên của lớp học.' },
+          memoryFragment: { id: 'frag-class-chair', title: 'Mảnh ký ức: Chỗ ngồi thân thương', questPrompt: 'Đến ngồi lên chiếc ghế học', story: 'Nơi bạn từng ngồi cùng bàn với những người bạn thân thuở thiếu thời.', senseOfSelf: 'Bạn trân trọng tình bạn và những gắn bó chân thành.' }
         },
         {
           id: 'window-classroom',
@@ -112,7 +127,9 @@ const DEFAULT_SAVED_PRESETS = [
           height: 1.4,
           depth: 0.15,
           color: '#E0E7FF',
-          isInteractable: true
+          isInteractable: true,
+          interaction: { type: 'window_breeze', actionTitle: 'Đón gió sân trường', breezeFeeling: 'Tiếng ve râm ran và gió thoảng hương hoa phượng đỏ rực ngoài sân trường.' },
+          memoryFragment: { id: 'frag-class-win', title: 'Mảnh ký ức: Khung trời tuổi trẻ', questPrompt: 'Đến bên khung cửa sổ ngắm sân trường', story: 'Khung cửa sổ nơi bạn từng mơ ước về những chuyến đi xa và tương lai tươi sáng.', senseOfSelf: 'Bạn mang trong mình tinh thần lạc quan và khát khao vươn lên.' }
         },
         {
           id: 'whiteboard-main',
@@ -130,6 +147,23 @@ const DEFAULT_SAVED_PRESETS = [
           isInteractable: true
         },
         {
+          id: 'door-canteen',
+          kind: 'door',
+          label: 'Cửa bước sang Canteen',
+          description: 'Cửa dẫn ra hành lang xuống nhà ăn canteen trường học',
+          x: -3.85,
+          y: 0,
+          z: 0,
+          yaw: 90,
+          width: 1.1,
+          height: 2.2,
+          depth: 0.1,
+          color: '#8B5A2B',
+          isInteractable: true,
+          targetRoomId: 'room-canteen',
+          interaction: { type: 'door_transition', actionTitle: 'Xuống canteen', targetRoomId: 'room-canteen' }
+        },
+        {
           id: 'backpack-friend',
           kind: 'backpack',
           label: 'Cặp sách của bạn',
@@ -144,21 +178,74 @@ const DEFAULT_SAVED_PRESETS = [
           color: '#1E3A8A',
           isInteractable: true
         }
+      ],
+      connectedRooms: [
+        {
+          id: 'room-canteen',
+          title: 'Nhà Ăn Canteen Trường Học',
+          roomType: 'kitchen',
+          width: 6, depth: 5, height: 3,
+          wallColor: '#FFFDF7', floorColor: '#DCD4C4',
+          objects: [
+            {
+              id: 'canteen-table', kind: 'table', label: 'Bàn ăn tập thể rộn rã', description: 'Chiếc bàn ăn nơi nhóm bạn quây quần ăn trưa',
+              x: 0, y: 0, z: 0, yaw: 0, width: 2.0, height: 0.75, depth: 1.0, color: '#C49A6C',
+              isInteractable: true,
+              interaction: { type: 'desk_drawer', actionTitle: 'Mở khay ăn', drawerFeeling: 'Mùi cơm canh nóng hổi thơm phức của canteen trường.', insideItems: ['Hộp cơm kim loại', 'Chiếc thìa nhôm quen thuộc', 'Cốc nước ấm'] },
+              memoryFragment: { id: 'frag-canteen-1', title: 'Mảnh ký ức: Tình bạn thanh xuân', questPrompt: 'Khám phá bàn ăn canteen trường', story: 'Những bữa trưa rộn rã tiếng cười cùng bạn bè đồng môn.', senseOfSelf: 'Bạn là người bạn chân thành, luôn được bạn bè yêu quý.' }
+            },
+            {
+              id: 'door-back-class', kind: 'door', label: 'Cửa về Lớp học', description: 'Quay lại lớp học',
+              x: 0, y: 0, z: 2.35, yaw: 180, width: 1.1, height: 2.2, depth: 0.1, color: '#8B5A2B',
+              isInteractable: true, targetRoomId: 'primary',
+              interaction: { type: 'door_transition', actionTitle: 'Về lại lớp', targetRoomId: 'primary' }
+            }
+          ]
+        },
+        {
+          id: 'room-library',
+          title: 'Thư Viện Trường Yên Tĩnh',
+          roomType: 'library',
+          width: 7, depth: 6, height: 3,
+          wallColor: '#FDFBF7', floorColor: '#B89772',
+          objects: [
+            {
+              id: 'lib-book', kind: 'book', label: 'Sách Tuyển Tập Văn Học', description: 'Cuốn sách yêu thích bạn từng mượn đọc say sưa',
+              x: 0, y: 0.75, z: 0, yaw: 0, width: 0.3, height: 0.05, depth: 0.2, color: '#8B2500',
+              isInteractable: true,
+              interaction: {
+                type: 'book_read', actionTitle: 'Mở đọc sách',
+                pages: [
+                  'Trang 1: "Văn học là nhân học. Những trang sách nâng đỡ tâm hồn con người qua bao thăng trầm cuộc đời."',
+                  'Trang 2: "Những buổi chiều ngồi đọc sách tại thư viện, bạn say sưa đắm mình vào từng câu chữ tinh hoa."',
+                  'Trang 3: "Tri thức là tài sản quý giá nhất mà không ai có thể lấy đi được của bạn."'
+                ]
+              },
+              memoryFragment: { id: 'frag-lib-1', title: 'Mảnh ký ức: Tình yêu tri thức', questPrompt: 'Mở đọc cuốn sách văn học tại thư viện', story: 'Tình yêu cái đẹp và tri thức đã bồi đắp tâm hồn bạn suốt cuộc đời.', senseOfSelf: 'Bạn có một tâm hồn cao đẹp, tinh tế và giàu lòng trắc ẩn.' }
+            },
+            {
+              id: 'door-lib-class', kind: 'door', label: 'Cửa về Lớp học', description: 'Quay lại lớp học',
+              x: 0, y: 0, z: 2.85, yaw: 180, width: 1.1, height: 2.2, depth: 0.1, color: '#8B5A2B',
+              isInteractable: true, targetRoomId: 'primary',
+              interaction: { type: 'door_transition', actionTitle: 'Về lại lớp', targetRoomId: 'primary' }
+            }
+          ]
+        }
       ]
     }
   },
   {
     id: 'preset-living-room',
-    title: 'Phòng khách gia đình ấm cúng',
+    title: 'Ngôi nhà xưa ấm cúng của gia đình',
     createdAt: 'Mẫu có sẵn',
     room: {
-      title: 'Phòng khách gia đình ấm cúng',
-      reply: 'Phòng khách thân thương với chiếc sofa êm ái, bàn trà và ánh đèn vàng dịu nhẹ.',
-      width: 6.5,
+      title: 'Ngôi nhà xưa ấm cúng của gia đình',
+      reply: 'Phòng khách thân thương với chiếc sofa êm ái, tủ gỗ đựng quần áo, bàn trà và ánh đèn vàng dịu nhẹ.',
+      width: 7,
       depth: 6,
       height: 3,
       wallColor: '#FFFDF7',
-      floorColor: '#6B4423',
+      floorColor: '#C8A97E',
       floorTextureStyle: 'wood_planks',
       lightingStyle: 'warm_evening',
       objects: [
@@ -174,38 +261,160 @@ const DEFAULT_SAVED_PRESETS = [
           width: 2.1,
           height: 0.85,
           depth: 0.9,
-          color: '#5C3826',
-          isInteractable: true
+          color: '#8B5A2B',
+          isInteractable: true,
+          interaction: { type: 'bed_rest', actionTitle: 'Ngả lưng thư giãn', bedFeeling: 'Chiếc ghế sofa êm ái nâng niu lưng bạn, tiếng tivi quen thuộc vang vọng mang lại cảm giác an yên lạ thường.' },
+          memoryFragment: { id: 'frag-liv-sofa', title: 'Mảnh ký ức: Hơi ấm gia đình quây quần', questPrompt: 'Đến ngồi ngả lưng trên chiếc ghế sofa kỷ niệm', story: 'Những buổi tối cả nhà quây quần bên nhau luôn là khoảng thời gian hạnh phúc nhất.', senseOfSelf: 'Bạn là trụ cột yêu thương, luôn đặt hạnh phúc của gia đình lên trên hết.' }
         },
         {
-          id: 'tv-vintage',
-          kind: 'television',
-          label: 'Chiếc tivi màu xưa',
-          description: 'Chiếc tivi màu gắn bó với bao buổi tối đầm ấm cùng những chương trình thời sự lúc 19h.',
-          x: 0,
-          y: 0.6,
-          z: -2.4,
-          yaw: 3.14,
-          width: 1.1,
-          height: 0.8,
-          depth: 0.4,
-          color: '#2B2B2B',
-          isInteractable: true
+          id: 'wardrobe-living',
+          kind: 'wardrobe',
+          label: 'Tủ gỗ đựng quần áo',
+          description: 'Tủ gỗ 2 cánh màu cánh gián chứa đầy những bộ trang phục kỷ niệm của cuộc đời bạn.',
+          x: -2.8,
+          y: 0,
+          z: 0,
+          yaw: -90,
+          width: 1.4,
+          height: 2.1,
+          depth: 0.65,
+          color: '#7A4E2D',
+          isInteractable: true,
+          interaction: {
+            type: 'wardrobe_open',
+            actionTitle: 'Mở cánh tủ gỗ',
+            wardrobeFeeling: 'Cánh tủ mở ra thơm mùi gỗ trầm và sáp thơm, bên trong là những bộ đồ gắn với từng dấu mốc cuộc đời.',
+            clothes: ['Bộ áo dài lụa màu mây thanh nhã', 'Chiếc áo sơ mi trắng phẳng phiu thời đi dạy', 'Chiếc áo len ấm mẹ đan thuở hàn vi'],
+            mementos: ['Chiếc cặp sách da cũ thời đi học', 'Hộp gỗ đựng những lá thư tay thời thanh xuân']
+          },
+          memoryFragment: { id: 'frag-liv-ward', title: 'Mảnh ký ức: Phong cách sống thanh lịch', questPrompt: 'Đến mở cánh tủ gỗ đựng quần áo', story: 'Bạn luôn ăn mặc chỉn chu, lịch thiệp và giữ gìn nếp sống gia phong đáng kính trọng.', senseOfSelf: 'Bạn là người sống có nguyên tắc, trang nhã và tôn trọng mọi người xung quanh.' }
         },
         {
-          id: 'tea-table',
-          kind: 'table',
-          label: 'Bàn trà gỗ',
-          description: 'Chiếc bàn trà bằng gỗ mun mộc mạc nơi bố vẫn thường pha trà ấm đón khách quý.',
+          id: 'desk-living',
+          kind: 'desk',
+          label: 'Bàn viết & hộc bàn kỷ vật',
+          description: 'Bàn gỗ nơi bạn thường ghi chép sổ tay chi tiêu và viết thư cho người thân.',
+          x: 2.4,
+          y: 0,
+          z: 0.5,
+          yaw: 90,
+          width: 1.3,
+          height: 0.75,
+          depth: 0.65,
+          color: '#9E6938',
+          isInteractable: true,
+          interaction: {
+            type: 'desk_drawer',
+            actionTitle: 'Kéo ngăn hộc bàn',
+            drawerFeeling: 'Kéo hộc bàn gỗ ra, bạn thấy những kỷ vật thân quý được xếp ngay ngắn.',
+            insideItems: ['Cây bút máy Kim Tinh nắp vàng ba tặng', 'Chiếc đồng hồ Liên Xô kim trôi êm đềm', 'Tấm ảnh chụp cả nhà đi biển năm ấy']
+          },
+          memoryFragment: { id: 'frag-liv-desk', title: 'Mảnh ký ức: Bàn tay cần mẫn & kỷ vật thiêng liêng', questPrompt: 'Đến bên bàn viết và kéo ngăn hộc bàn', story: 'Những trang viết và kỷ vật là chứng nhân cho sự tận tụy của bạn suốt tháng năm.', senseOfSelf: 'Bạn là con người chu đáo, cẩn thận và giàu lòng biết ơn.' }
+        },
+        {
+          id: 'diary-living',
+          kind: 'book',
+          label: 'Cuốn sổ nhật ký của tôi',
+          description: 'Cuốn sổ bìa da ghi lại những dòng tâm tư sâu lắng nhất trong cuộc đời bạn.',
+          x: 2.4,
+          y: 0.75,
+          z: 0.5,
+          yaw: 0,
+          width: 0.25,
+          height: 0.05,
+          depth: 0.18,
+          color: '#3E2723',
+          isInteractable: true,
+          interaction: {
+            type: 'book_read',
+            actionTitle: 'Mở đọc nhật ký',
+            pages: [
+              'Trang 1: "Ngày... tháng... Cuộc đời dù có bao khó khăn thì lòng thiện lương và tình yêu thương con cái vẫn là ngọn hải đăng soi đường cho tôi."',
+              'Trang 2: "Hôm nay các con đã khôn lớn trưởng thành. Nhìn chúng hạnh phúc, tôi biết mọi hy sinh của mình đều xứng đáng."',
+              'Trang 3: "Nếu sau này trí nhớ có nhạt phai, xin hãy nhắc cho tôi nhớ rằng: Tôi đã sống một cuộc đời trọn vẹn và không hối tiếc."'
+            ]
+          },
+          memoryFragment: { id: 'frag-liv-diary', title: 'Mảnh ký ức: Tâm hồn sâu sắc & thiện lương', questPrompt: 'Đến mở đọc cuốn nhật ký trên bàn', story: 'Những dòng tâm tư chân thật thể hiện tấm lòng bao dung và tình thương vô bờ bến của bạn.', senseOfSelf: 'Bạn có một tâm hồn cao quý, luôn hướng thiện và bao dung với đời.' }
+        },
+        {
+          id: 'door-kitchen',
+          kind: 'door',
+          label: 'Cửa bước sang Gian Bếp',
+          description: 'Cửa gỗ mở lối sang gian bếp ấm cúng thơm mùi cơm canh',
           x: 0,
           y: 0,
-          z: -0.2,
+          z: -2.85,
           yaw: 0,
-          width: 1.2,
-          height: 0.45,
-          depth: 0.7,
-          color: '#4A2E1B',
-          isInteractable: true
+          width: 1.1,
+          height: 2.2,
+          depth: 0.1,
+          color: '#7A4E2D',
+          isInteractable: true,
+          targetRoomId: 'room_kitchen',
+          interaction: { type: 'door_transition', actionTitle: 'Bước sang gian bếp', targetRoomId: 'room_kitchen' }
+        },
+        {
+          id: 'window-garden',
+          kind: 'window',
+          label: 'Cửa sổ đón nắng vườn',
+          description: 'Khung cửa sổ nhìn ra vườn cây xanh mướt, đón từng làn gió mát rượi.',
+          x: 3.4,
+          y: 1.1,
+          z: 0.5,
+          yaw: -1.57,
+          width: 1.8,
+          height: 1.4,
+          depth: 0.15,
+          color: '#E8F5E9',
+          isInteractable: true,
+          interaction: { type: 'window_breeze', actionTitle: 'Mở cửa sổ ngắm vườn', breezeFeeling: 'Gió nhẹ thổi qua khung cửa, hương hoa ngọc lan thoang thoảng cùng tiếng chim hót líu lo.' },
+          memoryFragment: { id: 'frag-liv-win', title: 'Mảnh ký ức: Chiều thanh thản bên khung cửa', questPrompt: 'Đến mở cửa sổ đón gió vườn', story: 'Những buổi chiều thảnh thơi bên khung cửa ngắm hoa nở đem lại sự an lạc sâu lắng.', senseOfSelf: 'Bạn là người yêu thiên nhiên, có tâm hồn thanh thản và yêu đời.' }
+        }
+      ],
+      connectedRooms: [
+        {
+          id: 'room_kitchen',
+          title: 'Gian Bếp Ấm Cúng',
+          roomType: 'kitchen',
+          width: 5.5, depth: 5, height: 3,
+          wallColor: '#FFFDF7', floorColor: '#D2B48C',
+          objects: [
+            {
+              id: 'dining-table', kind: 'table', label: 'Bàn ăn gia đình tròn vị', description: 'Chiếc bàn ăn bằng gỗ mít nơi cả nhà quây quần chia sẻ bát canh ấm nóng.',
+              x: 0, y: 0, z: 0, yaw: 0, width: 1.6, height: 0.75, depth: 1.0, color: '#8B5A2B',
+              isInteractable: true,
+              interaction: { type: 'desk_drawer', actionTitle: 'Khám phá mâm cơm gia đình', drawerFeeling: 'Hương thơm của mâm cơm mẹ nấu: bát canh cua đồng, đĩa rau muống luộc, đĩa cá kho tộ...', insideItems: ['Bộ bát đĩa men lam Bát Tràng', 'Bình nước ấm giữ nhiệt', 'Chiếc ấm pha trà gốm Chu Đậu'] },
+              memoryFragment: { id: 'frag-kit-1', title: 'Mảnh ký ức: Hương vị tình thân', questPrompt: 'Đến bên chiếc bàn ăn gia đình trong gian bếp', story: 'Từng bữa cơm do chính tay bạn chăm chút là suối nguồn nuôi dưỡng cả gia đình.', senseOfSelf: 'Bạn là người giữ lửa tổ ấm, chu toàn và hết lòng chăm sóc người thân.' }
+            },
+            {
+              id: 'door-back-living', kind: 'door', label: 'Cửa về Phòng Khách', description: 'Quay lại phòng khách',
+              x: 0, y: 0, z: 2.35, yaw: 180, width: 1.1, height: 2.2, depth: 0.1, color: '#7A4E2D',
+              isInteractable: true, targetRoomId: 'primary',
+              interaction: { type: 'door_transition', actionTitle: 'Về lại phòng khách', targetRoomId: 'primary' }
+            }
+          ]
+        },
+        {
+          id: 'room_garden',
+          title: 'Hiên Vườn Nắng Sớm',
+          roomType: 'garden',
+          width: 6, depth: 6, height: 3.5,
+          wallColor: '#F7F3EB', floorColor: '#C8A97E',
+          objects: [
+            {
+              id: 'rocking-chair', kind: 'chair', label: 'Chiếc ghế bập bênh hiên nhà', description: 'Ghế mây bập bênh nơi bạn ngồi đọc báo và ngắm hoa mỗi sớm mai',
+              x: 0, y: 0, z: 0, yaw: 0, width: 0.8, height: 0.95, depth: 0.85, color: '#9E6938',
+              isInteractable: true,
+              interaction: { type: 'bed_rest', actionTitle: 'Ngồi đung đưa ghế mây', bedFeeling: 'Gió sớm hiu hiu thổi, tiếng lá cây xào xạc hòa cùng tiếng chim líu lo.' },
+              memoryFragment: { id: 'frag-gard-1', title: 'Mảnh ký ức: Chiều thanh thản bên hiên nhà', questPrompt: 'Đến ngồi lên ghế bập bênh ngắm hoa', story: 'Sự bình yên khi chăm chút từng luống rau, chậu hoa đã làm phong phú tâm hồn bạn.', senseOfSelf: 'Bạn có một tâm hồn tự tại, yêu đời và luôn mang đến niềm vui cho người xung quanh.' }
+            },
+            {
+              id: 'door-back-from-garden', kind: 'door', label: 'Cửa bước vào Phòng Khách', description: 'Quay vào phòng khách',
+              x: 0, y: 0, z: 2.85, yaw: 180, width: 1.1, height: 2.2, depth: 0.1, color: '#7A4E2D',
+              isInteractable: true, targetRoomId: 'primary',
+              interaction: { type: 'door_transition', actionTitle: 'Vào lại phòng khách', targetRoomId: 'primary' }
+            }
+          ]
         }
       ]
     }
@@ -292,10 +501,19 @@ export default function App() {
   const [pendingPlacement, setPendingPlacement] = useState(null); // { item, rawPrompt }
   const voiceTimeoutRef = useRef(null);
 
-  // Patient Mode Interactions
-  const [activeMemoryModal, setActiveMemoryModal] = useState(null); // { label, description, isInteractable }
+  // Multi-Room & Senior Navigation State
+  const [activeRoomId, setActiveRoomId] = useState('primary');
+  const [glideLabel, setGlideLabel] = useState('');
+  const [strollAction, setStrollAction] = useState(null);
+
+  // Patient Mode Interactions & Memory Quests
+  const [activeMemoryModal, setActiveMemoryModal] = useState(null); // { label, description, isInteractable, item }
   const [focusLabel, setFocusLabel] = useState('');
   const [speakingText, setSpeakingText] = useState(null);
+  const [discoveredFragments, setDiscoveredFragments] = useState({});
+  const [senseOfSelfModalVisible, setSenseOfSelfModalVisible] = useState(false);
+  const [bookPageIndex, setBookPageIndex] = useState(0);
+  const [aiAuditModalVisible, setAiAuditModalVisible] = useState(false);
 
   // Saved Rooms Library
   const [savedRooms, setSavedRooms] = useState(DEFAULT_SAVED_PRESETS);
@@ -1046,12 +1264,53 @@ export default function App() {
     }
   };
 
-  const handleSelectFurniture = (label, description) => {
+  const getActiveRoom = () => {
+    if (!currentRoom) return null;
+    if (!activeRoomId || activeRoomId === 'primary') return currentRoom;
+    const found = currentRoom.connectedRooms?.find(r => r.id === activeRoomId);
+    return found || currentRoom;
+  };
+
+  const unlockMemoryFragment = (fragment) => {
+    if (!fragment || !fragment.id) return;
+    setDiscoveredFragments(prev => {
+      if (prev[fragment.id]) return prev;
+      return { ...prev, [fragment.id]: fragment };
+    });
+  };
+
+  const triggerStroll = (action) => {
+    setStrollAction(action);
+    setTimeout(() => setStrollAction(null), 120);
+  };
+
+  const handleDoorTransition = (targetRoomId, doorLabel) => {
+    if (!targetRoomId) return;
+    if (targetRoomId === 'primary') {
+      setActiveRoomId('primary');
+      setStatus(`Đã bước qua cửa vào ${currentRoom?.title || 'phòng chính'}`);
+    } else {
+      const targetRoom = currentRoom?.connectedRooms?.find(r => r.id === targetRoomId);
+      if (targetRoom) {
+        setActiveRoomId(targetRoomId);
+        setStatus(`Đã bước qua cửa vào ${targetRoom.title}`);
+      }
+    }
+  };
+
+  const handleSelectFurniture = (label, description, item) => {
+    const activeR = getActiveRoom();
+    const resolvedItem = item || activeR?.objects?.find(o => o.label === label);
+    if (resolvedItem?.memoryFragment?.id) {
+      unlockMemoryFragment(resolvedItem.memoryFragment);
+    }
+    setBookPageIndex(0);
     if (role === 'patient') {
       setActiveMemoryModal({
         label,
         description,
-        isInteractable: true
+        isInteractable: resolvedItem ? resolvedItem.isInteractable !== false : true,
+        item: resolvedItem
       });
     } else {
       setMessages(prev => [
@@ -1099,8 +1358,9 @@ export default function App() {
   };
 
   // Danh sách các vật thể tương tác để tạo các điểm neo ký ức dưới chân màn hình người bệnh
-  const interactiveObjects = (currentRoom && Array.isArray(currentRoom.objects))
-    ? currentRoom.objects.filter(obj => obj && obj.label)
+  const displayRoom = getActiveRoom();
+  const interactiveObjects = (displayRoom && Array.isArray(displayRoom.objects))
+    ? displayRoom.objects.filter(obj => obj && obj.label)
     : [];
 
   const renderVoiceBanner = () => {
@@ -1389,7 +1649,7 @@ export default function App() {
 
   const render3DViewer = () => (
     <RoomViewer3D
-      room={currentRoom}
+      room={getActiveRoom()}
       textures={usePhotoTexture ? textures : null}
       navMode={navMode}
       onNavModeChange={setNavMode}
@@ -1397,11 +1657,36 @@ export default function App() {
       cameraView={cameraView}
       onSelectFurniture={handleSelectFurniture}
       onRestrictedTouch={handleRestrictedTouch}
+      onDoorTransition={handleDoorTransition}
       onPovChange={handlePovChange}
       focusLabel={focusLabel}
+      glideLabel={glideLabel}
+      strollAction={strollAction}
       speakText={speakingText}
     />
   );
+
+  const connectedRoomsList = [
+    { id: 'primary', title: currentRoom?.title || 'Phòng chính', roomType: 'primary' },
+    ...(currentRoom?.connectedRooms || [])
+  ];
+  const allFragments = [];
+  if (currentRoom?.objects) {
+    currentRoom.objects.forEach(o => {
+      if (o.memoryFragment) allFragments.push({ ...o.memoryFragment, itemLabel: o.label, roomTitle: currentRoom.title || 'Phòng chính' });
+    });
+  }
+  if (currentRoom?.connectedRooms) {
+    currentRoom.connectedRooms.forEach(cr => {
+      if (cr.objects) {
+        cr.objects.forEach(o => {
+          if (o.memoryFragment) allFragments.push({ ...o.memoryFragment, itemLabel: o.label, roomTitle: cr.title });
+        });
+      }
+    });
+  }
+  const totalFragmentsCount = allFragments.length;
+  const discoveredCount = Object.keys(discoveredFragments).length;
 
   // =========================================================================
   // GIAO DIỆN 1: DÀNH CHO NGƯỜI BỆNH ALZHEIMER (PATIENT MEMORY EXPERIENCE)
@@ -1418,7 +1703,7 @@ export default function App() {
           <View style={[styles.patientTopBar, isLandscape && styles.patientTopBarLandscape]}>
             <View style={styles.patientTitleBlock}>
               <Text style={styles.patientBadge}>👵 KHÔNG GIAN KÝ ỨC THÂN THUỘC</Text>
-              <Text style={styles.patientTitleText} numberOfLines={1}>{roomTitle}</Text>
+              <Text style={styles.patientTitleText} numberOfLines={1}>{displayRoom?.title || roomTitle}</Text>
             </View>
 
             <View style={styles.patientControls}>
@@ -1466,6 +1751,43 @@ export default function App() {
             </View>
           </View>
 
+          {/* Thanh Chuyển Gian Phòng Nối Tiếp (Connected Multi-Room Switcher) */}
+          {connectedRoomsList.length > 1 && (
+            <View style={styles.patientRoomsSwitcherBar}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 12, gap: 8 }}>
+                {connectedRoomsList.map(r => {
+                  const isActive = (activeRoomId === r.id || (r.id === 'primary' && (!activeRoomId || activeRoomId === 'primary')));
+                  return (
+                    <TouchableOpacity
+                      key={r.id}
+                      style={[styles.patientRoomSwitchPill, isActive && styles.patientRoomSwitchPillActive]}
+                      onPress={() => {
+                        setActiveRoomId(r.id);
+                        setStatus(`Đã chuyển sang ${r.title}`);
+                      }}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={[styles.patientRoomSwitchText, isActive && styles.patientRoomSwitchTextActive]}>
+                        {r.roomType === 'kitchen' ? '🍳' : r.roomType === 'garden' ? '🌿' : r.roomType === 'library' ? '📚' : '🏡'} {r.title}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            </View>
+          )}
+
+          {/* Thanh Tiến Trình Ký Ức Bản Thân (Sense of Self Quest Badge) */}
+          <TouchableOpacity
+            style={styles.senseOfSelfBadge}
+            onPress={() => setSenseOfSelfModalVisible(true)}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.senseOfSelfBadgeText}>
+              🌟 Ký ức bản thân: {discoveredCount}/{totalFragmentsCount} Mảnh Ghép {discoveredCount === totalFragmentsCount && totalFragmentsCount > 0 ? '✓ Đầy đủ!' : '• Chạm mở sổ tay'}
+            </Text>
+          </TouchableOpacity>
+
           {/* Gợi nhắc trực tiếp từ Người Chăm Sóc */}
           {activeLiveNotification && (
             <View style={styles.patientReminderCard}>
@@ -1491,51 +1813,100 @@ export default function App() {
             {render3DViewer()}
           </View>
 
-          {/* Thanh Neo Kỷ Niệm Thân Quen (Bottom Highlights Carousel) - Ẩn khi đang đi lại bằng Joystick */}
-          {interactiveObjects.length > 0 && navMode !== 'fpv' && (
-            <View style={[styles.patientMemoryPillsBar, isLandscape && styles.patientMemoryPillsBarLandscape]}>
-              <Text style={styles.patientPillsTitle}>✨ Chạm vào kỷ niệm để gợi nhớ:</Text>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.patientPillsScroll}
+          {/* Bảng Điều Khiển Dạo Bước & Điểm Đến Nhanh Dành Riêng Cho Người Cao Tuổi */}
+          <View style={[styles.seniorWaypointsContainer, isLandscape && { paddingBottom: 6 }]}>
+            {/* Phím Dạo Bước Êm Ái (Thay thế joystick phức tạp) */}
+            <View style={styles.seniorStrollRow}>
+              <TouchableOpacity
+                style={styles.seniorStrollBtn}
+                onPress={() => triggerStroll('turn_left')}
+                activeOpacity={0.7}
               >
-                {interactiveObjects.map((obj, idx) => (
-                  <TouchableOpacity
-                    key={'pill-' + idx}
-                    style={[
-                      styles.patientMemoryPill,
-                      activeMemoryModal?.label === obj.label && styles.patientMemoryPillActive
-                    ]}
-                    onPress={() => {
-                      setActiveMemoryModal({
-                        label: obj.label,
-                        description: obj.description,
-                        isInteractable: obj.isInteractable !== false
-                      });
-                    }}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.patientMemoryPillText}>
-                      {getObjectIcon(obj.kind)} {obj.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
+                <Text style={styles.seniorStrollBtnText}>↶ Quay trái</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.seniorStrollBtn, styles.seniorStrollBtnPrimary]}
+                onPress={() => triggerStroll('forward')}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.seniorStrollBtnTextPrimary}>🚶 Bước tới</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.seniorStrollBtn}
+                onPress={() => triggerStroll('backward')}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.seniorStrollBtnText}>🔙 Lùi</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.seniorStrollBtn}
+                onPress={() => triggerStroll('turn_right')}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.seniorStrollBtnText}>↷ Quay phải</Text>
+              </TouchableOpacity>
             </View>
-          )}
 
-          {/* Thẻ Ký Ức Nổi To Rõ (Patient Memory Card Modal) */}
+            {/* Điểm Đến Nhanh Trong Phòng */}
+            {interactiveObjects.length > 0 && (
+              <View style={{ marginTop: 6 }}>
+                <Text style={styles.seniorWaypointsTitle}>✨ Điểm đến nhanh (chạm để tới):</Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ paddingHorizontal: 10, gap: 8 }}
+                >
+                  {interactiveObjects.map((obj, idx) => (
+                    <TouchableOpacity
+                      key={'wp-' + idx}
+                      style={[
+                        styles.seniorWaypointPill,
+                        activeMemoryModal?.label === obj.label && styles.seniorWaypointPillActive
+                      ]}
+                      onPress={() => {
+                        setGlideLabel(obj.label);
+                        setTimeout(() => setGlideLabel(''), 600);
+                      }}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={[
+                        styles.seniorWaypointPillText,
+                        activeMemoryModal?.label === obj.label && styles.seniorWaypointPillTextActive
+                      ]}>
+                        {getObjectIcon(obj.kind)} {obj.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            )}
+          </View>
+
+          {/* Thẻ Ký Ức & Tương Tác Cụ Thể (Interactive Tactile Modals) */}
           {activeMemoryModal && (
             <View style={styles.patientMemoryCardBackdrop}>
               <View style={[styles.patientMemoryCard, isLandscape && styles.patientMemoryCardLandscape]}>
                 <View style={styles.patientCardHeader}>
                   <View style={styles.patientCardIconTitle}>
-                    <Text style={styles.patientCardAvatar}>{activeMemoryModal.isInteractable ? '👵' : '🔒'}</Text>
+                    <Text style={styles.patientCardAvatar}>
+                      {activeMemoryModal.item?.kind === 'wardrobe' ? '🚪'
+                        : activeMemoryModal.item?.kind === 'desk' ? '📂'
+                        : activeMemoryModal.item?.kind === 'book' ? '📖'
+                        : activeMemoryModal.item?.kind === 'bed' ? '🛏️'
+                        : activeMemoryModal.item?.kind === 'window' ? '🪟'
+                        : activeMemoryModal.item?.kind === 'door' ? '🚪'
+                        : activeMemoryModal.isInteractable ? '👵' : '🔒'}
+                    </Text>
                     <View style={{ flex: 1 }}>
                       <Text style={styles.patientCardTitle}>{activeMemoryModal.label}</Text>
                       <Text style={styles.patientCardSubtitle}>
-                        {activeMemoryModal.isInteractable ? 'Kỷ niệm thân thương' : 'Khu vực hạn chế'}
+                        {activeMemoryModal.item?.kind === 'wardrobe' ? 'Tủ quần áo kỷ niệm'
+                          : activeMemoryModal.item?.kind === 'desk' ? 'Bàn viết & ngăn kéo kỷ vật'
+                          : activeMemoryModal.item?.kind === 'book' ? 'Nhật ký tâm tư'
+                          : activeMemoryModal.item?.kind === 'bed' ? 'Giường ấm nghỉ ngơi'
+                          : activeMemoryModal.item?.kind === 'window' ? 'Cửa sổ đón nắng vườn'
+                          : activeMemoryModal.item?.kind === 'door' ? 'Cửa sang phòng liền kề'
+                          : activeMemoryModal.isInteractable ? 'Kỷ niệm thân thương' : 'Khu vực hạn chế'}
                       </Text>
                     </View>
                   </View>
@@ -1551,36 +1922,189 @@ export default function App() {
                   </TouchableOpacity>
                 </View>
 
-                <ScrollView style={[styles.patientCardBody, isLandscape && { maxHeight: 110 }]} contentContainerStyle={{ paddingBottom: 6 }}>
-                  <Text style={styles.patientCardText}>
-                    {activeMemoryModal.description}
-                  </Text>
+                <ScrollView style={[styles.patientCardBody, isLandscape && { maxHeight: 160 }]} contentContainerStyle={{ paddingBottom: 10 }}>
+                  {/* 1. Tủ Quần Áo */}
+                  {activeMemoryModal.item?.interaction?.type === 'wardrobe_open' && (
+                    <View>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.wardrobeFeeling}
+                      </Text>
+                      {Array.isArray(activeMemoryModal.item.interaction.clothes) && (
+                        <View style={{ marginTop: 8 }}>
+                          <Text style={styles.modalSubHeader}>👗 Quần áo thân quen:</Text>
+                          {activeMemoryModal.item.interaction.clothes.map((c, i) => (
+                            <View key={i} style={styles.itemDetailRow}>
+                              <Text style={styles.itemDetailIcon}>👔</Text>
+                              <Text style={styles.itemDetailText}>{c}</Text>
+                            </View>
+                          ))}
+                        </View>
+                      )}
+                      {Array.isArray(activeMemoryModal.item.interaction.mementos) && (
+                        <View style={{ marginTop: 8 }}>
+                          <Text style={styles.modalSubHeader}>🎒 Cặp sách & kỷ vật bên trong:</Text>
+                          {activeMemoryModal.item.interaction.mementos.map((m, i) => (
+                            <View key={i} style={styles.itemDetailRow}>
+                              <Text style={styles.itemDetailIcon}>🎒</Text>
+                              <Text style={styles.itemDetailText}>{m}</Text>
+                            </View>
+                          ))}
+                        </View>
+                      )}
+                    </View>
+                  )}
+
+                  {/* 2. Ngăn Kéo Hộc Bàn */}
+                  {activeMemoryModal.item?.interaction?.type === 'desk_drawer' && (
+                    <View>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.drawerFeeling}
+                      </Text>
+                      {Array.isArray(activeMemoryModal.item.interaction.insideItems) && (
+                        <View style={{ marginTop: 8 }}>
+                          <Text style={styles.modalSubHeader}>🗝️ Kỷ vật trong hộc bàn:</Text>
+                          {activeMemoryModal.item.interaction.insideItems.map((it, i) => (
+                            <View key={i} style={styles.itemDetailRow}>
+                              <Text style={styles.itemDetailIcon}>✨</Text>
+                              <Text style={styles.itemDetailText}>{it}</Text>
+                            </View>
+                          ))}
+                        </View>
+                      )}
+                    </View>
+                  )}
+
+                  {/* 3. Cuốn Sách / Nhật Ký */}
+                  {activeMemoryModal.item?.interaction?.type === 'book_read' && (
+                    <View style={styles.bookReaderContainer}>
+                      {(() => {
+                        const pages = activeMemoryModal.item.interaction.pages || [activeMemoryModal.description];
+                        const pageText = pages[bookPageIndex] || pages[0];
+                        return (
+                          <>
+                            <View style={styles.bookPageCard}>
+                              <Text style={styles.bookPageIndicator}>📖 Trang {bookPageIndex + 1} / {pages.length}</Text>
+                              <Text style={styles.bookPageText}>{pageText}</Text>
+                            </View>
+                            <View style={styles.bookControlsRow}>
+                              <TouchableOpacity
+                                style={[styles.bookPageBtn, bookPageIndex <= 0 && { opacity: 0.4 }]}
+                                disabled={bookPageIndex <= 0}
+                                onPress={() => setBookPageIndex(p => Math.max(0, p - 1))}
+                              >
+                                <Text style={styles.bookPageBtnText}>⬅️ Trang trước</Text>
+                              </TouchableOpacity>
+                              <TouchableOpacity
+                                style={[styles.bookPageBtn, bookPageIndex >= pages.length - 1 && { opacity: 0.4 }]}
+                                disabled={bookPageIndex >= pages.length - 1}
+                                onPress={() => setBookPageIndex(p => Math.min(pages.length - 1, p + 1))}
+                              >
+                                <Text style={styles.bookPageBtnText}>Trang sau ➡️</Text>
+                              </TouchableOpacity>
+                            </View>
+                          </>
+                        );
+                      })()}
+                    </View>
+                  )}
+
+                  {/* 4. Giường Nghỉ Ngơi */}
+                  {activeMemoryModal.item?.interaction?.type === 'bed_rest' && (
+                    <View style={styles.bedRelaxBox}>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.bedFeeling}
+                      </Text>
+                      <View style={styles.bedBreathCircle}>
+                        <Text style={styles.bedBreathDot}>🌸 Hít sâu... thở đều... Bạn luôn được che chở và bình an 🌸</Text>
+                      </View>
+                    </View>
+                  )}
+
+                  {/* 5. Cửa Sổ */}
+                  {activeMemoryModal.item?.interaction?.type === 'window_breeze' && (
+                    <View>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.breezeFeeling}
+                      </Text>
+                      <Text style={[styles.patientCardText, { marginTop: 6, fontStyle: 'italic', color: '#4B6B58' }]}>
+                        🌿 Tầm nhìn rộng mở ra thiên nhiên giúp tâm trí nhẹ nhõm, xóa tan mọi cảm giác ngột ngạt.
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* 6. Cửa Sang Phòng Khác */}
+                  {(activeMemoryModal.item?.kind === 'door' || activeMemoryModal.item?.targetRoomId || activeMemoryModal.item?.interaction?.type === 'door_transition') && (
+                    <View style={{ alignItems: 'center', paddingVertical: 8 }}>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.description || 'Cửa nối sang gian phòng tiếp theo của ngôi nhà.'}
+                      </Text>
+                      <TouchableOpacity
+                        style={styles.doorTransitionBtn}
+                        onPress={() => {
+                          const tId = activeMemoryModal.item?.targetRoomId || activeMemoryModal.item?.interaction?.targetRoomId;
+                          handleDoorTransition(tId, activeMemoryModal.label);
+                          setActiveMemoryModal(null);
+                        }}
+                      >
+                        <Text style={styles.doorTransitionBtnText}>🚶 Bước Qua Cửa Ngay</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+
+                  {/* 7. Default description */}
+                  {!activeMemoryModal.item?.interaction && activeMemoryModal.item?.kind !== 'door' && (
+                    <Text style={styles.patientCardText}>
+                      {activeMemoryModal.description}
+                    </Text>
+                  )}
+
+                  {/* Mảnh Ký Ức Đã Mở Khóa (Memory Fragment Box) */}
+                  {activeMemoryModal.item?.memoryFragment && (
+                    <View style={styles.unlockedFragmentBox}>
+                      <Text style={styles.unlockedFragmentTitle}>
+                        🌟 {activeMemoryModal.item.memoryFragment.title}
+                      </Text>
+                      <Text style={styles.unlockedFragmentStory}>
+                        {activeMemoryModal.item.memoryFragment.story}
+                      </Text>
+                      <Text style={styles.unlockedFragmentSelf}>
+                        💡 Về bản thân bạn: {activeMemoryModal.item.memoryFragment.senseOfSelf}
+                      </Text>
+                    </View>
+                  )}
                 </ScrollView>
 
+                {/* Card Actions */}
                 <View style={styles.patientCardActions}>
                   <TouchableOpacity
                     style={[
                       styles.patientSpeakBtn,
-                      speakingText === activeMemoryModal.description && styles.patientSpeakBtnActive
+                      speakingText && styles.patientSpeakBtnActive
                     ]}
                     onPress={() => {
-                      if (speakingText === activeMemoryModal.description) {
+                      const textToRead = activeMemoryModal.item?.interaction?.type === 'book_read'
+                        ? (activeMemoryModal.item.interaction.pages?.[bookPageIndex] || activeMemoryModal.description)
+                        : (activeMemoryModal.item?.memoryFragment?.story
+                            ? `${activeMemoryModal.label}. ${activeMemoryModal.item.memoryFragment.story}. ${activeMemoryModal.item.memoryFragment.senseOfSelf}`
+                            : activeMemoryModal.description);
+                      if (speakingText) {
                         setSpeakingText(null);
                       } else {
-                        setSpeakingText(activeMemoryModal.description);
+                        setSpeakingText(textToRead);
                       }
                     }}
                   >
                     <Text style={styles.patientSpeakBtnText}>
-                      {speakingText === activeMemoryModal.description ? '⏹ Dừng đọc' : '🔊 Nghe giọng đọc'}
+                      {speakingText ? '⏹ Dừng đọc' : '🔊 Nghe giọng đọc'}
                     </Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     style={styles.patientFocusBtn}
                     onPress={() => {
-                      setFocusLabel(activeMemoryModal.label);
-                      setTimeout(() => setFocusLabel(''), 600);
+                      setGlideLabel(activeMemoryModal.label);
+                      setTimeout(() => setGlideLabel(''), 600);
+                      setActiveMemoryModal(null);
                     }}
                   >
                     <Text style={styles.patientFocusBtnText}>👁️ Đến ngắm cự ly gần</Text>
@@ -1589,6 +2113,69 @@ export default function App() {
               </View>
             </View>
           )}
+
+          {/* Modal Sổ Tay Ký Ức Bản Thân (Sense of Self Modal) */}
+          <Modal
+            onRequestClose={() => setSenseOfSelfModalVisible(false)}
+            visible={senseOfSelfModalVisible}
+            animationType="slide"
+            transparent
+          >
+            <View style={styles.modalOverlay}>
+              <View style={[styles.modalContent, styles.senseOfSelfModalCard]}>
+                <Text style={styles.senseOfSelfTitle}>🌟 SỔ TAY KÝ ỨC BẢN THÂN</Text>
+                <Text style={styles.senseOfSelfSubtitle}>
+                  Hành trình kết nối các mảnh ghép để tìm lại sự trọn vẹn và niềm tự hào về chính mình
+                </Text>
+
+                <View style={styles.senseOfSelfProgressBox}>
+                  <Text style={styles.senseOfSelfProgressText}>
+                    Tiến trình: {discoveredCount} / {totalFragmentsCount} Mảnh ghép ký ức đã mở khóa
+                  </Text>
+                </View>
+
+                {/* Celebration Banner when completed */}
+                {discoveredCount === totalFragmentsCount && totalFragmentsCount > 0 && (
+                  <View style={styles.senseCelebrationBox}>
+                    <Text style={styles.senseCelebrationTitle}>🎉 BỨC TRANH KÝ ỨC TOÀN VẸN: TÌM LẠI CHÍNH MÌNH!</Text>
+                    <Text style={styles.senseCelebrationText}>
+                      Bạn là một người có tâm hồn nhân hậu, sâu sắc và tràn đầy tình yêu thương với gia đình. Mọi kỷ niệm đẹp đẽ, những cống hiến và tình cảm của mọi người đều đang ở đây bên bạn.
+                    </Text>
+                  </View>
+                )}
+
+                <ScrollView style={{ maxHeight: 360, marginVertical: 10 }}>
+                  <Text style={styles.modalSubHeader}>✨ Những mảnh ký ức bạn đã nhớ lại:</Text>
+                  {Object.values(discoveredFragments).map((frag, idx) => (
+                    <View key={'disc-' + idx} style={styles.fragmentCard}>
+                      <Text style={styles.fragmentCardTitle}>🌟 {frag.title}</Text>
+                      <Text style={styles.fragmentCardStory}>{frag.story}</Text>
+                      <Text style={styles.fragmentCardInsight}>💡 {frag.senseOfSelf}</Text>
+                    </View>
+                  ))}
+
+                  {/* Gợi ý các mảnh chưa tìm thấy */}
+                  {allFragments.filter(f => !discoveredFragments[f.id]).length > 0 && (
+                    <View style={{ marginTop: 12 }}>
+                      <Text style={styles.modalSubHeader}>🔍 Gợi ý nơi tìm thêm ký ức:</Text>
+                      {allFragments.filter(f => !discoveredFragments[f.id]).map((frag, idx) => (
+                        <View key={'clue-' + idx} style={styles.questClueCard}>
+                          <Text style={styles.questClueText}>👉 {frag.questPrompt || `Tìm đến đồ vật ${frag.itemLabel}`}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                </ScrollView>
+
+                <TouchableOpacity
+                  style={styles.closeBtn}
+                  onPress={() => setSenseOfSelfModalVisible(false)}
+                >
+                  <Text style={styles.closeBtnText}>Đóng Sổ Tay</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
 
           {/* Modal Đổi phòng trong chế độ người bệnh */}
           <Modal
@@ -1824,6 +2411,46 @@ export default function App() {
                 </TouchableOpacity>
               )}
             </View>
+
+            {/* Thanh chuyển gian phòng kết nối cho Người Soạn Phòng */}
+            {currentRoom?.connectedRooms?.length > 0 && (
+              <View style={[styles.creatorActionBar, { marginTop: 4 }]}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+                  <TouchableOpacity
+                    style={[styles.actionPillBtn, (!activeRoomId || activeRoomId === 'primary') && styles.patientRoomSwitchPillActive]}
+                    onPress={() => setActiveRoomId('primary')}
+                  >
+                    <Text style={[styles.actionPillText, (!activeRoomId || activeRoomId === 'primary') && styles.patientRoomSwitchTextActive]}>
+                      🏡 {currentRoom.title || 'Phòng chính'}
+                    </Text>
+                  </TouchableOpacity>
+                  {currentRoom.connectedRooms.map(cr => (
+                    <TouchableOpacity
+                      key={cr.id}
+                      style={[styles.actionPillBtn, activeRoomId === cr.id && styles.patientRoomSwitchPillActive]}
+                      onPress={() => setActiveRoomId(cr.id)}
+                    >
+                      <Text style={[styles.actionPillText, activeRoomId === cr.id && styles.patientRoomSwitchTextActive]}>
+                        {cr.roomType === 'kitchen' ? '🍳' : cr.roomType === 'garden' ? '🌿' : cr.roomType === 'library' ? '📚' : '🚪'} {cr.title}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            )}
+
+            {/* Huy hiệu AI Tự Kiểm Định & Tối Ưu Bố Cục */}
+            {currentRoom?.aiVerification && (
+              <TouchableOpacity
+                style={styles.aiVerificationBadge}
+                onPress={() => setAiAuditModalVisible(true)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.aiVerificationText}>
+                  🛡️ AI Đã Kiểm Tra & Tối Ưu Logic Không Gian ({currentRoom.aiVerification.checks?.length || 7} Tiêu Chuẩn Đạt)
+                </Text>
+              </TouchableOpacity>
+            )}
 
             {/* === 3D Room Viewer (Tập trung không gian 3D trực quan) === */}
             {isKeyboardVisible ? (
@@ -2145,6 +2772,22 @@ export default function App() {
                     <Text style={styles.caregiverMsgSendText}>Gửi</Text>
                   </TouchableOpacity>
                 </View>
+                {/* 4. Mảnh ghép ký ức & Quest định hình bản thân */}
+                {allFragments.length > 0 && (
+                  <View style={styles.caregiverSectionBox}>
+                    <Text style={styles.caregiverSectionTitle}>🌟 4. Ký ức bản thân (Quest cho người bệnh)</Text>
+                    <Text style={styles.caregiverSectionDesc}>
+                      Các kỷ vật chứa đựng câu chuyện cuộc đời giúp người bệnh tìm lại chính mình ({allFragments.length} mảnh ghép):
+                    </Text>
+                    {allFragments.map((frag, i) => (
+                      <View key={i} style={[styles.caregiverReminderItem, { flexDirection: 'column', alignItems: 'flex-start', paddingVertical: 8 }]}>
+                        <Text style={{ fontWeight: '700', color: '#85581A' }}>✨ {frag.itemLabel} - {frag.title}</Text>
+                        <Text style={{ fontSize: 13, color: '#444', marginTop: 2 }}>{frag.story}</Text>
+                        <Text style={{ fontSize: 12, color: '#137333', fontStyle: 'italic', marginTop: 2 }}>💡 {frag.senseOfSelf}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
               </View>
             </ScrollView>
 
@@ -2160,6 +2803,49 @@ export default function App() {
           </View>
         </View>
       </Modal>
+
+      {/* Modal Báo Cáo Kiểm Định AI */}
+      <Modal
+        onRequestClose={() => setAiAuditModalVisible(false)}
+        visible={aiAuditModalVisible}
+        animationType="slide"
+        transparent
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, styles.aiAuditModalContent]}>
+            <Text style={styles.modalTitle}>🛡️ Kiểm Định Logic Không Gian AI</Text>
+            <Text style={styles.modalHelp}>
+              Hệ thống AI tự động quan sát và phản tư (Self-Reflection) để đảm bảo thế giới tạo lập logic, chuẩn xác và êm dịu cho người cao tuổi.
+            </Text>
+            <ScrollView style={{ maxHeight: 380, marginVertical: 10 }}>
+              {currentRoom?.aiVerification?.checks?.map((chk, i) => (
+                <View key={i} style={styles.aiAuditItem}>
+                  <View style={styles.aiAuditItemHeader}>
+                    <Text style={styles.aiAuditItemName}>
+                      {chk.name === 'bed_orientation' ? '🛏️ Đầu Giường Áp Tường'
+                        : chk.name === 'wardrobe_clearance' ? '🚪 Khoảng Trống Mở Cánh Tủ'
+                        : chk.name === 'tabletop_accessories' ? '📐 Gá Vật Dụng Mặt Bàn/Tủ'
+                        : chk.name === 'geriatric_color_and_lighting' ? '👁️ Thị Giác Người Cao Tuổi'
+                        : chk.name === 'spacious_environment' ? '🪟 Không Gian Mở Thoáng Đãng'
+                        : chk.name === 'connected_spaces' ? '🏡 Không Gian Đa Phòng Nối Tiếp'
+                        : chk.name === 'memory_fragment_quests' ? '🌟 Mảnh Ghép Ký Ức & Tương Tác'
+                        : chk.name}
+                    </Text>
+                    <Text style={styles.aiAuditItemStatus}>✓ Đạt</Text>
+                  </View>
+                  <Text style={styles.aiAuditItemDetails}>{chk.details}</Text>
+                </View>
+              ))}
+            </ScrollView>
+            <TouchableOpacity
+              style={styles.closeBtn}
+              onPress={() => setAiAuditModalVisible(false)}
+            >
+              <Text style={styles.closeBtnText}>Đóng Báo Cáo</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView></SafeAreaProvider>
   );
 }
@@ -2171,6 +2857,390 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+  },
+
+  // ===== Multi-Room Navigation & Geriatric Ergonomics =====
+  patientRoomsSwitcherBar: {
+    backgroundColor: '#1a2420',
+    paddingVertical: 7,
+    borderBottomWidth: 1,
+    borderBottomColor: '#263830',
+  },
+  patientRoomSwitchPill: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: '#263830',
+    borderWidth: 1,
+    borderColor: '#395347',
+  },
+  patientRoomSwitchPillActive: {
+    backgroundColor: '#34a853',
+    borderColor: '#46c268',
+  },
+  patientRoomSwitchText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#a3c2b4',
+  },
+  patientRoomSwitchTextActive: {
+    color: '#ffffff',
+    fontWeight: '700',
+  },
+  senseOfSelfBadge: {
+    backgroundColor: '#2d2417',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#453521',
+    alignItems: 'center',
+  },
+  senseOfSelfBadgeText: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: '#f9ab00',
+    letterSpacing: 0.3,
+  },
+  seniorWaypointsContainer: {
+    position: 'absolute',
+    bottom: 12,
+    left: 12,
+    right: 12,
+    backgroundColor: 'rgba(18, 26, 22, 0.92)',
+    borderRadius: 16,
+    padding: 10,
+    borderWidth: 1.2,
+    borderColor: '#3a5447',
+  },
+  seniorWaypointsTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#80c2a6',
+    marginBottom: 6,
+  },
+  seniorWaypointPill: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#243b31',
+    borderWidth: 1,
+    borderColor: '#3a5c4d',
+  },
+  seniorWaypointPillActive: {
+    backgroundColor: '#34a853',
+    borderColor: '#46c268',
+  },
+  seniorWaypointPillText: {
+    fontSize: 13.5,
+    fontWeight: '700',
+    color: '#d4ebd9',
+  },
+  seniorWaypointPillTextActive: {
+    color: '#ffffff',
+  },
+  seniorStrollRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  seniorStrollBtn: {
+    flex: 1,
+    backgroundColor: '#263b32',
+    paddingVertical: 9,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#3d5c4e',
+  },
+  seniorStrollBtnPrimary: {
+    backgroundColor: '#2e7d32',
+    borderColor: '#43a047',
+    flex: 1.3,
+  },
+  seniorStrollBtnText: {
+    fontSize: 12.5,
+    fontWeight: '600',
+    color: '#c2e0d1',
+  },
+  seniorStrollBtnTextPrimary: {
+    fontSize: 13.5,
+    fontWeight: '800',
+    color: '#ffffff',
+  },
+  modalSubHeader: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#8b5a2b',
+    marginBottom: 4,
+  },
+  itemDetailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fbf8f1',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    marginVertical: 2,
+    borderWidth: 1,
+    borderColor: '#eee5d8',
+  },
+  itemDetailIcon: {
+    fontSize: 16,
+    marginRight: 8,
+  },
+  itemDetailText: {
+    fontSize: 13.5,
+    color: '#333333',
+    flex: 1,
+  },
+  unlockedFragmentBox: {
+    marginTop: 12,
+    backgroundColor: '#fffdf0',
+    borderRadius: 10,
+    padding: 12,
+    borderWidth: 1.2,
+    borderColor: '#f9ab00',
+  },
+  unlockedFragmentTitle: {
+    fontSize: 14.5,
+    fontWeight: '800',
+    color: '#b06000',
+    marginBottom: 4,
+  },
+  unlockedFragmentStory: {
+    fontSize: 13.5,
+    color: '#444444',
+    lineHeight: 20,
+  },
+  unlockedFragmentSelf: {
+    fontSize: 13,
+    color: '#137333',
+    fontWeight: '700',
+    fontStyle: 'italic',
+    marginTop: 6,
+  },
+  bookReaderContainer: {
+    marginVertical: 4,
+  },
+  bookPageCard: {
+    backgroundColor: '#fffef7',
+    borderRadius: 12,
+    padding: 14,
+    borderWidth: 1.5,
+    borderColor: '#e8dcbe',
+    minHeight: 100,
+  },
+  bookPageIndicator: {
+    fontSize: 11.5,
+    fontWeight: '700',
+    color: '#a07844',
+    marginBottom: 6,
+    textTransform: 'uppercase',
+  },
+  bookPageText: {
+    fontSize: 15,
+    color: '#2a2218',
+    lineHeight: 23,
+    fontStyle: 'italic',
+  },
+  bookControlsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 8,
+    gap: 8,
+  },
+  bookPageBtn: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 8,
+    backgroundColor: '#f5eee1',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#d8c7ac',
+  },
+  bookPageBtnText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#5c4524',
+  },
+  bedRelaxBox: {
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
+  bedBreathCircle: {
+    marginTop: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+    backgroundColor: '#e8f5e9',
+    borderWidth: 1,
+    borderColor: '#a5d6a7',
+  },
+  bedBreathDot: {
+    fontSize: 13,
+    color: '#2e7d32',
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  doorTransitionBtn: {
+    marginTop: 10,
+    backgroundColor: '#2e7d32',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 24,
+    alignItems: 'center',
+  },
+  doorTransitionBtnText: {
+    fontSize: 14.5,
+    fontWeight: '800',
+    color: '#ffffff',
+  },
+  senseOfSelfModalCard: {
+    maxHeight: '85%',
+    backgroundColor: '#fdfbf7',
+    borderColor: '#d6c4a5',
+  },
+  senseOfSelfTitle: {
+    fontSize: 17,
+    fontWeight: '800',
+    color: '#8b5a2b',
+    textAlign: 'center',
+  },
+  senseOfSelfSubtitle: {
+    fontSize: 12.5,
+    color: '#666666',
+    textAlign: 'center',
+    marginTop: 2,
+    marginBottom: 8,
+  },
+  senseOfSelfProgressBox: {
+    backgroundColor: '#fff4db',
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#f9ab00',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  senseOfSelfProgressText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#b06000',
+  },
+  senseCelebrationBox: {
+    backgroundColor: '#e6f4ea',
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 1.5,
+    borderColor: '#34a853',
+    marginBottom: 10,
+  },
+  senseCelebrationTitle: {
+    fontSize: 14.5,
+    fontWeight: '800',
+    color: '#137333',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  senseCelebrationText: {
+    fontSize: 13,
+    color: '#202124',
+    lineHeight: 19,
+    textAlign: 'center',
+  },
+  fragmentCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    padding: 10,
+    marginVertical: 4,
+    borderWidth: 1,
+    borderColor: '#e8dcbe',
+  },
+  fragmentCardTitle: {
+    fontSize: 13.5,
+    fontWeight: '800',
+    color: '#8b5a2b',
+  },
+  fragmentCardStory: {
+    fontSize: 12.5,
+    color: '#444444',
+    marginTop: 2,
+    lineHeight: 18,
+  },
+  fragmentCardInsight: {
+    fontSize: 12,
+    color: '#137333',
+    fontWeight: '700',
+    fontStyle: 'italic',
+    marginTop: 4,
+  },
+  questClueCard: {
+    backgroundColor: '#f5f5f5',
+    borderRadius: 8,
+    padding: 8,
+    marginVertical: 3,
+    borderLeftWidth: 3,
+    borderLeftColor: '#f9ab00',
+  },
+  questClueText: {
+    fontSize: 12.5,
+    color: '#555555',
+  },
+  aiVerificationBadge: {
+    marginHorizontal: 14,
+    marginTop: 4,
+    marginBottom: 4,
+    backgroundColor: '#e8f0fe',
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: '#4285f4',
+    alignItems: 'center',
+  },
+  aiVerificationText: {
+    fontSize: 11.5,
+    fontWeight: '700',
+    color: '#1a73e8',
+  },
+  aiAuditModalContent: {
+    maxHeight: '85%',
+    backgroundColor: '#ffffff',
+  },
+  aiAuditItem: {
+    backgroundColor: '#f8f9fa',
+    borderRadius: 10,
+    padding: 10,
+    marginVertical: 4,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  aiAuditItemHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  aiAuditItemName: {
+    fontSize: 13.5,
+    fontWeight: '700',
+    color: '#202124',
+  },
+  aiAuditItemStatus: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#137333',
+    backgroundColor: '#e6f4ea',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  aiAuditItemDetails: {
+    fontSize: 12.5,
+    color: '#5f6368',
+    lineHeight: 18,
   },
 
   // ===== Giao diện Người Soạn Phòng (Creator) =====

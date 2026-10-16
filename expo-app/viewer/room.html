@@ -1601,13 +1601,42 @@
             }
             highlightFurniture(targetObj);
             playInteractChime();
+            if (info.kind === 'door' || info.targetRoomId || info.interaction?.type === 'door_transition') {
+              window.ReactNativeWebView?.postMessage(JSON.stringify({
+                type: 'DOOR_TRANSITION',
+                targetRoomId: info.targetRoomId || info.interaction?.targetRoomId,
+                label: info.label
+              }));
+            }
             window.ReactNativeWebView?.postMessage(JSON.stringify({
               type: 'SELECT_FURNITURE',
               label: info.label,
               description: info.description,
               routineLabel: info.routineLabel,
-              isInteractable: true
+              isInteractable: true,
+              item: info
             }));
+            return;
+          }
+
+          // Tap-to-walk on floor in FPV
+          if (floorMesh) {
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+            const floorHits = raycaster.intersectObject(floorMesh, false);
+            if (floorHits.length > 0) {
+              const hit = floorHits[0].point;
+              if (!checkPositionCollision(hit.x, hit.z)) {
+                const targetPos = new THREE.Vector3(hit.x, PLAYER_HEIGHT, hit.z);
+                const lookDist = 2.0;
+                const sinY = Math.sin(fpvYaw);
+                const cosY = Math.cos(fpvYaw);
+                const targetLook = new THREE.Vector3(hit.x - sinY * lookDist, PLAYER_HEIGHT, hit.z - cosY * lookDist);
+                glidePlayerInFpv(targetPos, targetLook);
+                return;
+              }
+            }
           }
           return;
         }
@@ -1636,12 +1665,20 @@
 
             highlightFurniture(cur);
             playInteractChime();
+            if (info.kind === 'door' || info.targetRoomId || info.interaction?.type === 'door_transition') {
+              window.ReactNativeWebView?.postMessage(JSON.stringify({
+                type: 'DOOR_TRANSITION',
+                targetRoomId: info.targetRoomId || info.interaction?.targetRoomId,
+                label: info.label
+              }));
+            }
             window.ReactNativeWebView?.postMessage(JSON.stringify({
               type: 'SELECT_FURNITURE',
               label: info.label,
               description: info.description,
               routineLabel: info.routineLabel,
-              isInteractable: true
+              isInteractable: true,
+              item: info
             }));
           }
         }
@@ -1810,6 +1847,163 @@
         }
         window.ReactNativeWebView?.postMessage(JSON.stringify({ type: 'POV_STATE', mode: 'overview' }));
       });
+    };
+
+    let fpvGlideAnimId = null;
+    function glidePlayerInFpv(targetPos, targetLook, onComplete) {
+      if (typeof cancelAnimationFrame === 'function' && fpvGlideAnimId) cancelAnimationFrame(fpvGlideAnimId);
+      const startPos = camera.position.clone();
+      let targetYaw = fpvYaw;
+      if (targetLook) {
+        const dx = targetLook.x - targetPos.x;
+        const dz = targetLook.z - targetPos.z;
+        targetYaw = Math.atan2(-dx, -dz);
+      }
+      const startYaw = fpvYaw;
+      let diffYaw = targetYaw - startYaw;
+      while (diffYaw < -Math.PI) diffYaw += Math.PI * 2;
+      while (diffYaw > Math.PI) diffYaw -= Math.PI * 2;
+
+      const duration = 750;
+      const getNow = () => (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now());
+      const startTime = getNow();
+      let lastFootstepT = 0;
+
+      function step() {
+        const elapsed = getNow() - startTime;
+        const t = Math.min(1, elapsed / duration);
+        const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+
+        camera.position.x = startPos.x + (targetPos.x - startPos.x) * ease;
+        camera.position.z = startPos.z + (targetPos.z - startPos.z) * ease;
+        camera.position.y = PLAYER_HEIGHT;
+        fpvYaw = startYaw + diffYaw * ease;
+        fpvPitch = -0.06 * ease;
+
+        camera.rotation.order = 'YXZ';
+        camera.rotation.y = fpvYaw;
+        camera.rotation.x = fpvPitch;
+        camera.rotation.z = 0;
+
+        if (t - lastFootstepT > 0.3) {
+          lastFootstepT = t;
+          playFootstepAudio();
+        }
+
+        render();
+
+        if (t < 1 && typeof requestAnimationFrame === 'function') {
+          fpvGlideAnimId = requestAnimationFrame(step);
+        } else {
+          fpvGlideAnimId = null;
+          onComplete?.();
+        }
+      }
+      step();
+    }
+
+    window.glideToFurniture = function(label) {
+      if (!roomGroup || !label) return;
+      const match = furnitureMeshes.find(g => {
+        const info = g.userData?.furnitureInfo;
+        return info && (info.label === label || info.id === label || info.kind === label);
+      });
+      if (!match) return;
+
+      const info = match.userData?.furnitureInfo;
+      highlightFurniture(match);
+
+      if (navMode === 'fpv') {
+        const fx = match.position.x;
+        const fz = match.position.z;
+        const fw = info?.width || 1.0;
+        const fd = info?.depth || 1.0;
+        const fy = match.position.y || 0;
+        const fh = info?.height || 1.0;
+
+        const rw = (roomGroup.userData.width || 6) / 2 - 0.45;
+        const rd = (roomGroup.userData.depth || 6) / 2 - 0.45;
+
+        let targetX = fx;
+        let targetZ = fz;
+        const toCenter = new THREE.Vector2(-fx, -fz).normalize();
+        if (toCenter.length() > 0.1) {
+          targetX += toCenter.x * Math.max(1.0, Math.max(fw, fd) * 0.85);
+          targetZ += toCenter.y * Math.max(1.0, Math.max(fw, fd) * 0.85);
+        } else {
+          targetZ += 1.1;
+        }
+        targetX = Math.max(-rw, Math.min(rw, targetX));
+        targetZ = Math.max(-rd, Math.min(rd, targetZ));
+
+        const targetPos = new THREE.Vector3(targetX, PLAYER_HEIGHT, targetZ);
+        const targetLook = new THREE.Vector3(fx, fy + Math.min(fh * 0.55, 1.2), fz);
+
+        glidePlayerInFpv(targetPos, targetLook, () => {
+          playInteractChime();
+          if (info.kind === 'door' || info.targetRoomId || info.interaction?.type === 'door_transition') {
+            window.ReactNativeWebView?.postMessage(JSON.stringify({
+              type: 'DOOR_TRANSITION',
+              targetRoomId: info.targetRoomId || info.interaction?.targetRoomId,
+              label: info.label
+            }));
+          }
+          window.ReactNativeWebView?.postMessage(JSON.stringify({
+            type: 'SELECT_FURNITURE',
+            label: info.label,
+            description: info.description,
+            routineLabel: info.routineLabel,
+            isInteractable: info.isInteractable !== false,
+            item: info
+          }));
+        });
+      } else {
+        focusOnFurniture(match);
+        if (info.kind === 'door' || info.targetRoomId || info.interaction?.type === 'door_transition') {
+          window.ReactNativeWebView?.postMessage(JSON.stringify({
+            type: 'DOOR_TRANSITION',
+            targetRoomId: info.targetRoomId || info.interaction?.targetRoomId,
+            label: info.label
+          }));
+        }
+        window.ReactNativeWebView?.postMessage(JSON.stringify({
+          type: 'SELECT_FURNITURE',
+          label: info.label,
+          description: info.description,
+          routineLabel: info.routineLabel,
+          isInteractable: info.isInteractable !== false,
+          item: info
+        }));
+      }
+    };
+
+    window.strollStep = function(stepType) {
+      if (navMode !== 'fpv') {
+        window.setNavMode('fpv');
+      }
+      if (stepType === 'turn_left') {
+        fpvYaw += (Math.PI / 6);
+      } else if (stepType === 'turn_right') {
+        fpvYaw -= (Math.PI / 6);
+      } else if (stepType === 'forward') {
+        const sinY = Math.sin(fpvYaw);
+        const cosY = Math.cos(fpvYaw);
+        const deltaX = -sinY * 0.85;
+        const deltaZ = -cosY * 0.85;
+        moveWithSlidewall(deltaX, deltaZ);
+        playFootstepAudio();
+      } else if (stepType === 'backward') {
+        const sinY = Math.sin(fpvYaw);
+        const cosY = Math.cos(fpvYaw);
+        const deltaX = sinY * 0.65;
+        const deltaZ = cosY * 0.65;
+        moveWithSlidewall(deltaX, deltaZ);
+        playFootstepAudio();
+      }
+      camera.rotation.order = 'YXZ';
+      camera.rotation.y = fpvYaw;
+      camera.rotation.x = fpvPitch;
+      render();
     };
 
     window.focusFurnitureByLabel = function(label) {
@@ -2480,7 +2674,13 @@
           routineLabel: item.routineLabel || '',
           isInteractable: item.isInteractable !== false,
           restrictedDialogue: item.restrictedDialogue || 'Chưa có đủ thông tin về khu vực này; đây là phần AI ước đoán.',
-          height: item.height || 1
+          height: item.height || 1,
+          width: item.width || 1,
+          depth: item.depth || 1,
+          targetRoomId: item.targetRoomId,
+          interaction: item.interaction,
+          memoryFragment: item.memoryFragment,
+          rawItem: item
         };
 
         const fw = item.width;

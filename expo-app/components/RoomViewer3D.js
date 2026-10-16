@@ -10,11 +10,14 @@ export default function RoomViewer3D({
   navMode = 'overview',
   onSelectFurniture,
   onRestrictedTouch,
+  onDoorTransition,
   onPovChange,
   onNavModeChange,
   onNavWarning,
   cameraView,
   focusLabel,
+  glideLabel,
+  strollAction,
   speakText
 }) {
   const webViewRef = useRef(null);
@@ -52,6 +55,16 @@ export default function RoomViewer3D({
     }
   }, [focusLabel, ready]);
   useEffect(() => {
+    if (ready && glideLabel) {
+      webViewRef.current?.injectJavaScript('window.glideToFurniture?.(' + JSON.stringify(glideLabel) + '); true;');
+    }
+  }, [glideLabel, ready]);
+  useEffect(() => {
+    if (ready && strollAction) {
+      webViewRef.current?.injectJavaScript('window.strollStep?.(' + JSON.stringify(strollAction) + '); true;');
+    }
+  }, [strollAction, ready]);
+  useEffect(() => {
     if (ready) {
       if (speakText) {
         webViewRef.current?.injectJavaScript('window.speakMemoryText?.(' + JSON.stringify(speakText) + '); true;');
@@ -65,7 +78,8 @@ export default function RoomViewer3D({
       const data = JSON.parse(event.nativeEvent.data);
       if (data.type === 'READY') setReady(true);
       if (data.type === 'ERROR') setError(data.message);
-      if (data.type === 'SELECT_FURNITURE') onSelectFurniture?.(data.label, data.description);
+      if (data.type === 'SELECT_FURNITURE') onSelectFurniture?.(data.label, data.description, data.item);
+      if (data.type === 'DOOR_TRANSITION') onDoorTransition?.(data.targetRoomId, data.label);
       if (data.type === 'RESTRICTED_TOUCH') onRestrictedTouch?.(data.label, data.dialogue);
       if (data.type === 'POV_STATE') onPovChange?.(data.mode, data.label);
       if (data.type === 'NAV_WARNING') onNavWarning?.(data.message);

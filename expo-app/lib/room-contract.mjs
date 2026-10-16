@@ -1,7 +1,7 @@
 // Shared by the server and Expo. No network or platform dependencies.
 export const kinds = ['sofa','table','chair','bed','shelf','cabinet','plant','lamp','rug','picture','window','door','desk','wardrobe','clock','mug','backpack','blackboard','whiteboard','curtain','water_bottle','notebook','air_conditioner','fan','book','lunchbox','television','projector_screen','projector','podium','pillar'];
-export const roomFields = ['title','wallColor','floorColor','width','depth','height','floorTextureStyle','lightingStyle'];
-export const itemFields = ['kind','label','description','x','y','z','yaw','width','height','depth','color','isInteractable','restrictedDialogue','restrictedReason','parentSupport','source'];
+export const roomFields = ['title','wallColor','floorColor','width','depth','height','floorTextureStyle','lightingStyle','connectedRooms','aiVerification'];
+export const itemFields = ['kind','label','description','x','y','z','yaw','width','height','depth','color','isInteractable','restrictedDialogue','restrictedReason','parentSupport','source','targetRoomId','interaction','memoryFragment'];
 const fail = message => { throw new Error(message); };
 const isObject = value => value && typeof value === 'object' && !Array.isArray(value);
 const text = (value, max, name) => typeof value === 'string' && value.length <= max ? value : fail(`Invalid ${name}`);
@@ -28,6 +28,8 @@ export function validateRoom(input) {
   };
   if (!['vintage_tiles','wood_planks','bamboo_mat','solid'].includes(room.floorTextureStyle)) fail('Invalid floor style');
   if (!['morning_sun','warm_evening','cozy_night'].includes(room.lightingStyle)) fail('Invalid lighting');
+  if (Array.isArray(input.connectedRooms)) room.connectedRooms = input.connectedRooms;
+  if (input.aiVerification && typeof input.aiVerification === 'object') room.aiVerification = input.aiVerification;
   if (!Array.isArray(input.objects) || input.objects.length > 40) fail('Invalid furniture count');
   const ids = new Set();
   for (const raw of input.objects) {
@@ -49,6 +51,9 @@ export function validateRoom(input) {
     const source = raw.source ?? { type: 'inferred', evidence: '' };
     if (!isObject(source) || !['user_provided','inferred'].includes(source.type)) fail('Invalid source');
     item.source = { type: source.type, evidence: text(source.evidence ?? '', 1000, 'evidence') };
+    if (typeof raw.targetRoomId === 'string') item.targetRoomId = raw.targetRoomId.slice(0, 80);
+    if (raw.interaction && typeof raw.interaction === 'object') item.interaction = raw.interaction;
+    if (raw.memoryFragment && typeof raw.memoryFragment === 'object') item.memoryFragment = raw.memoryFragment;
     room.objects.push(item);
   }
   for (const item of room.objects) {

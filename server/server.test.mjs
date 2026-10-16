@@ -216,3 +216,42 @@ test('live sync allows caregiver to publish room/reminders and send messages to 
     assert.equal(d3.activeNotification, null);
   });
 });
+
+test('createRoom generates connected rooms, enriched interactions, and self-reflection audit', () => {
+  const raw = {
+    title: 'Phòng khách thời bao cấp',
+    reply: 'Không gian phòng khách ấm cúng',
+    wallColor: '#0000FF',
+    floorColor: '#C49A6C',
+    width: 7, depth: 6, height: 3.2,
+    floorTextureStyle: 'wood_planks',
+    lightingStyle: 'morning_sun',
+    objects: [
+      { kind: 'wardrobe', label: 'Tủ gỗ đựng quần áo', description: 'Tủ 2 cánh', color: '#8B5A2B', x: -2.8, y: 0, z: 0, yaw: -90, width: 1.4, height: 2.0, depth: 0.6 },
+      { kind: 'desk', label: 'Bàn làm việc của ba', description: 'Bàn gỗ lim', color: '#A06B3E', x: 2.0, y: 0, z: 1.0, yaw: 0, width: 1.4, height: 0.75, depth: 0.7 },
+      { kind: 'book', label: 'Sổ nhật ký', description: 'Cuốn sổ bìa da', color: '#1A365D', x: 2.0, y: 0, z: 1.0, yaw: 0, width: 0.2, height: 0.05, depth: 0.15 }
+    ]
+  };
+  const room = createRoom(raw, 'phòng khách thời bao cấp');
+  // 1. Geriatric anti-blue adjustment
+  assert.notEqual(room.wallColor, '#0000FF');
+  assert.equal(room.wallColor, '#F7F3EB');
+
+  // 2. Connected rooms
+  assert.ok(Array.isArray(room.connectedRooms) && room.connectedRooms.length >= 2);
+  assert.equal(room.connectedRooms[0].roomType, 'kitchen');
+
+  // 3. Interactions and memory fragments
+  const wardrobe = room.objects.find(it => it.kind === 'wardrobe');
+  assert.equal(wardrobe.interaction.type, 'wardrobe_open');
+  assert.ok(wardrobe.interaction.clothes.length > 0);
+  assert.ok(wardrobe.memoryFragment.questPrompt.length > 0);
+
+  const book = room.objects.find(it => it.kind === 'book');
+  assert.equal(book.interaction.type, 'book_read');
+  assert.ok(Array.isArray(book.interaction.pages) && book.interaction.pages.length >= 2);
+
+  // 4. AI Self-reflection audit
+  assert.ok(room.aiVerification && room.aiVerification.status === 'verified_and_optimized');
+  assert.ok(room.aiVerification.checks.length >= 5);
+});
