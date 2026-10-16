@@ -830,7 +830,7 @@
       return cachedContactShadowTex;
     }
 
-    function addGroundContactShadow(group, w, d, opacity = 0.42) {
+    function addGroundContactShadow(group, w, d, opacity = 0.52) {
       const tex = getContactShadowTexture();
       if (!tex) return;
       const padW = Math.max(0.18, w * 1.08);
@@ -846,6 +846,7 @@
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.set(0, 0.005, 0);
       mesh.renderOrder = 1;
+      mesh.userData = { noTexture: true };
       group.add(mesh);
     }
 
@@ -910,28 +911,28 @@
       });
 
       // 1. Ánh sáng bầu trời và mặt đất (Sky & Ground Ambient Hemisphere Light)
-      hemiLight = new THREE.HemisphereLight(0xF4F8FD, 0x2A261F, 1.15);
+      hemiLight = new THREE.HemisphereLight(0xEDF4FC, 0x221E18, 0.42);
       scene.add(hemiLight);
 
       // 2. Nguồn sáng chính Mặt trời / Cửa sổ ban ngày (Primary Directional Sun Source)
-      sun = new THREE.DirectionalLight(0xFFF6E8, 2.0);
+      sun = new THREE.DirectionalLight(0xFFF6E8, 2.8);
       sun.position.set(9, 16, 7);
       sun.castShadow = true;
       sun.shadow.mapSize.width = 1024;
       sun.shadow.mapSize.height = 1024;
-      sun.shadow.bias = -0.0003;
-      sun.shadow.radius = 2.4;
+      sun.shadow.bias = -0.0002;
+      sun.shadow.radius = 1.2;
       scene.add(sun);
 
       // 3. Phản xạ gián tiếp từ sàn nhà lên trần (Secondary Floor Radiosity Diffuse Bounce)
-      bounceLight = new THREE.DirectionalLight(0xE8D5B7, 0.75);
+      bounceLight = new THREE.DirectionalLight(0xE8D5B7, 0.30);
       bounceLight.position.set(0, -2, 0);
       bounceLight.target.position.set(0, 3, 0);
       scene.add(bounceLight);
       scene.add(bounceLight.target);
 
       // 4. Ánh sáng tán xạ môi trường mát dịu (Soft Ambient Fill Light)
-      fillLight = new THREE.DirectionalLight(0xD8E6F5, 0.55);
+      fillLight = new THREE.DirectionalLight(0xD8E6F5, 0.20);
       fillLight.position.set(-8, 11, -8);
       scene.add(fillLight);
 
@@ -1647,8 +1648,10 @@
         const halfD = rd / 2;
         const itemW = item.width || 0.8;
         const itemD = item.depth || 0.2;
-        const marginW = Math.max(0.12, (itemW / 2) + 0.04);
-        const marginD = Math.max(0.12, (itemD / 2) + 0.04);
+        const span = (item.kind === 'window' || item.kind === 'curtain' || item.kind === 'projector_screen' || item.kind === 'whiteboard' || item.kind === 'blackboard')
+          ? Math.max(itemW, itemD, 2.0)
+          : itemW;
+        const cornerMargin = Math.max(0.25, (span / 2) + 0.15);
 
         const dLeft = Math.abs(item.x - (-halfW));
         const dRight = Math.abs(item.x - halfW);
@@ -1664,21 +1667,29 @@
         if (minDist === dRight) {
           wallSide = 'right';
           posX = halfW - 0.04;
-          posZ = Math.max(-halfD + marginD, Math.min(halfD - marginD, item.z));
+          posZ = (-halfD + cornerMargin <= halfD - cornerMargin)
+            ? Math.max(-halfD + cornerMargin, Math.min(halfD - cornerMargin, item.z))
+            : 0;
           yaw = -90; // hướng vào trong theo trục -X
         } else if (minDist === dLeft) {
           wallSide = 'left';
           posX = -halfW + 0.04;
-          posZ = Math.max(-halfD + marginD, Math.min(halfD - marginD, item.z));
+          posZ = (-halfD + cornerMargin <= halfD - cornerMargin)
+            ? Math.max(-halfD + cornerMargin, Math.min(halfD - cornerMargin, item.z))
+            : 0;
           yaw = 90; // hướng vào trong theo trục +X
         } else if (minDist === dBack) {
           wallSide = 'back';
-          posX = Math.max(-halfW + marginW, Math.min(halfW - marginW, item.x));
+          posX = (-halfW + cornerMargin <= halfW - cornerMargin)
+            ? Math.max(-halfW + cornerMargin, Math.min(halfW - cornerMargin, item.x))
+            : 0;
           posZ = halfD - 0.04;
           yaw = 0; // hướng vào trong theo trục -Z
         } else {
           wallSide = 'front';
-          posX = Math.max(-halfW + marginW, Math.min(halfW - marginW, item.x));
+          posX = (-halfW + cornerMargin <= halfW - cornerMargin)
+            ? Math.max(-halfW + cornerMargin, Math.min(halfW - cornerMargin, item.x))
+            : 0;
           posZ = -halfD + 0.04;
           yaw = 180; // hướng vào trong theo trục +Z
         }
@@ -1794,7 +1805,9 @@
             posZ = snapped.posZ;
             yaw = snapped.yaw;
             wallSide = snapped.wallSide;
-            if (posY < 0.3) {
+            if (item.kind === 'window') {
+              posY = 0;
+            } else if (posY < 0.3) {
               if (item.kind === 'clock') posY = rh * 0.70;
             }
           } else if (item.kind === 'projector') {
@@ -1928,7 +1941,7 @@
 
       let routineBadgeCount = 0;
       const solvedObjects = room.layoutVersion === 2
-        ? (room.objects || []).map(item => ({ item, posX: item.x, posY: item.y || 0, posZ: item.z, yaw: item.yaw, wallSide: null }))
+        ? (room.objects || []).map(item => ({ item, posX: item.x, posY: item.kind === 'window' ? 0 : (item.y || 0), posZ: item.z, yaw: item.yaw, wallSide: null }))
         : solveObjectPlacementAndOrientation(room.objects || [], w, d, h);
 
       // Đảm bảo không ghế nào bị kẹt, chìm trong bàn hoặc quay ngược lưng vào bàn
@@ -1937,7 +1950,7 @@
       solvedObjects.forEach(resolved => {
         const item = resolved.item;
         const posX = resolved.posX;
-        const posY = resolved.posY || 0;
+        const posY = item.kind === 'window' ? 0 : (resolved.posY || 0);
         const posZ = resolved.posZ;
         const rotY = (resolved.yaw || 0) * Math.PI / 180;
 
@@ -2017,7 +2030,8 @@
               ? new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(tableWoodCanvas), roughness: 0.45, metalness: 0.05 })
               : woodMat;
             legs(fh * 0.88);
-            box(0, fh * 0.94, 0, fw, fh * 0.12, fd, tableWoodMat);
+            const tableTop = box(0, fh * 0.94, 0, fw, fh * 0.12, fd, tableWoodMat);
+            tableTop.userData.isWoodPlank = true;
             addGroundContactShadow(fGroup, fw, fd, 0.46);
             break;
           }
@@ -2029,18 +2043,22 @@
               : createMaterial(item.color || '#D8BA92', 0.65, 0.05);
             const legThick = Math.max(0.025, Math.min(0.045, fw * 0.04));
             // 4 chân sắt sơn tĩnh điện
-            box(-fw * 0.44 + legThick / 2, fh * 0.44, -fd * 0.42 + legThick / 2, legThick, fh * 0.88, legThick, metalMat);
-            box(fw * 0.44 - legThick / 2, fh * 0.44, -fd * 0.42 + legThick / 2, legThick, fh * 0.88, legThick, metalMat);
-            box(-fw * 0.44 + legThick / 2, fh * 0.44, fd * 0.42 - legThick / 2, legThick, fh * 0.88, legThick, metalMat);
-            box(fw * 0.44 - legThick / 2, fh * 0.44, fd * 0.42 - legThick / 2, legThick, fh * 0.88, legThick, metalMat);
+            const dl1 = box(-fw * 0.44 + legThick / 2, fh * 0.44, -fd * 0.42 + legThick / 2, legThick, fh * 0.88, legThick, metalMat);
+            const dl2 = box(fw * 0.44 - legThick / 2, fh * 0.44, -fd * 0.42 + legThick / 2, legThick, fh * 0.88, legThick, metalMat);
+            const dl3 = box(-fw * 0.44 + legThick / 2, fh * 0.44, fd * 0.42 - legThick / 2, legThick, fh * 0.88, legThick, metalMat);
+            const dl4 = box(fw * 0.44 - legThick / 2, fh * 0.44, fd * 0.42 - legThick / 2, legThick, fh * 0.88, legThick, metalMat);
             // Giằng ngang chân bàn
-            box(0, fh * 0.12, -fd * 0.42 + legThick / 2, fw * 0.88, legThick, legThick, metalMat);
-            box(0, fh * 0.12, fd * 0.42 - legThick / 2, fw * 0.88, legThick, legThick, metalMat);
+            const dg1 = box(0, fh * 0.12, -fd * 0.42 + legThick / 2, fw * 0.88, legThick, legThick, metalMat);
+            const dg2 = box(0, fh * 0.12, fd * 0.42 - legThick / 2, fw * 0.88, legThick, legThick, metalMat);
+            [dl1, dl2, dl3, dl4, dg1, dg2].forEach(m => { m.userData = { isMetal: true, noTexture: true }; });
             // Mặt bàn gỗ vân tự nhiên
-            box(0, fh * 0.95, 0, fw, fh * 0.08, fd, deskWoodMat);
+            const deskTop = box(0, fh * 0.95, 0, fw, fh * 0.08, fd, deskWoodMat);
+            deskTop.userData.isWoodPlank = true;
             // Hộc bàn học sinh để sách vở
-            box(0, fh * 0.72, 0, fw * 0.92, fh * 0.04, fd * 0.86, deskWoodMat);
-            box(0, fh * 0.78, fd * 0.42, fw * 0.92, fh * 0.14, 0.02, metalMat);
+            const deskCubby = box(0, fh * 0.72, 0, fw * 0.92, fh * 0.04, fd * 0.86, deskWoodMat);
+            deskCubby.userData.isWoodPlank = true;
+            const modesty = box(0, fh * 0.78, fd * 0.42, fw * 0.92, fh * 0.14, 0.02, metalMat);
+            modesty.userData = { isMetal: true, noTexture: true };
             addGroundContactShadow(fGroup, fw, fd, 0.46);
             break;
           }
@@ -2071,11 +2089,14 @@
 
             // Mặt ngồi đệm êm ái, bo cạnh thác nước phía trước (mặt ngồi nhìn về -Z)
             // Lớp đế ngồi
-            box(0, legH + 0.015, 0, fw * 0.90, 0.03, fd * 0.88, chairWoodMat);
+            const seatBase = box(0, legH + 0.015, 0, fw * 0.90, 0.03, fd * 0.88, chairWoodMat);
+            seatBase.userData.isWoodPlank = true;
             // Đệm mút bọc vải/da êm ái
-            box(0, legH + 0.045, -fd * 0.02, fw * 0.88, 0.04, fd * 0.84, cushionMat);
+            const seatCushion = box(0, legH + 0.045, -fd * 0.02, fw * 0.88, 0.04, fd * 0.84, cushionMat);
+            seatCushion.userData = { isCushion: true, noTexture: true };
             // Mép bo thác nước phía trước ghế
-            box(0, legH + 0.035, -fd * 0.42, fw * 0.86, 0.035, 0.04, cushionMat);
+            const seatLip = box(0, legH + 0.035, -fd * 0.42, fw * 0.86, 0.035, 0.04, cushionMat);
+            seatLip.userData = { isCushion: true, noTexture: true };
 
             // 2 trụ kim loại đỡ lưng tựa vút cao từ sau mặt ghế (z = +fd * 0.38)
             const spineH = effectiveH - legH;
@@ -2087,10 +2108,12 @@
             const backH = spineH * 0.68;
             const backY = effectiveH - backH * 0.5 - 0.02;
             // Bản tựa lưng gỗ / đệm êm (nằm ở phía sau +Z)
-            box(0, backY, fd * 0.40, fw * 0.86, backH, 0.04, chairWoodMat);
+            const backPlate = box(0, backY, fd * 0.40, fw * 0.86, backH, 0.04, chairWoodMat);
+            backPlate.userData.isWoodPlank = true;
             // Đệm tựa lưng êm ái phía trong (+Z tựa lưng, phía trong hướng -Z về phía người ngồi)
-            box(0, backY, fd * 0.375, fw * 0.80, backH * 0.88, 0.025, cushionMat);
-            addGroundContactShadow(fGroup, fw * 0.92, fd * 0.92, 0.38);
+            const backCushion = box(0, backY, fd * 0.375, fw * 0.80, backH * 0.88, 0.025, cushionMat);
+            backCushion.userData = { isCushion: true, noTexture: true };
+            addGroundContactShadow(fGroup, fw * 0.92, fd * 0.92, 0.45);
             break;
           }
           case 'bed':
@@ -2118,19 +2141,24 @@
             const postD = Math.max(0.04, fd * 0.06);
 
             // 1. Bốn trụ thép chịu lực góc (Four corner vertical steel posts)
-            box(-fw * 0.48 + postW / 2, fh * 0.5, -fd * 0.46 + postD / 2, postW, fh, postD, shelfSteelMat);
-            box(fw * 0.48 - postW / 2, fh * 0.5, -fd * 0.46 + postD / 2, postW, fh, postD, shelfSteelMat);
-            box(-fw * 0.48 + postW / 2, fh * 0.5, fd * 0.46 - postD / 2, postW, fh, postD, shelfSteelMat);
-            box(fw * 0.48 - postW / 2, fh * 0.5, fd * 0.46 - postD / 2, postW, fh, postD, shelfSteelMat);
+            const p1 = box(-fw * 0.48 + postW / 2, fh * 0.5, -fd * 0.46 + postD / 2, postW, fh, postD, shelfSteelMat);
+            const p2 = box(fw * 0.48 - postW / 2, fh * 0.5, -fd * 0.46 + postD / 2, postW, fh, postD, shelfSteelMat);
+            const p3 = box(-fw * 0.48 + postW / 2, fh * 0.5, fd * 0.46 - postD / 2, postW, fh, postD, shelfSteelMat);
+            const p4 = box(fw * 0.48 - postW / 2, fh * 0.5, fd * 0.46 - postD / 2, postW, fh, postD, shelfSteelMat);
+            [p1, p2, p3, p4].forEach(p => { p.userData = { isMetal: true, noTexture: true }; });
 
             // 2. Tấm nẹp hồi 2 bên đầu kệ kèm biển phân loại sách màu vàng đặc trưng
-            box(-fw * 0.48, fh * 0.5, 0, postW * 0.8, fh * 0.96, fd * 0.88, shelfSteelMat);
-            box(fw * 0.48, fh * 0.5, 0, postW * 0.8, fh * 0.96, fd * 0.88, shelfSteelMat);
-            box(-fw * 0.485, fh * 0.88, 0, 0.02, fh * 0.14, fd * 0.45, signMat);
-            box(fw * 0.485, fh * 0.88, 0, 0.02, fh * 0.14, fd * 0.45, signMat);
+            const e1 = box(-fw * 0.48, fh * 0.5, 0, postW * 0.8, fh * 0.96, fd * 0.88, shelfSteelMat);
+            const e2 = box(fw * 0.48, fh * 0.5, 0, postW * 0.8, fh * 0.96, fd * 0.88, shelfSteelMat);
+            [e1, e2].forEach(e => { e.userData = { isMetal: true, noTexture: true }; });
+
+            const s1 = box(-fw * 0.485, fh * 0.88, 0, 0.02, fh * 0.14, fd * 0.45, signMat);
+            const s2 = box(fw * 0.485, fh * 0.88, 0, 0.02, fh * 0.14, fd * 0.45, signMat);
+            [s1, s2].forEach(s => { s.userData = { isSign: true, noTexture: true }; });
 
             // 3. Vách ngăn lửng chính giữa (Center divider partition - open frame)
-            box(0, fh * 0.5, 0, fw * 0.94, fh * 0.92, 0.02, shelfSteelMat);
+            const div = box(0, fh * 0.5, 0, fw * 0.94, fh * 0.92, 0.02, shelfSteelMat);
+            div.userData = { isMetal: true, noTexture: true };
 
             // 4. Các tầng đợt kệ (5 tiers of horizontal shelves)
             const numTiers = 5;
@@ -2138,7 +2166,8 @@
             for (let t = 0; t < numTiers; t++) {
               const shelfY = (t + 0.12) * tierHeight;
               // Mặt đợt kệ
-              box(0, shelfY, 0, fw * 0.94, 0.035, fd * 0.92, shelfPlankMat);
+              const plank = box(0, shelfY, 0, fw * 0.94, 0.035, fd * 0.92, shelfPlankMat);
+              plank.userData.isWoodPlank = true;
 
               // 5. CÁC HÀNG SÁCH PHONG PHÚ ĐA DẠNG TRÊN TỪNG TẦNG (CẢ 2 MẶT TRƯỚC VÀ SAU)
               const bookH = Math.min(tierHeight * 0.78, 0.28);
@@ -2153,9 +2182,11 @@
                 const bookCenterX = -fw * 0.42 + (b + 0.5) * batchW;
 
                 // Dãy sách phía trước (-Z)
-                box(bookCenterX, bookCenterY, -fd * 0.23, batchW * 0.92, bookH, bookD * 0.88, bMat);
+                const bFront = box(bookCenterX, bookCenterY, -fd * 0.23, batchW * 0.92, bookH, bookD * 0.88, bMat);
+                bFront.userData = { isBook: true, noTexture: true };
                 // Dãy sách phía sau (+Z)
-                box(bookCenterX, bookCenterY, fd * 0.23, batchW * 0.92, bookH, bookD * 0.88, bMat);
+                const bBack = box(bookCenterX, bookCenterY, fd * 0.23, batchW * 0.92, bookH, bookD * 0.88, bMat);
+                bBack.userData = { isBook: true, noTexture: true };
               }
             }
             addGroundContactShadow(fGroup, fw * 1.02, fd * 1.05, 0.52);
@@ -2197,9 +2228,11 @@
             box(0, 1.8, -0.08, fw * 0.84, fh * 0.82, 0.04, bodyMat);
             break;
           case 'window': {
+            const sillY = Math.max(0.85, Math.min(1.05, (typeof item.y === 'number' && item.y > 0.3 && item.y < 2.0) ? item.y : 0.95));
+            const maxWinH = Math.max(1.2, h - sillY - 0.35);
+            const winHeight = Math.min(maxWinH, Math.max(1.3, fh || 1.6));
             const winSpan = Math.max(fw, fd, 2.4);
-            const winHeight = Math.max(fh, 1.85);
-            const winY = item.y > 0 ? (item.y + winHeight * 0.5) : 1.75;
+            const winY = sillY + winHeight * 0.5;
             const frameThick = 0.075;
             const frameDepth = 0.12;
             const frameMat = createMaterial(item.color || '#F1F5F9', 0.35, 0.1);
@@ -2207,23 +2240,29 @@
 
             // 1. Khung cửa sổ viền ngoài nổi khối kiến trúc (Outer Casement Frame)
             // Khung trên
-            box(0, winY + winHeight * 0.5 - frameThick * 0.5, 0, winSpan, frameThick, frameDepth, frameMat);
+            const topFrame = box(0, winY + winHeight * 0.5 - frameThick * 0.5, 0, winSpan, frameThick, frameDepth, frameMat);
+            topFrame.userData.noTexture = true;
             // Bệ cửa sổ nhô ra đón nắng (Projecting Window Sill Ledge)
-            box(0, winY - winHeight * 0.5 + frameThick * 0.5, -0.05, winSpan + 0.22, frameThick * 1.4, frameDepth + 0.10, sillMat);
+            const sillBox = box(0, sillY + frameThick * 0.5, -0.05, winSpan + 0.22, frameThick * 1.4, frameDepth + 0.10, sillMat);
+            sillBox.userData.noTexture = true;
             // Khung trái & phải
-            box(-winSpan * 0.5 + frameThick * 0.5, winY, 0, frameThick, winHeight, frameDepth, frameMat);
-            box(winSpan * 0.5 - frameThick * 0.5, winY, 0, frameThick, winHeight, frameDepth, frameMat);
+            const leftFrame = box(-winSpan * 0.5 + frameThick * 0.5, winY, 0, frameThick, winHeight, frameDepth, frameMat);
+            leftFrame.userData.noTexture = true;
+            const rightFrame = box(winSpan * 0.5 - frameThick * 0.5, winY, 0, frameThick, winHeight, frameDepth, frameMat);
+            rightFrame.userData.noTexture = true;
 
             // 2. Chia khung kính (Mullions & Transom): 3 ô kính lớn hiện đại hoặc 2 ô
             const numPanes = winSpan > 2.8 ? 3 : 2;
             const paneW = (winSpan - frameThick * (numPanes + 1)) / numPanes;
             for (let i = 1; i < numPanes; i++) {
               const mx = -winSpan * 0.5 + frameThick + i * paneW + (i - 0.5) * frameThick;
-              box(mx, winY, 0, frameThick * 0.7, winHeight - frameThick * 2, frameDepth * 0.85, frameMat);
+              const mullion = box(mx, winY, 0, frameThick * 0.7, winHeight - frameThick * 2, frameDepth * 0.85, frameMat);
+              mullion.userData.noTexture = true;
             }
             // Khung ngang ô thoáng trên (Transom)
             const transomY = winY + winHeight * 0.28;
-            box(0, transomY, 0, winSpan - frameThick * 2, frameThick * 0.7, frameDepth * 0.85, frameMat);
+            const transom = box(0, transomY, 0, winSpan - frameThick * 2, frameThick * 0.7, frameDepth * 0.85, frameMat);
+            transom.userData.noTexture = true;
 
             // 3. Mặt kính PBR phản xạ ánh sáng (Physical Glass)
             const glassMat = new THREE.MeshStandardMaterial({
@@ -2233,7 +2272,8 @@
               roughness: 0.03,
               metalness: 0.30
             });
-            box(0, winY, 0.005, winSpan - frameThick * 2, winHeight - frameThick * 2, 0.012, glassMat, false);
+            const glassPane = box(0, winY, 0.005, winSpan - frameThick * 2, winHeight - frameThick * 2, 0.012, glassMat, false);
+            glassPane.userData.noTexture = true;
 
             // 4. Hậu cảnh ngoài trời chân thực (Atmospheric Sky & Trees Vista)
             const skyCanvas = generateOutdoorSkyCanvas();
@@ -2245,7 +2285,8 @@
             } else {
               skyMat = new THREE.MeshBasicMaterial({ color: 0xBAE6FD, depthWrite: false });
             }
-            box(0, winY, 0.02, winSpan * 0.99, winHeight * 0.99, 0.005, skyMat, false);
+            const skyPlane = box(0, winY, 0.02, winSpan * 0.99, winHeight * 0.99, 0.005, skyMat, false);
+            skyPlane.userData.noTexture = true;
 
             // 5. LIGHTING PHYSICS: Vệt nắng chiếu sàn nhà (Ray-Traced Sunbeam Floor Spill)
             const spillLength = Math.min(3.4, (roomGroup.userData.depth || 6) * 0.55);
@@ -2257,24 +2298,25 @@
               const spillMat = new THREE.MeshBasicMaterial({
                 map: spillTex,
                 transparent: true,
-                opacity: 0.28,
+                opacity: 0.45,
                 blending: THREE.AdditiveBlending,
                 depthWrite: false
               });
               const spillMesh = new THREE.Mesh(spillGeo, spillMat);
-              spillMesh.position.set(0, 0.007, -spillLength * 0.5 - 0.05);
+              spillMesh.position.set(0, 0.015, -spillLength * 0.5 - 0.05);
+              spillMesh.userData.noTexture = true;
               fGroup.add(spillMesh);
             }
 
             // 6. Ánh sáng xuyên phòng có đổ bóng (Directional Daylight Stream)
-            const windowLight = new THREE.DirectionalLight(0xFFF7DE, 1.5);
-            windowLight.position.set(0, winY + 0.8, 0.3);
+            const windowLight = new THREE.DirectionalLight(0xFFF0BD, 2.2);
+            windowLight.position.set(0, winY + winHeight * 0.35, 0.3);
             windowLight.target.position.set(0, 0, -spillLength * 1.1);
             windowLight.castShadow = true;
             windowLight.shadow.mapSize.width = 1024;
             windowLight.shadow.mapSize.height = 1024;
             windowLight.shadow.bias = -0.0003;
-            windowLight.shadow.radius = 2.2;
+            windowLight.shadow.radius = 1.2;
             if (extraLights < 2) {
               fGroup.add(windowLight);
               fGroup.add(windowLight.target);
@@ -2283,14 +2325,17 @@
 
             // 7. Rèm cuốn màu kem hiện đại (Modern Roller Blinds)
             const blindBoxMat = createMaterial('#CBD5E1', 0.4, 0.3);
-            box(0, winY + winHeight * 0.5 + 0.04, -0.05, winSpan * 0.98, 0.08, 0.09, blindBoxMat);
+            const blindHousing = box(0, winY + winHeight * 0.5 + 0.04, -0.05, winSpan * 0.98, 0.08, 0.09, blindBoxMat);
+            blindHousing.userData.noTexture = true;
             const blindCanvas = generateRollerBlindCanvas(item.color || '#F7F3E7');
             const blindFabricMat = blindCanvas
               ? new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(blindCanvas), roughness: 0.85, metalness: 0.0, side: THREE.DoubleSide })
               : createMaterial('#F7F3E7', 0.85, 0.0);
             const blindDrop = winHeight * 0.32;
-            box(0, winY + winHeight * 0.5 - blindDrop * 0.5, -0.045, winSpan * 0.95, blindDrop, 0.015, blindFabricMat);
-            box(0, winY + winHeight * 0.5 - blindDrop, -0.045, winSpan * 0.95, 0.03, 0.03, blindBoxMat);
+            const blindFabric = box(0, winY + winHeight * 0.5 - blindDrop * 0.5, -0.045, winSpan * 0.95, blindDrop, 0.015, blindFabricMat);
+            blindFabric.userData.noTexture = true;
+            const blindWeight = box(0, winY + winHeight * 0.5 - blindDrop, -0.045, winSpan * 0.95, 0.03, 0.03, blindBoxMat);
+            blindWeight.userData.noTexture = true;
             break;
           }
           case 'door': {
@@ -2809,7 +2854,6 @@
         table: ['desk', 2, 2],
         podium: ['desk', 1, 1],
         shelf: ['desk', 2, 3],
-        book: ['desk', 1, 1],
         chair: ['chair', 1, 1],
         whiteboard: ['board', 1, 1],
         blackboard: ['board', 1, 1],
@@ -2817,10 +2861,7 @@
         projector_screen: ['screen', 1, 1],
         television: ['screen', 1, 1],
         tv: ['screen', 1, 1],
-        window: ['window', 1, 2],
-        curtain: ['window', 1, 2],
-        sofa: ['sofa', 2, 2],
-        pillar: ['wall', 1, 3]
+        sofa: ['sofa', 2, 2]
       };
       furnitureMeshes.forEach(group => {
         const info = group.userData?.furnitureInfo;
@@ -2831,8 +2872,28 @@
           const fd = Math.max(1, Math.round(info?.depth || target[2]));
           group.traverse(child => {
             if (child.isMesh) {
-              // Preserve metallic frames and legs from being overwritten by wood or fabric textures
-              if (child.userData?.noTexture || (child.material && typeof child.material.metalness === 'number' && child.material.metalness >= 0.3)) return;
+              // Preserve tagged protected items: books, signs, cushions, metal, glass, lights, shadows
+              if (
+                child.userData?.noTexture ||
+                child.userData?.isBook ||
+                child.userData?.isSign ||
+                child.userData?.isCushion ||
+                child.userData?.isMetal ||
+                (child.material && typeof child.material.metalness === 'number' && child.material.metalness >= 0.3)
+              ) {
+                return;
+              }
+
+              // For shelves, only apply desk wood texture to horizontal wooden planks (never books, signs, or frame)
+              if (kind === 'shelf' && !child.userData?.isWoodPlank) {
+                return;
+              }
+
+              // For chairs, only apply chair texture to wooden backplate / seat base (never cushions or metal)
+              if (kind === 'chair' && !child.userData?.isWoodPlank) {
+                return;
+              }
+
               apply(child, target[0], fw, fd);
             }
           });
