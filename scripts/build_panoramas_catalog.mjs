@@ -21,7 +21,8 @@ async function main() {
     bedroom: [],
     dining_kitchen: [],
     office_study: [],
-    hospitality_gallery: []
+    hospitality_gallery: [],
+    studio_workshop: []
   };
 
   for (const [id, a] of entries) {
@@ -48,12 +49,14 @@ async function main() {
       buckets.living_room.push(item);
     } else if (/bed|hotel|bedroom|dorm|sleeping|wardrobe|suite/i.test(text)) {
       buckets.bedroom.push(item);
-    } else if (/dining|kitchen|restaurant|cafe|bar|canteen|bakery|cafeteria|pub|counter|cook/i.test(text)) {
+    } else if (/dining|kitchen|restaurant|cafe|bar|canteen|bakery|cafeteria|pub|counter|cook|bistro|table/i.test(text)) {
       buckets.dining_kitchen.push(item);
-    } else if (/office|study|desk|boardroom|meeting|conference|library|reading|classroom|school|university/i.test(text)) {
+    } else if (/office|study|desk|boardroom|meeting|conference|library|reading|classroom|school|university|computer/i.test(text)) {
       buckets.office_study.push(item);
-    } else if (/room|hall|studio|gallery|interior|house|flat|indoor|museum|church|palace|mansion|theater|cinema|shop|store|workshop/i.test(text)) {
+    } else if (/hall|gallery|museum|church|palace|mansion|theater|cinema|ballroom|cathedral|chapel/i.test(text)) {
       buckets.hospitality_gallery.push(item);
+    } else {
+      buckets.studio_workshop.push(item);
     }
   }
 
@@ -63,66 +66,95 @@ async function main() {
   console.log(' - Dining & Kitchens:', buckets.dining_kitchen.length);
   console.log(' - Offices & Studies:', buckets.office_study.length);
   console.log(' - Hospitality & Galleries:', buckets.hospitality_gallery.length);
+  console.log(' - Studios & Workshops:', buckets.studio_workshop.length);
 
-  // Fill up to exactly 100 items with balanced selection
-  const curated = [];
-  const targetCounts = {
-    living_room: 25,
-    bedroom: 20,
-    dining_kitchen: 22,
-    office_study: 18,
-    hospitality_gallery: 15
+  // Curate 200 rooms across 6 archetypes
+  const targetCounts200 = {
+    living_room: Math.min(buckets.living_room.length, 42),
+    bedroom: Math.min(buckets.bedroom.length, 10),
+    dining_kitchen: Math.min(buckets.dining_kitchen.length, 42),
+    office_study: Math.min(buckets.office_study.length, 10),
+    hospitality_gallery: Math.min(buckets.hospitality_gallery.length, 46),
+    studio_workshop: Math.min(buckets.studio_workshop.length, 50)
   };
 
-  for (const [key, target] of Object.entries(targetCounts)) {
-    const list = buckets[key];
+  const archetypeVN = {
+    living_room: 'Phòng khách & Sinh hoạt chung',
+    bedroom: 'Phòng ngủ & Khách sạn',
+    dining_kitchen: 'Phòng ăn, Bếp & Quán Cafe',
+    office_study: 'Phòng làm việc & Thư viện',
+    hospitality_gallery: 'Sảnh tiệc, Bảo tàng & Hội trường',
+    studio_workshop: 'Studio, Gác xép & Không gian sáng tạo'
+  };
+
+  const curated200 = [];
+  for (const [key, target] of Object.entries(targetCounts200)) {
+    const list = buckets[key] || [];
     const take = list.slice(0, target);
     take.forEach(item => {
-      curated.push({
+      curated200.push({
         ...item,
         archetype: key,
-        archetype_vn: {
-          living_room: 'Phòng khách & Lounge',
-          bedroom: 'Phòng ngủ & Khách sạn',
-          dining_kitchen: 'Phòng ăn & Nhà bếp',
-          office_study: 'Phòng làm việc & Thư viện',
-          hospitality_gallery: 'Sảnh tiệc & Không gian trưng bày'
-        }[key]
+        archetype_vn: archetypeVN[key] || key
       });
     });
   }
 
-  // If slightly under 100, top up from hospitality_gallery
-  if (curated.length < 100) {
-    const remaining = buckets.hospitality_gallery.slice(targetCounts.hospitality_gallery, targetCounts.hospitality_gallery + (100 - curated.length));
-    remaining.forEach(item => {
-      curated.push({
+  // If slightly under 200, fill from studio_workshop
+  if (curated200.length < 200 && buckets.studio_workshop.length > targetCounts200.studio_workshop) {
+    const extraNeeded = 200 - curated200.length;
+    const extra = buckets.studio_workshop.slice(targetCounts200.studio_workshop, targetCounts200.studio_workshop + extraNeeded);
+    extra.forEach(item => {
+      curated200.push({
         ...item,
-        archetype: 'hospitality_gallery',
-        archetype_vn: 'Sảnh tiệc & Không gian trưng bày'
+        archetype: 'studio_workshop',
+        archetype_vn: archetypeVN.studio_workshop
       });
     });
   }
 
-  const catalog = {
-    title: 'MemoryWeaver 100 Indoor Panorama Dataset & Benchmark',
-    total_rooms: curated.length,
-    description: '100 curated, CC0 licensed, high-resolution equirectangular 360 indoor panoramas across 5 major room archetypes for 3D reconstruction and layout testing.',
+  const catalog200 = {
+    title: 'MemoryWeaver 200 Indoor Panorama Dataset & Benchmark',
+    total_rooms: curated200.length,
+    description: '200 curated, CC0 licensed, high-resolution equirectangular 360 indoor panoramas across 6 room archetypes for 3D spatial layout reconstruction and multi-stage texture synthesis.',
     source: 'Poly Haven & Open Indoor Datasets',
     license: 'CC0 / Public Domain',
     categories: {
-      living_room: curated.filter(c => c.archetype === 'living_room').length,
-      bedroom: curated.filter(c => c.archetype === 'bedroom').length,
-      dining_kitchen: curated.filter(c => c.archetype === 'dining_kitchen').length,
-      office_study: curated.filter(c => c.archetype === 'office_study').length,
-      hospitality_gallery: curated.filter(c => c.archetype === 'hospitality_gallery').length
+      living_room: curated200.filter(c => c.archetype === 'living_room').length,
+      bedroom: curated200.filter(c => c.archetype === 'bedroom').length,
+      dining_kitchen: curated200.filter(c => c.archetype === 'dining_kitchen').length,
+      office_study: curated200.filter(c => c.archetype === 'office_study').length,
+      hospitality_gallery: curated200.filter(c => c.archetype === 'hospitality_gallery').length,
+      studio_workshop: curated200.filter(c => c.archetype === 'studio_workshop').length
     },
-    rooms: curated
+    rooms: curated200
   };
 
-  const outputPath = path.join(__dirname, 'indoor_panoramas_100.json');
-  await fs.writeFile(outputPath, JSON.stringify(catalog, null, 2), 'utf8');
-  console.log(`Saved ${curated.length} indoor panoramas to: ${outputPath}`);
+  const outputPath200 = path.join(__dirname, 'indoor_panoramas_200.json');
+  await fs.writeFile(outputPath200, JSON.stringify(catalog200, null, 2), 'utf8');
+  console.log(`Saved ${curated200.length} indoor panoramas to: ${outputPath200}`);
+
+  // Also preserve 100 rooms catalog
+  const curated100 = curated200.slice(0, 100);
+  const catalog100 = {
+    title: 'MemoryWeaver 100 Indoor Panorama Dataset & Benchmark',
+    total_rooms: curated100.length,
+    description: '100 curated, CC0 licensed, high-resolution equirectangular 360 indoor panoramas for 3D reconstruction and layout testing.',
+    source: 'Poly Haven & Open Indoor Datasets',
+    license: 'CC0 / Public Domain',
+    categories: {
+      living_room: curated100.filter(c => c.archetype === 'living_room').length,
+      bedroom: curated100.filter(c => c.archetype === 'bedroom').length,
+      dining_kitchen: curated100.filter(c => c.archetype === 'dining_kitchen').length,
+      office_study: curated100.filter(c => c.archetype === 'office_study').length,
+      hospitality_gallery: curated100.filter(c => c.archetype === 'hospitality_gallery').length,
+      studio_workshop: curated100.filter(c => c.archetype === 'studio_workshop').length
+    },
+    rooms: curated100
+  };
+  const outputPath100 = path.join(__dirname, 'indoor_panoramas_100.json');
+  await fs.writeFile(outputPath100, JSON.stringify(catalog100, null, 2), 'utf8');
+  console.log(`Saved ${curated100.length} indoor panoramas to: ${outputPath100}`);
 }
 
 main().catch(err => {

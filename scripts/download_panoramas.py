@@ -14,14 +14,17 @@ import sys
 import urllib.request
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-CATALOG_PATH = os.path.join(SCRIPT_DIR, "indoor_panoramas_100.json")
+DEFAULT_CATALOG_200 = os.path.join(SCRIPT_DIR, "indoor_panoramas_200.json")
+DEFAULT_CATALOG_100 = os.path.join(SCRIPT_DIR, "indoor_panoramas_100.json")
+CATALOG_PATH = DEFAULT_CATALOG_200 if os.path.exists(DEFAULT_CATALOG_200) else DEFAULT_CATALOG_100
 DEFAULT_OUT_DIR = os.path.join(SCRIPT_DIR, "downloaded_panoramas")
 
-def load_catalog():
-    if not os.path.exists(CATALOG_PATH):
-        print(f"Error: Catalog not found at {CATALOG_PATH}")
+def load_catalog(custom_path=None):
+    path = custom_path or CATALOG_PATH
+    if not os.path.exists(path):
+        print(f"Error: Catalog not found at {path}")
         sys.exit(1)
-    with open(CATALOG_PATH, "r", encoding="utf-8") as f:
+    with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 def list_panoramas(catalog):
@@ -30,12 +33,12 @@ def list_panoramas(catalog):
     print("=" * 80)
     categories = catalog.get("categories", {})
     for cat, count in categories.items():
-        print(f"  • {cat.replace('_', ' ').title():<25}: {count} rooms")
+        print(f"  • {cat.replace('_', ' ').title():<28}: {count} rooms")
     print("-" * 80)
-    print(f"{'#':<4} {'ID':<28} {'Category':<20} {'Name'}")
+    print(f"{'#':<4} {'ID':<28} {'Category':<22} {'Name'}")
     print("-" * 80)
     for idx, r in enumerate(catalog.get("rooms", []), 1):
-        print(f"{idx:<4} {r['id']:<28} {r['archetype']:<20} {r['name']}")
+        print(f"{idx:<4} {r['id']:<28} {r['archetype']:<22} {r['name']}")
 
 def download_images(catalog, category=None, count=5, out_dir=DEFAULT_OUT_DIR, download_all=False):
     rooms = catalog.get("rooms", [])
@@ -70,14 +73,15 @@ def download_images(catalog, category=None, count=5, out_dir=DEFAULT_OUT_DIR, do
 
 def main():
     parser = argparse.ArgumentParser(description="Download indoor 360 panorama samples.")
-    parser.add_argument("--list", action="store_true", help="List all 100 available panoramas")
-    parser.add_argument("--all", action="store_true", help="Download all 100 panoramas")
+    parser.add_argument("--catalog", type=str, default=None, help="Path to custom catalog JSON (default: indoor_panoramas_200.json)")
+    parser.add_argument("--list", action="store_true", help="List all available panoramas in the catalog")
+    parser.add_argument("--all", action="store_true", help="Download all panoramas in the catalog")
     parser.add_argument("--count", type=int, default=5, help="Number of panoramas to download (default: 5)")
-    parser.add_argument("--category", type=str, choices=["living_room", "bedroom", "dining_kitchen", "office_study", "hospitality_gallery"], help="Filter by room category")
+    parser.add_argument("--category", type=str, choices=["living_room", "bedroom", "dining_kitchen", "office_study", "hospitality_gallery", "studio_workshop"], help="Filter by room category")
     parser.add_argument("--output", type=str, default=DEFAULT_OUT_DIR, help="Output directory")
     args = parser.parse_args()
 
-    catalog = load_catalog()
+    catalog = load_catalog(args.catalog)
 
     if args.list:
         list_panoramas(catalog)

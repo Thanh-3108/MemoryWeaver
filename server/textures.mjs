@@ -40,14 +40,14 @@ CRITICAL INSTRUCTIONS:
 - If a surface is mostly covered or occluded (like the floor in a crowded classroom):
   Set 'has_clean_patch': false.
 - In ALL cases, specify:
-  * 'material_type': e.g., 'varnished_wood', 'hardwood_parquet', 'acoustic_carpet', 'carpet_tile', 'ceramic_tile', 'terrazzo_tile', 'matte_wall_paint', 'whiteboard_enamel', 'woven_fabric', 'leather', 'linen'
-  * Floor note: In living rooms and bedrooms, floors are frequently hardwood parquet ('hardwood_parquet') or acoustic carpet ('acoustic_carpet'). In classrooms/libraries, check for carpet tiles or ceramic.
-  * Sofa/Bed note: Living room sofas and bedroom duvets are tactile woven fabrics ('woven_fabric', 'linen', 'leather'). Sample the true upholstery color without cast shadows.
-  * Desk/Table note: Ensure dominant_color reflects authentic warm natural timber (oak, birch, walnut) or marble without cool shadow distortion.
+  * 'material_type': e.g., 'varnished_wood', 'hardwood_parquet', 'carrara_marble', 'acoustic_carpet', 'carpet_tile', 'ceramic_tile', 'terrazzo_tile', 'matte_wall_paint', 'whiteboard_enamel', 'woven_linen', 'aniline_leather'
+  * Floor note: In living rooms, bedrooms, and lounges, floors are frequently hardwood parquet ('hardwood_parquet') or acoustic carpet ('acoustic_carpet'). In classrooms/libraries, check for carpet tiles or ceramic tiles.
+  * Sofa/Bed note: Living room sofas and bedroom duvets are tactile woven fabrics ('woven_linen', 'woven_fabric') or luxury leather ('aniline_leather'). Sample the true upholstery color without cast shadows.
+  * Desk/Table note: Coffee tables, dining tables, or desks are natural timber ('varnished_wood') or marble/stone ('carrara_marble'). Ensure dominant_color reflects authentic material without cool shadow distortion.
   * 'dominant_color': Hex #RRGGBB sampled strictly from the pure material itself (NOT from clutter!).
   * 'secondary_color': Hex #RRGGBB for grain/veins/grout if applicable.
   * 'grain_direction': 'horizontal', 'vertical', 'none', or 'isotropic'.
-  * 'roughness': 0.0 to 1.0 (e.g., 0.35 for varnished wood, 0.45 for polished tile, 0.75 for sofa fabric, 0.85 for matte wall, 0.90 for carpet).
+  * 'roughness': 0.0 to 1.0 (e.g., 0.22 for polished marble, 0.35 for hardwood parquet, 0.44 for leather, 0.78 for woven linen sofa, 0.85 for matte wall, 0.90 for carpet).
   * 'details': Short description of the real material appearance.
 
 Return strict JSON:

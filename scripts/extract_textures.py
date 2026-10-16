@@ -85,14 +85,14 @@ def load_input_image(image_input):
     else:
         raise ValueError(f"Unsupported image input type: {type(image_input)}")
 
-    if pil_img.width * pil_img.height > 16_000_000:
-        pil_img.close()
-        raise ValueError("Image exceeds 16 megapixels")
+    if hasattr(Image, 'MAX_IMAGE_PIXELS'):
+        Image.MAX_IMAGE_PIXELS = 120_000_000
+
     pil_img = ImageOps.exif_transpose(pil_img)
 
     max_dim = max(pil_img.width, pil_img.height)
-    if max_dim > 1600:
-        scale = 1600.0 / max_dim
+    if max_dim > 2048:
+        scale = 2048.0 / max_dim
         pil_img = pil_img.resize((int(pil_img.width * scale), int(pil_img.height * scale)), Image.Resampling.BILINEAR)
 
     pil_img = pil_img.convert("RGB")
@@ -162,7 +162,7 @@ def inpaint_clutter_and_foreign_objects(patch_rgb):
 
 
 def make_seamless_tile(patch_rgb, target_size=(512, 512)):
-    """Synthesize seamless tile by blending edge borders so opposite sides connect seamlessly."""
+    """Synthesize seamless tile by blending edge borders using smooth cosine ease so opposite sides connect seamlessly."""
     tw, th = target_size
     if HAS_CV2:
         resized = cv2.resize(patch_rgb, (tw, th), interpolation=cv2.INTER_AREA)
@@ -173,15 +173,15 @@ def make_seamless_tile(patch_rgb, target_size=(512, 512)):
     blend_width = int(tw * 0.12)
     out = resized.copy().astype(np.float32)
 
-    # Horizontal blend
+    # Horizontal blend with smooth cosine ease (zero derivative at boundaries)
     for x in range(blend_width):
-        alpha = x / float(blend_width)
+        alpha = 0.5 - 0.5 * np.cos(np.pi * (x / float(blend_width)))
         out[:, x] = (1.0 - alpha) * resized[:, tw - blend_width + x] + alpha * resized[:, x]
         out[:, tw - blend_width + x] = (1.0 - alpha) * resized[:, tw - blend_width + x] + alpha * resized[:, x]
 
-    # Vertical blend
+    # Vertical blend with smooth cosine ease
     for y in range(blend_width):
-        alpha = y / float(blend_width)
+        alpha = 0.5 - 0.5 * np.cos(np.pi * (y / float(blend_width)))
         out[y, :] = (1.0 - alpha) * out[th - blend_width + y, :] + alpha * out[y, :]
         out[th - blend_width + y, :] = (1.0 - alpha) * out[th - blend_width + y, :] + alpha * out[y, :]
 
@@ -369,6 +369,137 @@ def synthesize_fabric_texture(dom_hex='#A79A8D', sec_hex='#8C8074', size=(512, 5
     return make_seamless_tile(np.clip(img, 0, 255).astype(np.uint8), target_size=size)
 
 
+def synthesize_parquet_texture(dom_hex='#8D6E63', sec_hex='#5D4037', size=(512, 512), photo_patch=None):
+    """Synthesize photorealistic hardwood parquet / herringbone floor planks."""
+    w, h = size
+    c1 = hex_to_rgb(dom_hex, (141.0, 110.0, 99.0))
+    if photo_patch is not None and photo_patch.shape[0] >= 16 and photo_patch.shape[1] >= 16:
+        c1 = np.median(photo_patch.reshape(-1, 3), axis=0).astype(np.float32)
+    c1 = sanitize_wood_color(c1)
+
+    rows = 4
+    cols = 4
+    ph = h // rows
+    pw = w // cols
+    img = np.zeros((h, w, 3), dtype=np.float32)
+    rng = np.random.RandomState(77)
+
+    for r in range(rows):
+        y0 = r * ph
+        y1 = (r + 1) * ph if r < rows - 1 else h
+        row_h = y1 - y0
+        offset_x = (r % 2) * (pw // 2)
+
+        for c in range(-1, cols + 1):
+            x0 = c * pw + offset_x
+            x1 = x0 + pw
+            rx0 = max(0, x0)
+            rx1 = min(w, x1)
+            if rx1 <= rx0:
+                continue
+
+            shift = rng.uniform(-14.0, 14.0, (1, 1, 3))
+            base = np.clip(c1 + shift, 25.0, 245.0)
+
+            cur_w = rx1 - rx0
+            cur_y = np.linspace(0, 1, row_h)[:, None]
+            cur_x = np.linspace(0, 1, cur_w)[None, :]
+
+            grain = (np.sin(cur_x * 4.0 * np.pi + rng.uniform(-1, 1)) * 0.05 +
+                     np.sin(cur_y * 60.0 * np.pi) * 0.45 + 0.5)[:, :, None]
+            dark = np.clip(base * 0.82, 0.0, 255.0)
+            plank = base[None, None, :] * (1.0 - grain * 0.22) + dark[None, None, :] * (grain * 0.22)
+            plank += rng.normal(0, 2.5, (row_h, cur_w, 1))
+
+            if rx0 > x0:
+                plank[:, :1] *= 0.80
+            if rx1 < x1 or rx1 < w:
+                plank[:, -1:] *= 0.80
+            if y1 < h:
+                plank[-1:, :] *= 0.78
+            if y0 > 0:
+                plank[:1, :] *= 1.08
+
+            img[y0:y1, rx0:rx1] = plank
+
+    return make_seamless_tile(np.clip(img, 0, 255).astype(np.uint8), target_size=size)
+
+
+def synthesize_marble_texture(dom_hex='#F8F9FA', sec_hex='#7F8C8D', size=(512, 512), photo_patch=None):
+    """Synthesize luxury Carrara / Calacatta or Nero Marquina marble with calcite veining."""
+    w, h = size
+    c_base = hex_to_rgb(dom_hex, (245.0, 245.0, 245.0))
+    c_vein = hex_to_rgb(sec_hex, (120.0, 130.0, 140.0))
+    if photo_patch is not None and photo_patch.shape[0] >= 16 and photo_patch.shape[1] >= 16:
+        flat = photo_patch.reshape(-1, 3).astype(np.float32)
+        c_base = np.percentile(flat, 80, axis=0)
+        c_vein = np.percentile(flat, 20, axis=0)
+
+    y, x = np.mgrid[0:h, 0:w].astype(np.float32)
+    rng = np.random.RandomState(123)
+
+    turb1 = np.sin(x * 0.015 + np.sin(y * 0.02) * 2.5)
+    turb2 = np.cos(y * 0.025 + np.sin(x * 0.015) * 1.8)
+    turb3 = np.sin((x + y) * 0.04) * 0.5
+    vein_field = np.abs(np.sin((x * 0.008 + turb1 * 2.0 + turb2 * 1.5 + turb3) * np.pi))
+
+    sharp_veins = np.power(1.0 - vein_field, 6.0)[:, :, None]
+    soft_veins = np.power(1.0 - vein_field, 2.0)[:, :, None] * 0.35
+
+    specks = rng.normal(0, 3.0, (h, w, 3))
+    marble = c_base[None, None, :] * (1.0 - (sharp_veins + soft_veins)) + c_vein[None, None, :] * (sharp_veins + soft_veins) + specks
+
+    return make_seamless_tile(np.clip(marble, 0, 255).astype(np.uint8), target_size=size)
+
+
+def synthesize_leather_texture(dom_hex='#5D4037', sec_hex='#3E2723', size=(512, 512), photo_patch=None):
+    """Synthesize premium aniline upholstery leather with organic cellular grain."""
+    w, h = size
+    c_leather = hex_to_rgb(dom_hex, (93.0, 64.0, 55.0))
+    if photo_patch is not None and photo_patch.shape[0] >= 16 and photo_patch.shape[1] >= 16:
+        c_leather = np.median(photo_patch.reshape(-1, 3), axis=0).astype(np.float32)
+
+    rng = np.random.RandomState(66)
+    base = np.clip(c_leather, 20.0, 235.0)
+
+    y, x = np.mgrid[0:h, 0:w].astype(np.float32)
+    jitter_x = rng.normal(0, 0.4, (h, w))
+    jitter_y = rng.normal(0, 0.4, (h, w))
+    grain1 = np.sin((x + jitter_x) * 1.2) * np.cos((y + jitter_y) * 1.2)
+    grain2 = np.sin((x + y) * 0.6) * 0.5
+    grain = ((grain1 + grain2) * 0.5 + 0.5)[:, :, None]
+
+    highlight = np.clip(base * 1.15, 0.0, 255.0)
+    shadow = np.clip(base * 0.80, 0.0, 255.0)
+    leather = shadow[None, None, :] * (1.0 - grain) + highlight[None, None, :] * grain
+    leather += rng.normal(0, 3.0, (h, w, 3))
+
+    return make_seamless_tile(np.clip(leather, 0, 255).astype(np.uint8), target_size=size)
+
+
+def synthesize_linen_texture(dom_hex='#C8BFA8', sec_hex='#A89F88', size=(512, 512), photo_patch=None):
+    """Synthesize tactile slub woven linen for fabric sofas, armchairs, and bed duvets."""
+    w, h = size
+    c_linen = hex_to_rgb(dom_hex, (200.0, 191.0, 168.0))
+    if photo_patch is not None and photo_patch.shape[0] >= 16 and photo_patch.shape[1] >= 16:
+        c_linen = np.median(photo_patch.reshape(-1, 3), axis=0).astype(np.float32)
+
+    rng = np.random.RandomState(45)
+    base = np.clip(c_linen, 30.0, 245.0)
+
+    y, x = np.mgrid[0:h, 0:w].astype(np.float32)
+    warp = np.sin(x * 0.75 + rng.normal(0, 0.2, (h, w)))
+    weft = np.cos(y * 0.75 + rng.normal(0, 0.2, (h, w)))
+    slub = (warp * weft * 0.5 + 0.5)[:, :, None]
+
+    fibers = rng.normal(0, 7.0, (h, w, 3))
+    dark_linen = np.clip(base * 0.85, 0.0, 255.0)
+    linen = base[None, None, :] * (1.0 - slub * 0.25) + dark_linen[None, None, :] * (slub * 0.25) + fibers
+
+    return make_seamless_tile(np.clip(linen, 0, 255).astype(np.uint8), target_size=size)
+
+
+
 def get_dominant_color_hex(arr_rgb):
     """Compute dominant representative color in hex format (#RRGGBB)."""
     median_rgb = np.median(arr_rgb.reshape(-1, 3), axis=0).astype(int)
@@ -506,6 +637,104 @@ def find_autonomous_patches(img_rgb):
             "material_type": "matte_wall_paint"
         }
 
+    floor_mean = np.mean(best_floor_patch, axis=(0, 1)) if best_floor_patch is not None else np.array([128.0, 128.0, 128.0])
+    wall_mean = np.mean(best_wall_patch, axis=(0, 1)) if best_wall_patch is not None else np.array([210.0, 210.0, 210.0])
+
+    # 5. Sofa / Upholstered Seating (mid-band: y: 0.42..0.78, lateral-to-central)
+    best_sofa_patch = None
+    min_sofa_clutter = float('inf')
+    best_sofa_box = None
+    spw, sph = int(w * 0.16), int(h * 0.12)
+
+    for y in range(int(h * 0.42), max(int(h * 0.43), int(h * 0.76) - sph), step_y):
+        for x in range(int(w * 0.12), max(int(w * 0.13), int(w * 0.88) - spw), step_x):
+            candidate = img_rgb[y:y+sph, x:x+spw]
+            mean_c = np.mean(candidate, axis=(0, 1))
+            if np.linalg.norm(mean_c - floor_mean) < 22 or np.linalg.norm(mean_c - wall_mean) < 22:
+                continue
+            score = get_patch_clutter_score(candidate)
+            if score < min_sofa_clutter:
+                min_sofa_clutter = score
+                best_sofa_patch = candidate
+                best_sofa_box = [int(y / h * 1000), int(x / w * 1000), int((y + sph) / h * 1000), int((x + spw) / w * 1000)]
+
+    if best_sofa_patch is not None:
+        sofa_mean = np.mean(best_sofa_patch, axis=(0, 1))
+        is_leather = (sofa_mean[0] > sofa_mean[2] * 1.15) and (np.mean(sofa_mean) < 145)
+        patches["sofa"] = {
+            "patch": best_sofa_patch,
+            "box": best_sofa_box,
+            "material_type": "aniline_leather" if is_leather else "woven_linen"
+        }
+
+    # 6. Rug (lower-central zone: y: 0.62..0.92, x: 0.25..0.75)
+    best_rug_patch = None
+    min_rug_clutter = float('inf')
+    best_rug_box = None
+    rpw, rph = int(w * 0.16), int(h * 0.10)
+    for y in range(int(h * 0.62), max(int(h * 0.63), int(h * 0.90) - rph), step_y):
+        for x in range(int(w * 0.25), max(int(w * 0.26), int(w * 0.75) - rpw), step_x):
+            candidate = img_rgb[y:y+rph, x:x+rpw]
+            mean_c = np.mean(candidate, axis=(0, 1))
+            if np.linalg.norm(mean_c - floor_mean) < 28:
+                continue
+            score = get_patch_clutter_score(candidate)
+            if score < min_rug_clutter:
+                min_rug_clutter = score
+                best_rug_patch = candidate
+                best_rug_box = [int(y / h * 1000), int(x / w * 1000), int((y + rph) / h * 1000), int((x + rpw) / w * 1000)]
+
+    if best_rug_patch is not None:
+        patches["rug"] = {
+            "patch": best_rug_patch,
+            "box": best_rug_box,
+            "material_type": "acoustic_carpet"
+        }
+
+    # 7. Table (lower-central foreground: y: 0.52..0.85, x: 0.28..0.72)
+    best_table_patch = None
+    min_table_clutter = float('inf')
+    best_table_box = None
+    tpw, tph = int(w * 0.15), int(h * 0.08)
+    for y in range(int(h * 0.52), max(int(h * 0.53), int(h * 0.82) - tph), step_y):
+        for x in range(int(w * 0.28), max(int(w * 0.29), int(w * 0.72) - tpw), step_x):
+            candidate = img_rgb[y:y+tph, x:x+tpw]
+            score = get_patch_clutter_score(candidate)
+            if score < min_table_clutter:
+                min_table_clutter = score
+                best_table_patch = candidate
+                best_table_box = [int(y / h * 1000), int(x / w * 1000), int((y + tph) / h * 1000), int((x + tpw) / w * 1000)]
+
+    if best_table_patch is not None:
+        t_mean = np.mean(best_table_patch, axis=(0, 1))
+        is_marble = (np.mean(t_mean) > 185) and (np.std(t_mean) < 20)
+        patches["table"] = {
+            "patch": best_table_patch,
+            "box": best_table_box,
+            "material_type": "carrara_marble" if is_marble else "varnished_wood"
+        }
+
+    # 8. Bed (mid-lower central: y: 0.46..0.80, x: 0.20..0.80)
+    best_bed_patch = None
+    min_bed_clutter = float('inf')
+    best_bed_box = None
+    bpw, bph = int(w * 0.18), int(h * 0.12)
+    for y in range(int(h * 0.46), max(int(h * 0.47), int(h * 0.80) - bph), step_y):
+        for x in range(int(w * 0.20), max(int(w * 0.21), int(w * 0.80) - bpw), step_x):
+            candidate = img_rgb[y:y+bph, x:x+bpw]
+            score = get_patch_clutter_score(candidate)
+            if score < min_bed_clutter:
+                min_bed_clutter = score
+                best_bed_patch = candidate
+                best_bed_box = [int(y / h * 1000), int(x / w * 1000), int((y + bph) / h * 1000), int((x + bpw) / w * 1000)]
+
+    if best_bed_patch is not None:
+        patches["bed"] = {
+            "patch": best_bed_patch,
+            "box": best_bed_box,
+            "material_type": "woven_linen"
+        }
+
     return patches
 
 
@@ -608,20 +837,53 @@ def extract_textures(image_input, regions_input=None):
 
             if name == "screen":
                 synth_tile = synthesize_screen_texture(photo_patch=photo_patch, dom_hex=dom_color, size=(512, 384))
+            elif "parquet" in mat_type or "herringbone" in mat_type or (name == "floor" and ("wood" in mat_type or "timber" in mat_type or "parquet" in mat_type)):
+                synth_tile = synthesize_parquet_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
+                mat_type = "hardwood_parquet"
+            elif "marble" in mat_type or "granite" in mat_type or "stone" in mat_type or (name == "table" and ("marble" in mat_type or "stone" in mat_type)):
+                synth_tile = synthesize_marble_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
+                mat_type = "carrara_marble"
+            elif "leather" in mat_type or (name in ["sofa", "chair"] and "leather" in mat_type):
+                synth_tile = synthesize_leather_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
+                mat_type = "aniline_leather"
+            elif "linen" in mat_type or "cotton" in mat_type or "duvet" in mat_type or name in ["sofa", "bed"]:
+                synth_tile = synthesize_linen_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
+                mat_type = "woven_linen"
             elif "carpet" in mat_type or "rug" in mat_type or name == "rug" or (name == "floor" and ("carpet" in mat_type or "fabric" in mat_type or ("#2" in dom_color or "#3" in dom_color))):
                 synth_tile = synthesize_carpet_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
-            elif "wood" in mat_type or "parquet" in mat_type or name in ["desk", "table"]:
+                mat_type = "acoustic_carpet"
+            elif "wood" in mat_type or name in ["desk", "table", "chair", "shelf", "wardrobe"]:
                 synth_tile = synthesize_wood_texture(dom_color, sec_color, size=tile_size, grain_dir=grain_dir, photo_patch=photo_patch)
+                mat_type = "varnished_wood"
             elif "tile" in mat_type or "terrazzo" in mat_type or name == "floor":
                 synth_tile = synthesize_tile_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
+                mat_type = "terrazzo_tile"
             elif "wall" in mat_type or "paint" in mat_type or name in ["wall", "ceiling"]:
                 synth_tile = synthesize_wall_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
+                mat_type = "matte_wall_paint"
             elif "board" in mat_type or "whiteboard" in mat_type or name == "board":
                 synth_tile = synthesize_board_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
-            elif "fabric" in mat_type or "leather" in mat_type or "linen" in mat_type or name in ["sofa", "bed"]:
-                synth_tile = synthesize_fabric_texture(dom_color, sec_color, size=tile_size)
+                mat_type = "whiteboard_enamel"
             else:
                 synth_tile = synthesize_wood_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
+
+            # Physically calibrated PBR properties
+            if "marble" in mat_type:
+                roughness = 0.22
+            elif "parquet" in mat_type or "wood" in mat_type:
+                roughness = 0.38
+            elif "leather" in mat_type:
+                roughness = 0.44
+            elif "tile" in mat_type or "terrazzo" in mat_type:
+                roughness = 0.40
+            elif "linen" in mat_type or "fabric" in mat_type:
+                roughness = 0.78
+            elif "carpet" in mat_type or "rug" in mat_type:
+                roughness = 0.90
+            elif "wall" in mat_type or "paint" in mat_type:
+                roughness = 0.85
+            elif name == "screen":
+                roughness = 0.18
 
             b64_data = array_to_base64_jpeg(synth_tile, quality=88)
             textures[name] = b64_data

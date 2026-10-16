@@ -1,0 +1,4015 @@
+{
+  "title": "MemoryWeaver 200 Indoor Panorama Dataset & Benchmark",
+  "total_rooms": 200,
+  "description": "200 curated, CC0 licensed, high-resolution equirectangular 360 indoor panoramas across 6 room archetypes for 3D spatial layout reconstruction and multi-stage texture synthesis.",
+  "source": "Poly Haven & Open Indoor Datasets",
+  "license": "CC0 / Public Domain",
+  "categories": {
+    "living_room": 42,
+    "bedroom": 10,
+    "dining_kitchen": 42,
+    "office_study": 10,
+    "hospitality_gallery": 46,
+    "studio_workshop": 50
+  },
+  "rooms": [
+    {
+      "id": "aft_lounge",
+      "name": "Aft Lounge",
+      "category_raw": "Interiors/Dining & Hospitality/Lounges",
+      "tags": [
+        "lounge",
+        "chair",
+        "ship",
+        "stage",
+        "carpet",
+        "window",
+        "ocean",
+        "sun",
+        "lamp",
+        "table"
+      ],
+      "description": "Unclipped, free 16K HDRI of a lounge on a cruise ship at sunrise - warm high-contrast light, mixed lamps and cool accents, glossy reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/aft_lounge.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/aft_lounge.png?width=256&height=256&format=webp&v=6d48d677",
+      "polyhaven_page": "https://polyhaven.com/a/aft_lounge",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "anniversary_lounge",
+      "name": "Anniversary Lounge",
+      "category_raw": "Interiors/Residential/Living Rooms & Lounges",
+      "tags": [
+        "window",
+        "room",
+        "couch",
+        "lamp",
+        "carpet",
+        "table"
+      ],
+      "description": "Free, unclipped 21K HDRI - warm window daylight mixed with yellow ceiling lamps, medium-contrast cozy lounge lighting and soft indoor reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/anniversary_lounge.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/anniversary_lounge.png?width=256&height=256&format=webp&v=b452ac5f",
+      "polyhaven_page": "https://polyhaven.com/a/anniversary_lounge",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "blue_photo_studio",
+      "name": "Blue Photo Studio",
+      "category_raw": "Studio/Photo Studios/Natural-Light Studios",
+      "tags": [
+        "couch",
+        "wooden floor",
+        "lamp",
+        "window",
+        "seat",
+        "dark",
+        "backplates"
+      ],
+      "description": "Unclipped, free 16K HDRI with cool midday studio lighting, mixing natural window light and artificial lamps to produce a medium-contrast, moody blue indoor ambiance.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/blue_photo_studio.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/blue_photo_studio.png?width=256&height=256&format=webp&v=d6972885",
+      "polyhaven_page": "https://polyhaven.com/a/blue_photo_studio",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "brown_photostudio_01",
+      "name": "Brown Photostudio 01",
+      "category_raw": "Studio/Photo Studios/Natural-Light Studios",
+      "tags": [
+        "studio",
+        "lamp",
+        "photo",
+        "chair",
+        "window",
+        "wood",
+        "fluorescent",
+        "couch",
+        "victorian",
+        "backplates"
+      ],
+      "description": "Free, unclipped 16K HDRI. Warm, soft mixed natural window light with subtle fluorescent fill over brown wooden studio floors, low contrast and cozy mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/brown_photostudio_01.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/brown_photostudio_01.png?width=256&height=256&format=webp&v=72f7ca1d",
+      "polyhaven_page": "https://polyhaven.com/a/brown_photostudio_01",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "brown_photostudio_02",
+      "name": "Brown Photostudio 02",
+      "category_raw": "Studio/Photo Studios/Natural-Light Studios",
+      "tags": [
+        "bed",
+        "studio",
+        "fluorescent",
+        "window",
+        "couch",
+        "chair",
+        "photo",
+        "table",
+        "kitchen",
+        "fridge",
+        "backplates"
+      ],
+      "description": "Free unclipped 16K HDRI - warm brown indoor studio lit by large window daylight and cool fluorescent fixtures; medium contrast, soft shadows.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/brown_photostudio_02.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/brown_photostudio_02.png?width=256&height=256&format=webp&v=4542fee3",
+      "polyhaven_page": "https://polyhaven.com/a/brown_photostudio_02",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "brown_photostudio_03",
+      "name": "Brown Photostudio 03",
+      "category_raw": "Studio/Photo Studios/Natural-Light Studios",
+      "tags": [
+        "couch",
+        "studio",
+        "window",
+        "fireplace",
+        "plant",
+        "modern",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI of a brown modern studio with soft natural morning/afternoon light, low-contrast shadows and warm, neutral window highlights.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/brown_photostudio_03.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/brown_photostudio_03.png?width=256&height=256&format=webp&v=90d5eb30",
+      "polyhaven_page": "https://polyhaven.com/a/brown_photostudio_03",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "brown_photostudio_04",
+      "name": "Brown Photostudio 04",
+      "category_raw": "Studio/Photo Studios/Natural-Light Studios",
+      "tags": [
+        "studio",
+        "couch",
+        "bed",
+        "window",
+        "table",
+        "kitchen",
+        "plant",
+        "curtain",
+        "backplates"
+      ],
+      "description": "Free 16K, unclipped HDRI - soft midday natural light through a large window with sheer curtains, low-contrast warm studio interior mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/brown_photostudio_04.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/brown_photostudio_04.png?width=256&height=256&format=webp&v=a49a3fe0",
+      "polyhaven_page": "https://polyhaven.com/a/brown_photostudio_04",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "brown_photostudio_05",
+      "name": "Brown Photostudio 05",
+      "category_raw": "Studio/Photo Studios/Natural-Light Studios",
+      "tags": [
+        "wood",
+        "couch",
+        "decor",
+        "studio",
+        "windows",
+        "door",
+        "curtain",
+        "backplates"
+      ],
+      "description": "Free, unclipped 16K HDRI with soft morning natural light indoors - low-contrast warm brown wood tones, diffused window sunlight and gentle shadows.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/brown_photostudio_05.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/brown_photostudio_05.png?width=256&height=256&format=webp&v=1bfa5fc2",
+      "polyhaven_page": "https://polyhaven.com/a/brown_photostudio_05",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "brown_photostudio_06",
+      "name": "Brown Photostudio 06",
+      "category_raw": "Studio/Photo Studios/Natural-Light Studios",
+      "tags": [
+        "studio",
+        "couch",
+        "curtain",
+        "wood",
+        "mirror",
+        "backplates"
+      ],
+      "description": "Unclipped, free 16K HDRI of a brown photostudio. Warm sunlight through sheer curtains, herringbone wood, medium-contrast shadows and mirror reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/brown_photostudio_06.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/brown_photostudio_06.png?width=256&height=256&format=webp&v=f8785cfd",
+      "polyhaven_page": "https://polyhaven.com/a/brown_photostudio_06",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "cayley_interior",
+      "name": "Cayley Interior",
+      "category_raw": "Interiors/Residential/Living Rooms & Lounges",
+      "tags": [
+        "lamp",
+        "table",
+        "window",
+        "glass",
+        "balcony",
+        "view",
+        "log"
+      ],
+      "description": "Free 16K, unclipped HDRI of an interior at sunrise: strong natural backlight through glass doors, warm artificial lamps, high-contrast lighting and a balcony view.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/cayley_interior.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/cayley_interior.png?width=256&height=256&format=webp&v=b0869513",
+      "polyhaven_page": "https://polyhaven.com/a/cayley_interior",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "christmas_photo_studio_01",
+      "name": "Christmas Photo Studio 01",
+      "category_raw": "Studio/Photo Studios/Themed & Set-Dressed",
+      "tags": [
+        "couch",
+        "sofa",
+        "wood",
+        "book",
+        "blanket",
+        "tree",
+        "christmas",
+        "step",
+        "ladder",
+        "studio",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI - warm, high-contrast indoor studio at night with strong overhead and Christmas tree lights, cozy festive mood and subtle cool fill.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/christmas_photo_studio_01.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/christmas_photo_studio_01.png?width=256&height=256&format=webp&v=58babc5e",
+      "polyhaven_page": "https://polyhaven.com/a/christmas_photo_studio_01",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "christmas_photo_studio_03",
+      "name": "Christmas Photo Studio 03",
+      "category_raw": "Studio/Photo Studios/Themed & Set-Dressed",
+      "tags": [
+        "couch",
+        "christmas",
+        "photo",
+        "shoot",
+        "backplates"
+      ],
+      "description": "Free unclipped 16K HDRI of an indoor Christmas photo studio at night - mixed cool and warm artificial lights, medium contrast, festive couch and props.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/christmas_photo_studio_03.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/christmas_photo_studio_03.png?width=256&height=256&format=webp&v=c270a1bd",
+      "polyhaven_page": "https://polyhaven.com/a/christmas_photo_studio_03",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "christmas_photo_studio_04",
+      "name": "Christmas Photo Studio 04",
+      "category_raw": "Studio/Photo Studios/Themed & Set-Dressed",
+      "tags": [
+        "couch",
+        "christmas",
+        "photo",
+        "shoot",
+        "curtain",
+        "presents",
+        "fluorescent",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI: indoor night studio lit by cool fluorescents and a warm chandelier, low contrast, festive Christmas decor and soft reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/christmas_photo_studio_04.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/christmas_photo_studio_04.png?width=256&height=256&format=webp&v=96b8bef2",
+      "polyhaven_page": "https://polyhaven.com/a/christmas_photo_studio_04",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "christmas_photo_studio_05",
+      "name": "Christmas Photo Studio 05",
+      "category_raw": "Studio/Photo Studios/Themed & Set-Dressed",
+      "tags": [
+        "table",
+        "couch",
+        "christmas",
+        "fireplace",
+        "victorian",
+        "apartment",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI with soft morning/afternoon natural light and warm fireplace Christmas glow in a Victorian studio apartment, low contrast, cozy",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/christmas_photo_studio_05.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/christmas_photo_studio_05.png?width=256&height=256&format=webp&v=1e00a8a9",
+      "polyhaven_page": "https://polyhaven.com/a/christmas_photo_studio_05",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "christmas_photo_studio_06",
+      "name": "Christmas Photo Studio 06",
+      "category_raw": "Studio/Photo Studios/Themed & Set-Dressed",
+      "tags": [
+        "couch",
+        "christmas",
+        "photo",
+        "shoot",
+        "clock",
+        "painting",
+        "chair"
+      ],
+      "description": "Free 16K unclipped HDRI. Medium-contrast indoor studio with warm hanging bulbs and cool blue accents, soft window fill, bright speculars and festive mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/christmas_photo_studio_06.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/christmas_photo_studio_06.png?width=256&height=256&format=webp&v=30c887e4",
+      "polyhaven_page": "https://polyhaven.com/a/christmas_photo_studio_06",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "cinema_lobby",
+      "name": "Cinema Lobby",
+      "category_raw": "Interiors/Halls & Venues/Lobbies & Foyers",
+      "tags": [
+        "couch",
+        "seat",
+        "bench",
+        "fluorescent"
+      ],
+      "description": "Free 16K unclipped HDRI of a cinema lobby with fluorescent ceilings, even medium-contrast lighting, warm ambient tones and cool blue accent washes.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/cinema_lobby.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/cinema_lobby.png?width=256&height=256&format=webp&v=f22507dd",
+      "polyhaven_page": "https://polyhaven.com/a/cinema_lobby",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "colorful_studio",
+      "name": "Colorful Studio",
+      "category_raw": "Studio/Photo Studios/Themed & Set-Dressed",
+      "tags": [
+        "couch",
+        "bar",
+        "bottle",
+        "incandescent",
+        "set",
+        "lounge",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI of a colorful indoor studio: high contrast lounge lighting with warm bar glows, cool overhead spots and strong reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/colorful_studio.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/colorful_studio.png?width=256&height=256&format=webp&v=8e7a5fcb",
+      "polyhaven_page": "https://polyhaven.com/a/colorful_studio",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "combination_room",
+      "name": "Combination Room",
+      "category_raw": "Interiors/Residential/Living Rooms & Lounges",
+      "tags": [
+        "couch",
+        "victorian",
+        "curtain",
+        "lamp",
+        "painting",
+        "window"
+      ],
+      "description": "Free 16K unclipped HDRI showing soft natural light from a bay window with warm chandelier and lamp highlights; medium contrast, warm Victorian parlor.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/combination_room.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/combination_room.png?width=256&height=256&format=webp&v=78bf7bba",
+      "polyhaven_page": "https://polyhaven.com/a/combination_room",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "comfy_cafe",
+      "name": "Comfy Café",
+      "category_raw": "Interiors/Dining & Hospitality/Cafes & Coffee Shops",
+      "tags": [
+        "shop",
+        "coffee",
+        "cafe",
+        "couch",
+        "table",
+        "store",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI: warm, low-contrast indoor café with soft artificial lamps, gentle shadows and cozy shop ambiance.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/comfy_cafe.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/comfy_cafe.png?width=256&height=256&format=webp&v=aeab7467",
+      "polyhaven_page": "https://polyhaven.com/a/comfy_cafe",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "decor_shop",
+      "name": "Decor Shop",
+      "category_raw": "Interiors/Retail & Commercial/Shops & Stores",
+      "tags": [
+        "tile",
+        "couch",
+        "decor",
+        "chandelier",
+        "store",
+        "shop",
+        "backplates"
+      ],
+      "description": "Free 16K, unclipped HDRI of a warm, decor shop interior with mixed artificial chandelier lighting and soft urban daylight.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/decor_shop.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/decor_shop.png?width=256&height=256&format=webp&v=cabf7b12",
+      "polyhaven_page": "https://polyhaven.com/a/decor_shop",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "fireplace",
+      "name": "Fireplace",
+      "category_raw": "Interiors/Residential/Living Rooms & Lounges",
+      "tags": [
+        "fire",
+        "couch",
+        "room",
+        "lounge"
+      ],
+      "description": "Free, unclipped 16K HDRI of a warm, high-contrast lounge at night with strong fireplace glow, amber artificial lighting, deep shadows and a cozy, intimate mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/fireplace.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/fireplace.png?width=256&height=256&format=webp&v=633d66cc",
+      "polyhaven_page": "https://polyhaven.com/a/fireplace",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "glasshouse_interior",
+      "name": "Glasshouse Interior",
+      "category_raw": "Interiors/Residential/Living Rooms & Lounges",
+      "tags": [
+        "large windows",
+        "bed",
+        "kitchen",
+        "dining table",
+        "fireplace",
+        "vintage carpet",
+        "cozy",
+        "panoramic",
+        "vista"
+      ],
+      "description": "Free, unclipped 24k HDRI of a glasshouse interior with soft, low-contrast partly-cloudy light through large windows, panoramic vista and cozy mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/glasshouse_interior.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/glasshouse_interior.png?width=256&height=256&format=webp&v=bf095b36",
+      "polyhaven_page": "https://polyhaven.com/a/glasshouse_interior",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "gym_entrance",
+      "name": "Gym Entrance",
+      "category_raw": "Interiors/Sports & Recreation/Gyms & Fitness",
+      "tags": [
+        "shop",
+        "couch",
+        "gym",
+        "red",
+        "fluorescent"
+      ],
+      "description": "Free 16K, unclipped HDRI of a gym entrance with cool fluorescent ceiling light and strong red rim lighting, medium-contrast urban indoor mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/gym_entrance.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/gym_entrance.png?width=256&height=256&format=webp&v=89f1a3ae",
+      "polyhaven_page": "https://polyhaven.com/a/gym_entrance",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "kiara_interior",
+      "name": "Kiara Interior",
+      "category_raw": "Interiors/Residential/Kitchens & Dining",
+      "tags": [
+        "tile",
+        "table",
+        "fridge",
+        "window",
+        "door",
+        "glass",
+        "kitchen",
+        "lounge"
+      ],
+      "description": "Free 16K unclipped HDRI: warm interior with mixed natural and soft artificial light, medium contrast, cozy thatch kitchen-lounge.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/kiara_interior.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/kiara_interior.png?width=256&height=256&format=webp&v=869445b8",
+      "polyhaven_page": "https://polyhaven.com/a/kiara_interior",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "lapa",
+      "name": "Lapa",
+      "category_raw": "Parks & Gardens/Gardens/Courtyard Gardens",
+      "tags": [
+        "thatch",
+        "couch",
+        "garden",
+        "plant",
+        "gazebo"
+      ],
+      "description": "Free, unclipped 16K HDRI: warm, mixed natural and artificial lighting beneath a thatched garden gazebo; medium contrast with soft daytime ambience and visible interior lamps.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/lapa.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/lapa.png?width=256&height=256&format=webp&v=97ae0f25",
+      "polyhaven_page": "https://polyhaven.com/a/lapa",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "lebombo",
+      "name": "Lebombo",
+      "category_raw": "Interiors/Residential/Living Rooms & Lounges",
+      "tags": [
+        "house",
+        "lamp",
+        "window",
+        "wood floor",
+        "empty"
+      ],
+      "description": "Free 16K unclipped HDRI: empty sunlit living room with soft morning light through sheer curtains, warm wall lamps and low-contrast shadows on wood floor.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/lebombo.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/lebombo.png?width=256&height=256&format=webp&v=29dfedad",
+      "polyhaven_page": "https://polyhaven.com/a/lebombo",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "lythwood_lounge",
+      "name": "Lythwood Lounge",
+      "category_raw": "Interiors/Residential/Living Rooms & Lounges",
+      "tags": [
+        "couch",
+        "warm",
+        "lounge",
+        "lamp",
+        "room"
+      ],
+      "description": "Free 16K, unclipped HDRI showing a warm indoor lounge with mixed natural midday overcast light and soft warm lamp glow, medium contrast, cozy amber tones.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/lythwood_lounge.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/lythwood_lounge.png?width=256&height=256&format=webp&v=21b3b70d",
+      "polyhaven_page": "https://polyhaven.com/a/lythwood_lounge",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "lythwood_room",
+      "name": "Lythwood Room",
+      "category_raw": "Interiors/Residential/Bedrooms",
+      "tags": [
+        "couch",
+        "bed",
+        "lamp",
+        "window",
+        "mantel",
+        "carpet",
+        "backplates"
+      ],
+      "description": "Free 16K HDRI (unclipped): softly lit, low-contrast urban open plan bedroom/living room at overcast midday with warm lamps and gentle natural window light.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/lythwood_room.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/lythwood_room.png?width=256&height=256&format=webp&v=af8b90de",
+      "polyhaven_page": "https://polyhaven.com/a/lythwood_room",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "marry_hall",
+      "name": "Marry Hall",
+      "category_raw": "Studio/Photo Studios/Themed & Set-Dressed",
+      "tags": [
+        "curtain",
+        "couch",
+        "studio",
+        "text",
+        "window",
+        "chair",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI: soft morning daylight filtered through sheer curtains with subtle studio fill and warm marquee lights, low-contrast, neutral mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/marry_hall.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/marry_hall.png?width=256&height=256&format=webp&v=2e579efa",
+      "polyhaven_page": "https://polyhaven.com/a/marry_hall",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "music_hall_02",
+      "name": "Music Hall 02",
+      "category_raw": "Interiors/Halls & Venues/Concert & Music Halls",
+      "tags": [
+        "hall",
+        "empty",
+        "victorian",
+        "window",
+        "couch"
+      ],
+      "description": "Free 16K unclipped HDRI: Victorian music hall with warm chandeliers and cool window daylight. Medium-contrast, soft mixed lighting, reflective parquet.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/music_hall_02.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/music_hall_02.png?width=256&height=256&format=webp&v=fd719ef5",
+      "polyhaven_page": "https://polyhaven.com/a/music_hall_02",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "old_apartments_walkway",
+      "name": "Old Apartments Walkway",
+      "category_raw": "Abandoned & Ruins/Buildings/Abandoned Residences",
+      "tags": [
+        "tree",
+        "railing",
+        "abandoned",
+        "balcony"
+      ],
+      "description": "Free 16K unclipped HDRI of an abandoned apartment walkway: clear midday natural light, low-contrast soft shadows, faded paint, railings and surrounding trees.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/old_apartments_walkway.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/old_apartments_walkway.png?width=256&height=256&format=webp&v=a9ae4877",
+      "polyhaven_page": "https://polyhaven.com/a/old_apartments_walkway",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "old_room",
+      "name": "Old Room",
+      "category_raw": "Abandoned & Ruins/Buildings/Derelict Interiors",
+      "tags": [
+        "window",
+        "arch",
+        "fireplace",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI: soft natural morning light in an old urban room with arched windows and fireplaces, low-contrast warm diffuse illumination.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/old_room.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/old_room.png?width=256&height=256&format=webp&v=55ce2c5b",
+      "polyhaven_page": "https://polyhaven.com/a/old_room",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "photo_studio_loft_hall",
+      "name": "Photo Studio Loft Hall",
+      "category_raw": "Studio/Photo Studios/Natural-Light Studios",
+      "tags": [
+        "couch",
+        "wood",
+        "sunny",
+        "apartment",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI: sunny urban loft studio with warm afternoon natural light, medium contrast, directional sun and soft window shadows on wood floor.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/photo_studio_loft_hall.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/photo_studio_loft_hall.png?width=256&height=256&format=webp&v=84a6bef0",
+      "polyhaven_page": "https://polyhaven.com/a/photo_studio_loft_hall",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "photo_studio_london_hall",
+      "name": "Photo Studio London Hall",
+      "category_raw": "Studio/Photo Studios/Themed & Set-Dressed",
+      "tags": [
+        "table",
+        "couch",
+        "victorian",
+        "apartment",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI of a Victorian themed studio with soft midday natural light, low contrast, airy ambiance and warm window highlights.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/photo_studio_london_hall.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/photo_studio_london_hall.png?width=256&height=256&format=webp&v=b75c75d3",
+      "polyhaven_page": "https://polyhaven.com/a/photo_studio_london_hall",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "provence_studio",
+      "name": "Provence Studio",
+      "category_raw": "Studio/Photo Studios/Softbox & Lamp Setups",
+      "tags": [
+        "couch",
+        "stair",
+        "door",
+        "studio",
+        "umbrella",
+        "chair",
+        "curtain",
+        "bicycle"
+      ],
+      "description": "Free 16K unclipped HDRI: soft, low-contrast indoor studio lighting with even artificial ceiling illumination, subtle window fill and turquoise accents.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/provence_studio.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/provence_studio.png?width=256&height=256&format=webp&v=ab3a2f2b",
+      "polyhaven_page": "https://polyhaven.com/a/provence_studio",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "reading_room",
+      "name": "Reading Room",
+      "category_raw": "Interiors/Residential/Living Rooms & Lounges",
+      "tags": [
+        "chair",
+        "couch",
+        "window",
+        "door",
+        "tile"
+      ],
+      "description": "Free 16K unclipped HDRI of a sunlit reading room with natural afternoon light, medium contrast, soft window shadows on terrazzo floor and reflective surfaces.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/reading_room.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/reading_room.png?width=256&height=256&format=webp&v=71d37565",
+      "polyhaven_page": "https://polyhaven.com/a/reading_room",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "small_empty_house",
+      "name": "Small Empty House",
+      "category_raw": "Interiors/Residential/Living Rooms & Lounges",
+      "tags": [
+        "house",
+        "tile",
+        "lamp",
+        "door"
+      ],
+      "description": "Unclipped, free 16K HDRI of a small empty house interior with warm morning light through door and windows, tiled floor and soft mid-contrast shadows.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/small_empty_house.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/small_empty_house.png?width=256&height=256&format=webp&v=b5055046",
+      "polyhaven_page": "https://polyhaven.com/a/small_empty_house",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "st_fagans_interior",
+      "name": "St. Fagans Interior",
+      "category_raw": "Interiors/Cultural & Civic/Museums & Galleries",
+      "tags": [
+        "bench",
+        "couch",
+        "lobby",
+        "modern",
+        "museum",
+        "stairs",
+        "wooden floor"
+      ],
+      "description": "Free 16K unclipped HDRI of a modern museum lobby: low-contrast, soft overhead artificial lighting, warm wooden floor, cool green accents and subtle reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/st_fagans_interior.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/st_fagans_interior.png?width=256&height=256&format=webp&v=c556994f",
+      "polyhaven_page": "https://polyhaven.com/a/st_fagans_interior",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "warm_reception_dinner",
+      "name": "Warm Reception Dinner",
+      "category_raw": "Interiors/Halls & Venues/Ballrooms & Banquet Halls",
+      "tags": [
+        "lamp",
+        "windows",
+        "table",
+        "chair",
+        "chandelier",
+        "fireplace",
+        "barn door",
+        "concrete floor",
+        "rustic",
+        "wedding",
+        "banquet",
+        "exposed brick"
+      ],
+      "description": "Free 20K HDRI, unclipped - warm chandelier & fireplace light in a rustic banquet with window fill. Medium contrast; ideal for wedding scenes & product renders.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/warm_reception_dinner.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/warm_reception_dinner.png?width=256&height=256&format=webp&v=d313de8d",
+      "polyhaven_page": "https://polyhaven.com/a/warm_reception_dinner",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "warm_restaurant",
+      "name": "Warm Restaurant",
+      "category_raw": "Interiors/Dining & Hospitality/Restaurants",
+      "tags": [
+        "window",
+        "table",
+        "restaurant",
+        "chair",
+        "tiles",
+        "bench",
+        "animal skin",
+        "rafters",
+        "dining",
+        "cozy",
+        "fireplace",
+        "seat"
+      ],
+      "description": "Free, unclipped 24K HDRI of a warm restaurant - natural morning/afternoon window light, soft warmth, visible rafters.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/warm_restaurant.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/warm_restaurant.png?width=256&height=256&format=webp&v=8d52b356",
+      "polyhaven_page": "https://polyhaven.com/a/warm_restaurant",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "warm_restaurant_night",
+      "name": "Warm Restaurant Night",
+      "category_raw": "Interiors/Dining & Hospitality/Restaurants",
+      "tags": [
+        "restaurant",
+        "seat",
+        "chair",
+        "bench",
+        "animal skin",
+        "dining",
+        "rafters",
+        "window",
+        "table",
+        "tiles",
+        "cozy",
+        "fireplace"
+      ],
+      "description": "Free 24K unclipped HDRI: warm indoor night lighting in a cozy restaurant, soft orange artificial lights and fireplace glow, medium contrast.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/warm_restaurant_night.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/warm_restaurant_night.png?width=256&height=256&format=webp&v=f2b8ab1c",
+      "polyhaven_page": "https://polyhaven.com/a/warm_restaurant_night",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "wooden_lounge",
+      "name": "Wooden Lounge",
+      "category_raw": "Interiors/Dining & Hospitality/Bars & Pubs",
+      "tags": [
+        "couch",
+        "wood",
+        "lamp",
+        "table"
+      ],
+      "description": "Free 16K, unclipped HDRI of a warm wooden lounge with brown sofas, pool table and lamps, high-contrast artificial yellow lighting with strong highlights, cozy mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/wooden_lounge.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/wooden_lounge.png?width=256&height=256&format=webp&v=d5688e12",
+      "polyhaven_page": "https://polyhaven.com/a/wooden_lounge",
+      "archetype": "living_room",
+      "archetype_vn": "Phòng khách & Sinh hoạt chung"
+    },
+    {
+      "id": "brown_photostudio_07",
+      "name": "Brown Photostudio 07",
+      "category_raw": "Studio/Photo Studios/Natural-Light Studios",
+      "tags": [
+        "studio",
+        "bed",
+        "fabric",
+        "wood",
+        "wooden floor",
+        "white",
+        "windows",
+        "chair"
+      ],
+      "description": "Free unclipped 16K HDRI - warm natural window light in a brown studio with wooden floors, fabric backdrops and medium-contrast soft shadows, urban indoor mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/brown_photostudio_07.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/brown_photostudio_07.png?width=256&height=256&format=webp&v=1fff8c81",
+      "polyhaven_page": "https://polyhaven.com/a/brown_photostudio_07",
+      "archetype": "bedroom",
+      "archetype_vn": "Phòng ngủ & Khách sạn"
+    },
+    {
+      "id": "cabin",
+      "name": "Cabin",
+      "category_raw": "Interiors/Residential/Bedrooms",
+      "tags": [
+        "bed",
+        "tv",
+        "hotel",
+        "cabin",
+        "boat",
+        "ship",
+        "cruise"
+      ],
+      "description": "Free 16K unclipped HDRI of a cruise cabin: warm, high-contrast artificial lighting from ceiling spots and lamps, soft amber tones, cozy intimate indoor mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/cabin.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/cabin.png?width=256&height=256&format=webp&v=c6c851ad",
+      "polyhaven_page": "https://polyhaven.com/a/cabin",
+      "archetype": "bedroom",
+      "archetype_vn": "Phòng ngủ & Khách sạn"
+    },
+    {
+      "id": "childrens_hospital",
+      "name": "Children's Hospital",
+      "category_raw": "Interiors/Retail & Commercial/Medical & Healthcare",
+      "tags": [
+        "bed",
+        "ward",
+        "medical",
+        "hospital",
+        "room"
+      ],
+      "description": "Free 17K unclipped HDRI: warm, high-contrast children's hospital ward with soft yellow overhead lighting, cool wall lamps and subtle reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/childrens_hospital.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/childrens_hospital.png?width=256&height=256&format=webp&v=a5bcd228",
+      "polyhaven_page": "https://polyhaven.com/a/childrens_hospital",
+      "archetype": "bedroom",
+      "archetype_vn": "Phòng ngủ & Khách sạn"
+    },
+    {
+      "id": "en_suite",
+      "name": "En Suite",
+      "category_raw": "Interiors/Residential/Bathrooms",
+      "tags": [
+        "bathroom",
+        "sink",
+        "basin",
+        "shower",
+        "toilet"
+      ],
+      "description": "Free 16K unclipped HDRI of an en-suite bathroom with warm artificial lights, bright mirror highlights, reflective surfaces and strong indoor contrast.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/en_suite.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/en_suite.png?width=256&height=256&format=webp&v=d322b589",
+      "polyhaven_page": "https://polyhaven.com/a/en_suite",
+      "archetype": "bedroom",
+      "archetype_vn": "Phòng ngủ & Khách sạn"
+    },
+    {
+      "id": "hospital_room",
+      "name": "Hospital Room",
+      "category_raw": "Interiors/Retail & Commercial/Medical & Healthcare",
+      "tags": [
+        "bed",
+        "table",
+        "hospital",
+        "lamp",
+        "medical",
+        "operation"
+      ],
+      "description": "Free 17K unclipped HDRI of a hospital treatment room: cool, clinical artificial overhead lights, medium contrast, soft diffuse reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/hospital_room.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/hospital_room.png?width=256&height=256&format=webp&v=896a27b3",
+      "polyhaven_page": "https://polyhaven.com/a/hospital_room",
+      "archetype": "bedroom",
+      "archetype_vn": "Phòng ngủ & Khách sạn"
+    },
+    {
+      "id": "hospital_room_2",
+      "name": "Hospital Room 2",
+      "category_raw": "Interiors/Retail & Commercial/Medical & Healthcare",
+      "tags": [
+        "medical",
+        "healthcare",
+        "hospital",
+        "ward",
+        "bed",
+        "clean",
+        "clinical",
+        "recovery"
+      ],
+      "description": "Free 20K unclipped HDRI of a hospital ward with cool fluorescent overheads, soft shadows, medium contrast and a calm, clinical blue-tinted environment.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/hospital_room_2.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/hospital_room_2.png?width=256&height=256&format=webp&v=6098965c",
+      "polyhaven_page": "https://polyhaven.com/a/hospital_room_2",
+      "archetype": "bedroom",
+      "archetype_vn": "Phòng ngủ & Khách sạn"
+    },
+    {
+      "id": "hotel_room",
+      "name": "Hotel Room",
+      "category_raw": "Interiors/Residential/Bedrooms",
+      "tags": [
+        "bed",
+        "tv",
+        "table",
+        "chair",
+        "mirror",
+        "window",
+        "curtain",
+        "lamp",
+        "hotel"
+      ],
+      "description": "Free 16K unclipped HDRI of a hotel room: soft natural window light blended with warm lamps, high-contrast indoor lighting, cozy urban atmosphere with subtle reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/hotel_room.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/hotel_room.png?width=256&height=256&format=webp&v=12f1b532",
+      "polyhaven_page": "https://polyhaven.com/a/hotel_room",
+      "archetype": "bedroom",
+      "archetype_vn": "Phòng ngủ & Khách sạn"
+    },
+    {
+      "id": "photo_studio_01",
+      "name": "Photo Studio 01",
+      "category_raw": "Studio/Photo Studios/Themed & Set-Dressed",
+      "tags": [
+        "lamp",
+        "photo",
+        "fluorescent",
+        "bed",
+        "white",
+        "infinity",
+        "chair",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI: cool fluorescent studio lighting with medium contrast, soft white surroundings, subtle floor reflections and indoor studio mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/photo_studio_01.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/photo_studio_01.png?width=256&height=256&format=webp&v=9fbcddff",
+      "polyhaven_page": "https://polyhaven.com/a/photo_studio_01",
+      "archetype": "bedroom",
+      "archetype_vn": "Phòng ngủ & Khách sạn"
+    },
+    {
+      "id": "relax_inn_seaview_suite",
+      "name": "Relax Inn Seaview Suite",
+      "category_raw": "Interiors/Residential/Bedrooms",
+      "tags": [
+        "hotel",
+        "bed",
+        "bedroom",
+        "window",
+        "clock",
+        "table",
+        "balcony",
+        "sliding glass door",
+        "wicker ottoman",
+        "chaise"
+      ],
+      "description": "Free 24k unclipped HDRI of a seaview hotel suite: bright midday natural light through sliding glass doors and warm indoor lamps; soft, medium-contrast.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/relax_inn_seaview_suite.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/relax_inn_seaview_suite.png?width=256&height=256&format=webp&v=587ca9be",
+      "polyhaven_page": "https://polyhaven.com/a/relax_inn_seaview_suite",
+      "archetype": "bedroom",
+      "archetype_vn": "Phòng ngủ & Khách sạn"
+    },
+    {
+      "id": "surgery",
+      "name": "Surgery",
+      "category_raw": "Interiors/Retail & Commercial/Medical & Healthcare",
+      "tags": [
+        "bed",
+        "table",
+        "hospital",
+        "lamp",
+        "medical",
+        "operation"
+      ],
+      "description": "Free 17K unclipped HDRI of a surgical operating room, cool-even overhead lamps, soft floor reflections and medium-contrast clinical artificial lighting.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/surgery.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/surgery.png?width=256&height=256&format=webp&v=15b625cf",
+      "polyhaven_page": "https://polyhaven.com/a/surgery",
+      "archetype": "bedroom",
+      "archetype_vn": "Phòng ngủ & Khách sạn"
+    },
+    {
+      "id": "abandoned_bakery",
+      "name": "Abandoned Bakery",
+      "category_raw": "Abandoned & Ruins/Buildings/Derelict Interiors",
+      "tags": [
+        "abandoned",
+        "empty",
+        "industrial",
+        "windows",
+        "bare",
+        "rubble",
+        "brick",
+        "concrete",
+        "backplates"
+      ],
+      "description": "Unclipped, free 16K HDRI of an abandoned bakery: high-contrast indoor lighting with strong window daylight, faint ceiling lamps, cold brick and concrete rubble.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/abandoned_bakery.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/abandoned_bakery.png?width=256&height=256&format=webp&v=4f2e912d",
+      "polyhaven_page": "https://polyhaven.com/a/abandoned_bakery",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "abandoned_factory_canteen_01",
+      "name": "Abandoned Factory Canteen 01",
+      "category_raw": "Abandoned & Ruins/Buildings/Derelict Interiors",
+      "tags": [
+        "hall",
+        "abandoned",
+        "fluorescent",
+        "industrial",
+        "backplates",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI of an abandoned factory canteen - soft natural window light with cool fluorescent fill, low-contrast industrial hall atmosphere.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/abandoned_factory_canteen_01.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/abandoned_factory_canteen_01.png?width=256&height=256&format=webp&v=f0b18b58",
+      "polyhaven_page": "https://polyhaven.com/a/abandoned_factory_canteen_01",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "abandoned_factory_canteen_02",
+      "name": "Abandoned Factory Canteen 02",
+      "category_raw": "Abandoned & Ruins/Buildings/Derelict Interiors",
+      "tags": [
+        "hall",
+        "abandoned",
+        "industrial",
+        "boxes",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI of an abandoned factory canteen - soft natural window light, medium contrast, indoor industrial hall with boxes, gritty urban mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/abandoned_factory_canteen_02.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/abandoned_factory_canteen_02.png?width=256&height=256&format=webp&v=258c4bf2",
+      "polyhaven_page": "https://polyhaven.com/a/abandoned_factory_canteen_02",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "abandoned_hall_01",
+      "name": "Abandoned Hall 01",
+      "category_raw": "Abandoned & Ruins/Buildings/Derelict Interiors",
+      "tags": [
+        "hall",
+        "window",
+        "abandoned",
+        "empty",
+        "bare"
+      ],
+      "description": "Free 16K unclipped HDRI of an abandoned indoor hall with soft natural window light - low contrast, cool dusty atmosphere and sparse, empty urban interior.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/abandoned_hall_01.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/abandoned_hall_01.png?width=256&height=256&format=webp&v=6b97a014",
+      "polyhaven_page": "https://polyhaven.com/a/abandoned_hall_01",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "abandoned_workshop",
+      "name": "Abandoned workshop",
+      "category_raw": "Abandoned & Ruins/Buildings/Derelict Interiors",
+      "tags": [
+        "abandoned",
+        "warehouse",
+        "rubble",
+        "brick",
+        "pillar",
+        "bare",
+        "empty",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI of an abandoned workshop - soft natural daylight, medium contrast, warm brick tones, dusty floor, pillars and long subtle shadows.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/abandoned_workshop.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/abandoned_workshop.png?width=256&height=256&format=webp&v=bb650ce8",
+      "polyhaven_page": "https://polyhaven.com/a/abandoned_workshop",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "abandoned_workshop_02",
+      "name": "Abandoned Workshop 02",
+      "category_raw": "Abandoned & Ruins/Buildings/Derelict Interiors",
+      "tags": [
+        "abandoned",
+        "warehouse",
+        "concrete",
+        "bare",
+        "empty",
+        "overgrown",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI of an abandoned concrete workshop - low-contrast midday natural light, soft and even, with overgrown openings and subtle urban interior mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/abandoned_workshop_02.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/abandoned_workshop_02.png?width=256&height=256&format=webp&v=29143cfa",
+      "polyhaven_page": "https://polyhaven.com/a/abandoned_workshop_02",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "bank_vault",
+      "name": "Bank Vault",
+      "category_raw": "Interiors/Workshops & Garages/Industrial Workshops",
+      "tags": [
+        "cage",
+        "bars",
+        "concrete",
+        "fluorescent",
+        "bare",
+        "empty",
+        "industrial"
+      ],
+      "description": "Free unclipped 24K HDRI of an empty bank vault lit by harsh ceiling fluorescents, cool concrete tones, subtle yellow tint, cage-bar, and medium contrast.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/bank_vault.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/bank_vault.png?width=256&height=256&format=webp&v=cd19bd91",
+      "polyhaven_page": "https://polyhaven.com/a/bank_vault",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "billiard_hall",
+      "name": "Billiard Hall",
+      "category_raw": "Interiors/Sports & Recreation/Games Rooms",
+      "tags": [
+        "brick",
+        "pool",
+        "snooker",
+        "ball game",
+        "carpet",
+        "window",
+        "lamp",
+        "billiards",
+        "table"
+      ],
+      "description": "Free 24K HDRI, unclipped: warm indoor billiard hall with morning sunlight and soft overhead lamps, medium contrast, brick walls, carpeted floor, and pool tables.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/billiard_hall.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/billiard_hall.png?width=256&height=256&format=webp&v=fd158425",
+      "polyhaven_page": "https://polyhaven.com/a/billiard_hall",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "blinds",
+      "name": "Blinds",
+      "category_raw": "Interiors/Residential/Kitchens & Dining",
+      "tags": [
+        "kitchen",
+        "window",
+        "counter",
+        "table"
+      ],
+      "description": "Free 16K, unclipped HDRI of a morning kitchen with warm orange-red sunlight filtered through blinds, medium contrast, slatted highlights and soft ambient fill.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/blinds.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/blinds.png?width=256&height=256&format=webp&v=e7730753",
+      "polyhaven_page": "https://polyhaven.com/a/blinds",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "boma",
+      "name": "Boma",
+      "category_raw": "Interiors/Dining & Hospitality/Cafes & Coffee Shops",
+      "tags": [
+        "bench",
+        "restaurant",
+        "arch",
+        "brick",
+        "rafters",
+        "cafe",
+        "seat",
+        "flag"
+      ],
+      "description": "Free 24K HDRI, unclipped - bright indoor urban cafe with warm morning/afternoon natural light, medium contrast, and soft shadows on brick, rafters and wooden benches.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/boma.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/boma.png?width=256&height=256&format=webp&v=43e2eee9",
+      "polyhaven_page": "https://polyhaven.com/a/boma",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "bush_restaurant",
+      "name": "Bush Restaurant",
+      "category_raw": "Interiors/Dining & Hospitality/Restaurants",
+      "tags": [
+        "table",
+        "chair",
+        "restaurant",
+        "window",
+        "door"
+      ],
+      "description": "Free 16K, unclipped HDRI of an indoor restaurant with warm natural window light, medium contrast, soft directional sun, gentle shadows and subtle reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/bush_restaurant.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/bush_restaurant.png?width=256&height=256&format=webp&v=cc46547b",
+      "polyhaven_page": "https://polyhaven.com/a/bush_restaurant",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "carpentry_shop_01",
+      "name": "Carpentry Shop 01",
+      "category_raw": "Interiors/Workshops & Garages/Industrial Workshops",
+      "tags": [
+        "workshop",
+        "lamp",
+        "tablesaw",
+        "wood"
+      ],
+      "description": "Free 16K unclipped HDRI of a carpentry shop with warm, high-contrast artificial lighting, dusty daylight from an open door, and metal highlights.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/carpentry_shop_01.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/carpentry_shop_01.png?width=256&height=256&format=webp&v=f5475f2c",
+      "polyhaven_page": "https://polyhaven.com/a/carpentry_shop_01",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "chapel_day",
+      "name": "Chapel Day",
+      "category_raw": "Interiors/Religious/Chapels",
+      "tags": [
+        "chair",
+        "bench",
+        "cross",
+        "altar",
+        "barrel",
+        "seat",
+        "church",
+        "pew",
+        "stained glass",
+        "religion"
+      ],
+      "description": "Free 20K unclipped HDRI of a chapel interior - soft, low-contrast mix of warm natural window light and subtle artificial sconces with stained-glass.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/chapel_day.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/chapel_day.png?width=256&height=256&format=webp&v=6dba6ed8",
+      "polyhaven_page": "https://polyhaven.com/a/chapel_day",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "christmas_photo_studio_07",
+      "name": "Christmas Photo Studio 07",
+      "category_raw": "Studio/Photo Studios/Themed & Set-Dressed",
+      "tags": [
+        "kitchen",
+        "chair",
+        "umbrella",
+        "wood",
+        "wooden floor",
+        "table",
+        "window",
+        "plant",
+        "christmas",
+        "backplates"
+      ],
+      "description": "Free 16K HDRI, unclipped: soft studio flash plus cool window daylight, warm festive indoor mood with medium-high contrast and natural reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/christmas_photo_studio_07.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/christmas_photo_studio_07.png?width=256&height=256&format=webp&v=69a15ec5",
+      "polyhaven_page": "https://polyhaven.com/a/christmas_photo_studio_07",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "church_meeting_room",
+      "name": "Church Meeting Room",
+      "category_raw": "Interiors/Religious/Churches & Cathedrals",
+      "tags": [
+        "table",
+        "pew",
+        "chair",
+        "portraits",
+        "wooden ceiling",
+        "stained glass",
+        "carpet"
+      ],
+      "description": "Free 24k unclipped HDRI: church meeting room with warm, low-contrast natural morning/afternoon light through stained-glass windows, soft ambient wood tones.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/church_meeting_room.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/church_meeting_room.png?width=256&height=256&format=webp&v=8b16edf5",
+      "polyhaven_page": "https://polyhaven.com/a/church_meeting_room",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "church_museum",
+      "name": "Church Museum",
+      "category_raw": "Interiors/Cultural & Civic/Museums & Galleries",
+      "tags": [
+        "wooden ceiling",
+        "vaulted ceiling",
+        "stained glass",
+        "carpet",
+        "table",
+        "chair",
+        "bench",
+        "display",
+        "high ceiling",
+        "decorative windows"
+      ],
+      "description": "Free 24k unclipped HDRI, sunlit church museum interior with warm morning/afternoon natural light, stained-glass accents, vaulted wood ceiling, medium contrast.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/church_museum.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/church_museum.png?width=256&height=256&format=webp&v=bdb98e76",
+      "polyhaven_page": "https://polyhaven.com/a/church_museum",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "cinema_hall",
+      "name": "Cinema Hall",
+      "category_raw": "Interiors/Cultural & Civic/Theatres & Cinemas",
+      "tags": [
+        "movie",
+        "cinema",
+        "chair",
+        "seat",
+        "projector",
+        "theater"
+      ],
+      "description": "Free 16K HDRI, unclipped - warm cinema lighting, medium contrast: arched ceiling glow, projector cool spill on screen, red seats and gentle reflections. Public domain imagery.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/cinema_hall.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/cinema_hall.png?width=256&height=256&format=webp&v=7898219d",
+      "polyhaven_page": "https://polyhaven.com/a/cinema_hall",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "cowboy_town_hall",
+      "name": "Cowboy Town Hall",
+      "category_raw": "Interiors/Halls & Venues/School & Assembly Halls",
+      "tags": [
+        "saloon",
+        "western decor",
+        "wild west",
+        "bench",
+        "lamp",
+        "table",
+        "corrugated metal ceiling"
+      ],
+      "description": "Unclipped, free 20K HDRI of a rustic cowboy hall: warm LED bulbs, corrugated roof, wood benches, soft shadows, cool daylight, and bright entrances.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/cowboy_town_hall.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/cowboy_town_hall.png?width=256&height=256&format=webp&v=92215fca",
+      "polyhaven_page": "https://polyhaven.com/a/cowboy_town_hall",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "cowboy_town_saloon",
+      "name": "Cowboy Town Saloon",
+      "category_raw": "Interiors/Dining & Hospitality/Bars & Pubs",
+      "tags": [
+        "saloon",
+        "western decor",
+        "wild west",
+        "restaurant",
+        "table",
+        "chair",
+        "bar",
+        "dining"
+      ],
+      "description": "Unclipped, free 20K HDRI of a rustic saloon: warm tungsten glow, brick and wood, soft amber mood, gentle shadows, bright doorway highlights.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/cowboy_town_saloon.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/cowboy_town_saloon.png?width=256&height=256&format=webp&v=89b95f3d",
+      "polyhaven_page": "https://polyhaven.com/a/cowboy_town_saloon",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "empty_play_room",
+      "name": "Empty Play Room",
+      "category_raw": "Interiors/Sports & Recreation/Games Rooms",
+      "tags": [
+        "carpet",
+        "table tennis",
+        "curtain",
+        "fluorescent",
+        "brick",
+        "wood"
+      ],
+      "description": "Free 24K unclipped HDRI: sparse room with morning sun and fluorescent fixtures, medium contrast - carpeted floor, table tennis, curtains, brick and warm wood surfaces.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/empty_play_room.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/empty_play_room.png?width=256&height=256&format=webp&v=464ade80",
+      "polyhaven_page": "https://polyhaven.com/a/empty_play_room",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "empty_workshop",
+      "name": "Empty Workshop",
+      "category_raw": "Interiors/Workshops & Garages/Industrial Workshops",
+      "tags": [
+        "bare",
+        "empty",
+        "clean",
+        "spacious",
+        "brick",
+        "concrete",
+        "wood"
+      ],
+      "description": "Free 16K unclipped HDRI of an empty midday workshop - natural, medium-contrast sunlight filtering through dusty windows onto brick, concrete and wooden surfaces.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/empty_workshop.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/empty_workshop.png?width=256&height=256&format=webp&v=af44b83b",
+      "polyhaven_page": "https://polyhaven.com/a/empty_workshop",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "hayloft",
+      "name": "Hayloft",
+      "category_raw": "Interiors/Workshops & Garages/Agricultural & Farm Buildings",
+      "tags": [
+        "barn",
+        "farm",
+        "hay",
+        "timber",
+        "rafters",
+        "pallet",
+        "rural",
+        "rustic"
+      ],
+      "description": "Free 16K unclipped HDRI: warm midday sun streaming through slatted barn walls, soft directional golden light with medium contrast, dusty rustic hayloft mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/hayloft.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/hayloft.png?width=256&height=256&format=webp&v=6e88f642",
+      "polyhaven_page": "https://polyhaven.com/a/hayloft",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "industrial_wooden_attic",
+      "name": "Industrial Wooden Attic",
+      "category_raw": "Abandoned & Ruins/Industrial/Derelict Factories & Warehouses",
+      "tags": [
+        "wooden floor",
+        "rafters",
+        "machine",
+        "rustic",
+        "beam ceiling",
+        "loft",
+        "old factory",
+        "barn",
+        "whitewashed walls"
+      ],
+      "description": "Free unclipped 29k HDRI of a sunlit industrial wooden attic: warm rafters, whitewashed walls, strong midday directional light and high-contrast shadows.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/industrial_wooden_attic.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/industrial_wooden_attic.png?width=256&height=256&format=webp&v=13982803",
+      "polyhaven_page": "https://polyhaven.com/a/industrial_wooden_attic",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "interior_construction",
+      "name": "Interior Construction",
+      "category_raw": "Industrial/Construction/Bare-Shell Interiors",
+      "tags": [
+        "bare",
+        "construction",
+        "brick",
+        "wood",
+        "chipboard",
+        "empty",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI: empty interior construction at midday with soft, low-contrast diffuse daylight, neutral wood, brick and chipboard.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/interior_construction.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/interior_construction.png?width=256&height=256&format=webp&v=e4d68df3",
+      "polyhaven_page": "https://polyhaven.com/a/interior_construction",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "kart_club",
+      "name": "Kart Club",
+      "category_raw": "Interiors/Sports & Recreation",
+      "tags": [
+        "track",
+        "race",
+        "tire",
+        "warehouse",
+        "graffiti",
+        "pillar",
+        "window",
+        "concrete",
+        "gocart",
+        "backplates"
+      ],
+      "description": "Unclipped, free 16K HDRI: indoor go kart track, high-contrast natural light, bright window flare, concrete reflections, tire barriers and graffiti.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/kart_club.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/kart_club.png?width=256&height=256&format=webp&v=bfd17221",
+      "polyhaven_page": "https://polyhaven.com/a/kart_club",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "newman_cafeteria",
+      "name": "Newman Cafeteria",
+      "category_raw": "Interiors/Retail & Commercial/Canteens & Cafeterias",
+      "tags": [
+        "lockers",
+        "fluorescent",
+        "brick",
+        "table",
+        "school",
+        "university",
+        "hallway"
+      ],
+      "description": "Free 20k unclipped HDRI: fluorescent cafeteria light, even soft shadows, bright ceiling panels, cool reflections on blue lockers and warm tiled floor; quiet vibe.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/newman_cafeteria.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/newman_cafeteria.png?width=256&height=256&format=webp&v=4f081d22",
+      "polyhaven_page": "https://polyhaven.com/a/newman_cafeteria",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "newman_lobby",
+      "name": "Newman Lobby",
+      "category_raw": "Interiors/Halls & Venues/Lobbies & Foyers",
+      "tags": [
+        "school",
+        "university",
+        "brick",
+        "concrete ceiling",
+        "doorway",
+        "table",
+        "hallway"
+      ],
+      "description": "Free 20k HDRI, unclipped, indoor lobby with warm overhead fluorescents and vivid magenta neon; glossy floor reflections and soft ambient shadows.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/newman_lobby.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/newman_lobby.png?width=256&height=256&format=webp&v=a01f996c",
+      "polyhaven_page": "https://polyhaven.com/a/newman_lobby",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "phone_shop",
+      "name": "Phone Shop",
+      "category_raw": "Interiors/Retail & Commercial/Shops & Stores",
+      "tags": [
+        "lamp",
+        "shop",
+        "store",
+        "display",
+        "counter"
+      ],
+      "description": "Free 16K unclipped HDRI of a shop interior with fluorescent artificial lighting, front-door daylight, medium contrast and soft shadows.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/phone_shop.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/phone_shop.png?width=256&height=256&format=webp&v=dea01559",
+      "polyhaven_page": "https://polyhaven.com/a/phone_shop",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "poly_haven_studio",
+      "name": "Poly Haven Studio",
+      "category_raw": "Interiors/Retail & Commercial/Offices",
+      "tags": [
+        "chair",
+        "office",
+        "table",
+        "heater",
+        "cat",
+        "wooden ceiling",
+        "computer",
+        "window",
+        "lamp",
+        "curtain",
+        "tiles",
+        "desk",
+        "room",
+        "bright"
+      ],
+      "description": "Free 24K unclipped HDRI of a bright home office, soft natural daylight mixed with down lights; low-contrast vibe with subtle reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/poly_haven_studio.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/poly_haven_studio.png?width=256&height=256&format=webp&v=f6f95d76",
+      "polyhaven_page": "https://polyhaven.com/a/poly_haven_studio",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "rostock_arches",
+      "name": "Rostock Arches",
+      "category_raw": "Interiors/Halls & Venues/Arcades & Colonnades",
+      "tags": [
+        "europe",
+        "architecture",
+        "germany",
+        "street",
+        "restaurant",
+        "city",
+        "square",
+        "building",
+        "town",
+        "arch"
+      ],
+      "description": "Free 24K unclipped HDRI of a low-contrast night arcade in Rostock: soft cool uplights under vaulted arches with warm distant street lamps.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/rostock_arches.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/rostock_arches.png?width=256&height=256&format=webp&v=c85b23c8",
+      "polyhaven_page": "https://polyhaven.com/a/rostock_arches",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "small_workshop",
+      "name": "Small Workshop",
+      "category_raw": "Interiors/Workshops & Garages/Domestic Garages & Studios",
+      "tags": [
+        "workshop",
+        "machine",
+        "fluorescent",
+        "lamp",
+        "table",
+        "tablesaw",
+        "concrete",
+        "tools",
+        "mess"
+      ],
+      "description": "Unclipped, free 24K HDRI of a small workshop with fluorescent fixtures and gentle morning sunlight, low - medium contrast, muted warm, dusty indoor mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/small_workshop.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/small_workshop.png?width=256&height=256&format=webp&v=7e76eb35",
+      "polyhaven_page": "https://polyhaven.com/a/small_workshop",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "studio_country_hall",
+      "name": "Studio Country Hall",
+      "category_raw": "Studio/Photo Studios/Themed & Set-Dressed",
+      "tags": [
+        "studio",
+        "wood",
+        "rustic",
+        "kitchen",
+        "chair",
+        "ladder",
+        "carpet",
+        "backplates"
+      ],
+      "description": "Free 16K HDRI, unclipped, soft morning natural light in a rustic wood studio; medium contrast, warm directional window light and gentle shadows.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/studio_country_hall.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/studio_country_hall.png?width=256&height=256&format=webp&v=be8c2178",
+      "polyhaven_page": "https://polyhaven.com/a/studio_country_hall",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "studio_small_01",
+      "name": "Studio Small 01",
+      "category_raw": "Studio/Photo Studios/Softbox & Lamp Setups",
+      "tags": [
+        "lamp",
+        "studio",
+        "photo"
+      ],
+      "description": "Free 16K unclipped HDRI: small indoor studio with bright bare lamps producing hard speculars, white cyc fill, dark curtains and mixed warm/cool tones.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/studio_small_01.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/studio_small_01.png?width=256&height=256&format=webp&v=383a222f",
+      "polyhaven_page": "https://polyhaven.com/a/studio_small_01",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "sundowner_deck",
+      "name": "Sundowner Deck",
+      "category_raw": "Interiors/Dining & Hospitality/Restaurants",
+      "tags": [
+        "patio",
+        "restaurant",
+        "table",
+        "chair",
+        "cafe",
+        "sea view",
+        "ocean",
+        "wooden deck",
+        "covered terrace"
+      ],
+      "description": "Free 24k HDRI, unclipped. Warm afternoon in a covered wooden terrace cafe on a hillside with an ocean view.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/sundowner_deck.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/sundowner_deck.png?width=256&height=256&format=webp&v=89488628",
+      "polyhaven_page": "https://polyhaven.com/a/sundowner_deck",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "thatch_chapel",
+      "name": "Thatch Chapel",
+      "category_raw": "Interiors/Religious/Chapels",
+      "tags": [
+        "room",
+        "thatch",
+        "windows",
+        "door",
+        "basket",
+        "table",
+        "chapel"
+      ],
+      "description": "Free 24K unclipped HDRI of a thatched chapel interior with warm, high-contrast morning/afternoon sunlight and golden pendant lighting, cozy rustic atmosphere.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/thatch_chapel.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/thatch_chapel.png?width=256&height=256&format=webp&v=2b7b606c",
+      "polyhaven_page": "https://polyhaven.com/a/thatch_chapel",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "unfinished_office",
+      "name": "Unfinished Office",
+      "category_raw": "Industrial/Construction/Bare-Shell Interiors",
+      "tags": [
+        "room",
+        "empty",
+        "construction",
+        "office",
+        "door",
+        "white"
+      ],
+      "description": "Free 16K unclipped HDRI: soft natural morning light in unfinished white office, low-contrast diffuse shadows, gentle window highlights and urban balcony view.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/unfinished_office.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/unfinished_office.png?width=256&height=256&format=webp&v=4568e790",
+      "polyhaven_page": "https://polyhaven.com/a/unfinished_office",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "unfinished_office_night",
+      "name": "Unfinished Office Night",
+      "category_raw": "Industrial/Construction/Bare-Shell Interiors",
+      "tags": [
+        "room",
+        "empty",
+        "construction",
+        "office",
+        "door",
+        "white"
+      ],
+      "description": "Free, unclipped 16K HDRI of an unfinished white office at night: cool, diffuse ceiling lights, soft shadows, medium contrast urban indoor atmosphere.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/unfinished_office_night.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/unfinished_office_night.png?width=256&height=256&format=webp&v=4e79664c",
+      "polyhaven_page": "https://polyhaven.com/a/unfinished_office_night",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "veranda",
+      "name": "Veranda",
+      "category_raw": "Parks & Gardens/Patios & Verandas",
+      "tags": [
+        "table",
+        "tile",
+        "brick",
+        "patio",
+        "veranda",
+        "porch"
+      ],
+      "description": "Unclipped, free 16K HDRI of a sunlit veranda with tiled floor and brick walls - warm morning/afternoon natural light, medium contrast, and soft directional patio shadows.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/veranda.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/veranda.png?width=256&height=256&format=webp&v=31a43518",
+      "polyhaven_page": "https://polyhaven.com/a/veranda",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "warm_bar",
+      "name": "Warm Bar",
+      "category_raw": "Interiors/Dining & Hospitality/Bars & Pubs",
+      "tags": [
+        "pub",
+        "bar",
+        "stool",
+        "bench",
+        "counter",
+        "fridge",
+        "bottle",
+        "rafters",
+        "cozy",
+        "drinks",
+        "tiles",
+        "wood"
+      ],
+      "description": "Free 24K unclipped HDRI of a cozy pub interior: warm amber night lighting, medium contrast, soft specular highlights on wood, tiles, bar counter and stools.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/warm_bar.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/warm_bar.png?width=256&height=256&format=webp&v=d856481a",
+      "polyhaven_page": "https://polyhaven.com/a/warm_bar",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "witsand_woolshop",
+      "name": "Witsand Woolshop",
+      "category_raw": "Interiors/Retail & Commercial/Shops & Stores",
+      "tags": [
+        "shop",
+        "table",
+        "wool",
+        "wood",
+        "yarn",
+        "spinning wheel",
+        "crochet",
+        "fabric",
+        "colorful"
+      ],
+      "description": "Unclipped, free 24K HDRI of a cozy wool shop interior with warm mixed lighting - fluorescents and window daylight - soft shadows, colorful shelves, wooden tables.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/witsand_woolshop.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/witsand_woolshop.png?width=256&height=256&format=webp&v=885280d3",
+      "polyhaven_page": "https://polyhaven.com/a/witsand_woolshop",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "workshop",
+      "name": "Workshop",
+      "category_raw": "Interiors/Workshops & Garages/Industrial Workshops",
+      "tags": [
+        "fluorescent",
+        "lamp",
+        "table",
+        "workshop",
+        "machine",
+        "tools",
+        "concrete",
+        "mess"
+      ],
+      "description": "Free, unclipped 24K HDRI of a cluttered workshop lit by harsh fluorescent strips and warm lamps - high-contrast artificial light with gritty, urban indoor mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/workshop.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/workshop.png?width=256&height=256&format=webp&v=61b0e758",
+      "polyhaven_page": "https://polyhaven.com/a/workshop",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "zwartkops_pit",
+      "name": "Zwartkops Pit",
+      "category_raw": "Streets & Town/Streets & Alleys/Race Tracks",
+      "tags": [
+        "race",
+        "track",
+        "pit",
+        "parking",
+        "concrete",
+        "covered",
+        "barrier",
+        "pillar",
+        "backplates"
+      ],
+      "description": "Free, unclipped 20K HDRI. Midday racetrack pit with covered concrete bays: bright sun outside, cool shaded interiors, medium-contrast natural light.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/zwartkops_pit.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/zwartkops_pit.png?width=256&height=256&format=webp&v=8d12df9b",
+      "polyhaven_page": "https://polyhaven.com/a/zwartkops_pit",
+      "archetype": "dining_kitchen",
+      "archetype_vn": "Phòng ăn, Bếp & Quán Cafe"
+    },
+    {
+      "id": "blender_institute",
+      "name": "Blender Institute",
+      "category_raw": "Interiors/Retail & Commercial/Offices",
+      "tags": [
+        "blender",
+        "timber",
+        "computer",
+        "chair",
+        "lamp",
+        "people"
+      ],
+      "description": "Free 16K, unclipped HDRI of Blender Institute: warm timber-ceiling office, soft low-contrast artificial light, mixed desk-lamp/computer highlights and people.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/blender_institute.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/blender_institute.png?width=256&height=256&format=webp&v=3b022e22",
+      "polyhaven_page": "https://polyhaven.com/a/blender_institute",
+      "archetype": "office_study",
+      "archetype_vn": "Phòng làm việc & Thư viện"
+    },
+    {
+      "id": "de_balie",
+      "name": "De Balie",
+      "category_raw": "Interiors/Halls & Venues/Lobbies & Foyers",
+      "tags": [
+        "stair",
+        "banister",
+        "people",
+        "bcon",
+        "door",
+        "meeting",
+        "pink"
+      ],
+      "description": "Free 16K unclipped HDRI: warm pink-tinted indoor stairwell with medium-contrast artificial lighting, wooden banisters and a soft, friendly event mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/de_balie.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/de_balie.png?width=256&height=256&format=webp&v=ef2a7159",
+      "polyhaven_page": "https://polyhaven.com/a/de_balie",
+      "archetype": "office_study",
+      "archetype_vn": "Phòng làm việc & Thư viện"
+    },
+    {
+      "id": "newman_locker_room",
+      "name": "Newman Locker Room",
+      "category_raw": "Interiors/Sports & Recreation/Locker Rooms",
+      "tags": [
+        "lockers",
+        "fluorescent",
+        "brick",
+        "school",
+        "university",
+        "concrete ceiling",
+        "hallway"
+      ],
+      "description": "Free 20k unclipped HDRI: fluorescent locker room, warm yellow cast, soft even light, low contrast, clear specular highlights on tiled floor and blue lockers.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/newman_locker_room.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/newman_locker_room.png?width=256&height=256&format=webp&v=6e932e4f",
+      "polyhaven_page": "https://polyhaven.com/a/newman_locker_room",
+      "archetype": "office_study",
+      "archetype_vn": "Phòng làm việc & Thư viện"
+    },
+    {
+      "id": "school_hall",
+      "name": "School Hall",
+      "category_raw": "Interiors/Halls & Venues/School & Assembly Halls",
+      "tags": [
+        "school",
+        "stage",
+        "hall",
+        "wood",
+        "wooden floor",
+        "curtain"
+      ],
+      "description": "Free 24K, unclipped HDRI of a school hall stage: warm morning/afternoon sunlight plus artificial lights, wooden floor glow, medium contrast and soft shadows.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/school_hall.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/school_hall.png?width=256&height=256&format=webp&v=b177bb3d",
+      "polyhaven_page": "https://polyhaven.com/a/school_hall",
+      "archetype": "office_study",
+      "archetype_vn": "Phòng làm việc & Thư viện"
+    },
+    {
+      "id": "school_quad",
+      "name": "School Quad",
+      "category_raw": "Interiors/Halls & Venues/School & Assembly Halls",
+      "tags": [
+        "concrete",
+        "pavers",
+        "covered",
+        "hall",
+        "square",
+        "campus",
+        "school",
+        "symmetrical"
+      ],
+      "description": "Free 20K, unclipped HDRI of a covered school quad with soft daylight mixed with warm artificial lamps; medium contrast, calm mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/school_quad.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/school_quad.png?width=256&height=256&format=webp&v=95f1bc6c",
+      "polyhaven_page": "https://polyhaven.com/a/school_quad",
+      "archetype": "office_study",
+      "archetype_vn": "Phòng làm việc & Thư viện"
+    },
+    {
+      "id": "small_empty_room_1",
+      "name": "Small Empty Room 1",
+      "category_raw": "Interiors/Retail & Commercial/Offices",
+      "tags": [
+        "room",
+        "empty",
+        "office",
+        "door",
+        "window",
+        "curtain",
+        "wooden floor"
+      ],
+      "description": "Free 16K, unclipped HDRI of a small empty room with soft midday natural light through a curtained window, neutral tones and medium contrast from the wooden floor.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/small_empty_room_1.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/small_empty_room_1.png?width=256&height=256&format=webp&v=cf9b0482",
+      "polyhaven_page": "https://polyhaven.com/a/small_empty_room_1",
+      "archetype": "office_study",
+      "archetype_vn": "Phòng làm việc & Thư viện"
+    },
+    {
+      "id": "small_empty_room_2",
+      "name": "Small Empty Room 2",
+      "category_raw": "Interiors/Retail & Commercial/Offices",
+      "tags": [
+        "room",
+        "empty",
+        "office",
+        "door",
+        "curtain",
+        "wooden floor",
+        "led panel",
+        "wallpaper"
+      ],
+      "description": "Free, unclipped 16K HDRI of a small empty office with soft, cool LED ceiling panels, muted warm walls and wood floor, medium-contrast lighting and a quiet mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/small_empty_room_2.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/small_empty_room_2.png?width=256&height=256&format=webp&v=a1e90413",
+      "polyhaven_page": "https://polyhaven.com/a/small_empty_room_2",
+      "archetype": "office_study",
+      "archetype_vn": "Phòng làm việc & Thư viện"
+    },
+    {
+      "id": "small_empty_room_3",
+      "name": "Small Empty Room 3",
+      "category_raw": "Interiors/Retail & Commercial/Offices",
+      "tags": [
+        "room",
+        "empty",
+        "office",
+        "door",
+        "curtain",
+        "wooden floor",
+        "led panel"
+      ],
+      "description": "Unclipped, free 16K HDRI of a small empty office - diffused morning window light through curtains plus cool LED panels, wooden floor, medium contrast.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/small_empty_room_3.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/small_empty_room_3.png?width=256&height=256&format=webp&v=4995f330",
+      "polyhaven_page": "https://polyhaven.com/a/small_empty_room_3",
+      "archetype": "office_study",
+      "archetype_vn": "Phòng làm việc & Thư viện"
+    },
+    {
+      "id": "small_empty_room_4",
+      "name": "Small Empty Room 4",
+      "category_raw": "Interiors/Retail & Commercial/Offices",
+      "tags": [
+        "room",
+        "empty",
+        "office",
+        "door",
+        "window",
+        "curtain",
+        "wooden floor",
+        "wallpaper"
+      ],
+      "description": "Free 16K unclipped HDRI, midday natural light through a curtained balcony door, medium contrast, soft shadows on wooden floor and wallpaper.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/small_empty_room_4.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/small_empty_room_4.png?width=256&height=256&format=webp&v=94e53b30",
+      "polyhaven_page": "https://polyhaven.com/a/small_empty_room_4",
+      "archetype": "office_study",
+      "archetype_vn": "Phòng làm việc & Thư viện"
+    },
+    {
+      "id": "university_workshop",
+      "name": "University Workshop",
+      "category_raw": "Interiors/Workshops & Garages/Industrial Workshops",
+      "tags": [
+        "machine",
+        "workshop",
+        "tools",
+        "carpentry",
+        "workbench",
+        "spacious",
+        "industrial",
+        "concrete floor",
+        "high ceiling"
+      ],
+      "description": "Free 20K HDRI, unclipped. Spacious industrial university workshop with high skylit ceilings and concrete floor - medium contrast; ideal for product, hard-surface and arch‑viz renders.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/university_workshop.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/university_workshop.png?width=256&height=256&format=webp&v=e55f8418",
+      "polyhaven_page": "https://polyhaven.com/a/university_workshop",
+      "archetype": "office_study",
+      "archetype_vn": "Phòng làm việc & Thư viện"
+    },
+    {
+      "id": "afrikaans_church_interior",
+      "name": "Afrikaans Church Interior",
+      "category_raw": "Interiors/Religious/Churches & Cathedrals",
+      "tags": [
+        "windows",
+        "pew",
+        "altar",
+        "red carpet",
+        "stage",
+        "wooden ceiling",
+        "pulpit",
+        "high ceiling"
+      ],
+      "description": "Free 20k unclipped HDRI: warm morning/afternoon light in a high-ceilinged Afrikaans church, wooden curved ceiling, red carpet, pews and pulpit, high contrast.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/afrikaans_church_interior.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/afrikaans_church_interior.png?width=256&height=256&format=webp&v=f808b17b",
+      "polyhaven_page": "https://polyhaven.com/a/afrikaans_church_interior",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "ballroom",
+      "name": "Ballroom",
+      "category_raw": "Interiors/Halls & Venues/Ballrooms & Banquet Halls",
+      "tags": [
+        "tile",
+        "victorian",
+        "window",
+        "piano",
+        "chandelier"
+      ],
+      "description": "Free 16K, unclipped HDRI of a Victorian ballroom with warm chandelier glow and soft daylight from tall windows, medium-contrast lighting and reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/ballroom.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/ballroom.png?width=256&height=256&format=webp&v=a806925e",
+      "polyhaven_page": "https://polyhaven.com/a/ballroom",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "bell_tower",
+      "name": "Bell Tower",
+      "category_raw": "Interiors/Religious/Churches & Cathedrals",
+      "tags": [
+        "church",
+        "tower",
+        "wooden beams",
+        "stained glass",
+        "architecture",
+        "arched windows",
+        "empty",
+        "wooden floor",
+        "ladder"
+      ],
+      "description": "Free 24k unclipped HDRI: warm morning light through stained‑glass arched windows, soft wooden beams, ladder and worn wooden floor; quiet, natural mood with medium contrast.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/bell_tower.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/bell_tower.png?width=256&height=256&format=webp&v=85ace594",
+      "polyhaven_page": "https://polyhaven.com/a/bell_tower",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "church_stairway",
+      "name": "Church Stairway",
+      "category_raw": "Interiors/Religious/Churches & Cathedrals",
+      "tags": [
+        "wooden staircase",
+        "stained glass",
+        "wooden ceiling",
+        "historic architecture",
+        "balusters",
+        "balcony",
+        "arched windows"
+      ],
+      "description": "Free 24k unclipped HDRI of a sunlit church stairway with stained-glass windows, warm wood tones and soft colored light mixed with artificial highlights",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/church_stairway.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/church_stairway.png?width=256&height=256&format=webp&v=eac590b6",
+      "polyhaven_page": "https://polyhaven.com/a/church_stairway",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "circus_arena",
+      "name": "Circus Arena",
+      "category_raw": "Interiors/Halls & Venues/Arenas & Stadiums",
+      "tags": [
+        "seat",
+        "theater",
+        "arena",
+        "show"
+      ],
+      "description": "Free unclipped 17K HDRI of a circus arena: warm amber house lights and cool blue center spotlights, medium contrast, red seating and glossy reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/circus_arena.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/circus_arena.png?width=256&height=256&format=webp&v=c419e49d",
+      "polyhaven_page": "https://polyhaven.com/a/circus_arena",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "country_club",
+      "name": "Country Club",
+      "category_raw": "Interiors/Halls & Venues/Ballrooms & Banquet Halls",
+      "tags": [
+        "victorian",
+        "room",
+        "window",
+        "ballroom",
+        "wood floor",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI. Victorian ballroom with tall windows, warm directional morning sunlight, high-contrast shafts and wooden floor.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/country_club.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/country_club.png?width=256&height=256&format=webp&v=3c9157eb",
+      "polyhaven_page": "https://polyhaven.com/a/country_club",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "dancing_hall",
+      "name": "Dancing Hall",
+      "category_raw": "Interiors/Halls & Venues/Ballrooms & Banquet Halls",
+      "tags": [
+        "lamp",
+        "hall",
+        "architecture",
+        "empty",
+        "curtain",
+        "stage",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI of an empty dancing hall with bright overhead LED grids, soft curtained windows, a stage and mid-contrast artificial indoor lighting.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/dancing_hall.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/dancing_hall.png?width=256&height=256&format=webp&v=1d3d577d",
+      "polyhaven_page": "https://polyhaven.com/a/dancing_hall",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "dresden_station_night",
+      "name": "Dresden Station Night",
+      "category_raw": "Interiors/Halls & Venues/Transit Stations",
+      "tags": [
+        "train",
+        "station",
+        "bench",
+        "hall",
+        "tracks",
+        "fluorescent"
+      ],
+      "description": "Free 16K, unclipped HDRI of a night urban train station: indoor hall lit by cool fluorescent lines, medium contrast, empty platforms, benches and tracks.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/dresden_station_night.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/dresden_station_night.png?width=256&height=256&format=webp&v=ef602359",
+      "polyhaven_page": "https://polyhaven.com/a/dresden_station_night",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "entrance_hall",
+      "name": "Entrance Hall",
+      "category_raw": "Interiors/Halls & Venues/Lobbies & Foyers",
+      "tags": [
+        "victorian",
+        "window",
+        "tile"
+      ],
+      "description": "Unclipped, free 16K HDRI of a Victorian entrance hall: warm midday daylight and chandelier glow, medium-contrast natural & artificial indoor lighting.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/entrance_hall.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/entrance_hall.png?width=256&height=256&format=webp&v=7cba37a5",
+      "polyhaven_page": "https://polyhaven.com/a/entrance_hall",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "events_hall_interior",
+      "name": "Events Hall Interior",
+      "category_raw": "Interiors/Halls & Venues/Exhibition & Event Halls",
+      "tags": [
+        "warehouse",
+        "concrete floor",
+        "high ceiling",
+        "rustic walls",
+        "metal roof",
+        "white chairs"
+      ],
+      "description": "Free unclipped 20k HDRI of an events hall interior with soft natural light through windows, high metal roof, worn brick walls and concrete floor.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/events_hall_interior.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/events_hall_interior.png?width=256&height=256&format=webp&v=7f83a40a",
+      "polyhaven_page": "https://polyhaven.com/a/events_hall_interior",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "ferndale_studio_02",
+      "name": "Ferndale Studio 02",
+      "category_raw": "Studio/Photo Studios/Coloured & Gel Lighting",
+      "tags": [
+        "photo",
+        "lamp",
+        "infinity",
+        "dark ceiling",
+        "umbrella",
+        "rectangle",
+        "spotlight",
+        "blue",
+        "teal",
+        "red"
+      ],
+      "description": "Free HDRI - high‑contrast indoor studio with blue, teal and red spotlights, umbrella and lamp highlights; ideal for product, character, and cinematic lighting.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/ferndale_studio_02.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/ferndale_studio_02.png?width=256&height=256&format=webp&v=633e54fd",
+      "polyhaven_page": "https://polyhaven.com/a/ferndale_studio_02",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "ferndale_studio_05",
+      "name": "Ferndale Studio 05",
+      "category_raw": "Studio/Photo Studios/Coloured & Gel Lighting",
+      "tags": [
+        "photo",
+        "lamp",
+        "infinity",
+        "dark ceiling",
+        "umbrella",
+        "rectangle",
+        "pink",
+        "purple"
+      ],
+      "description": "Free HDRI: moody pink-purple studio with high-contrast lamp and umbrella fills on an infinity cove - perfect for stylized product, fashion, and cinematic indoor renders.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/ferndale_studio_05.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/ferndale_studio_05.png?width=256&height=256&format=webp&v=670ba147",
+      "polyhaven_page": "https://polyhaven.com/a/ferndale_studio_05",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "ferndale_studio_06",
+      "name": "Ferndale Studio 06",
+      "category_raw": "Studio/Photo Studios/Coloured & Gel Lighting",
+      "tags": [
+        "photo",
+        "lamp",
+        "infinity",
+        "dark ceiling",
+        "umbrella",
+        "rectangle",
+        "red",
+        "blue"
+      ],
+      "description": "Free HDRI: Ferndale Studio 06 - high-contrast indoor studio with vivid red and blue practical lamps, deep shadows and directional light for stylized portraits, product and cinematic renders.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/ferndale_studio_06.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/ferndale_studio_06.png?width=256&height=256&format=webp&v=fe980581",
+      "polyhaven_page": "https://polyhaven.com/a/ferndale_studio_06",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "ferndale_studio_09",
+      "name": "Ferndale Studio 09",
+      "category_raw": "Studio/Photo Studios/Softbox & Lamp Setups",
+      "tags": [
+        "photo",
+        "lamp",
+        "infinity",
+        "dark ceiling",
+        "umbrella",
+        "reflector",
+        "warm",
+        "white"
+      ],
+      "description": "Free studio HDRI - warm, high-contrast umbrella key with floor reflector in a dark infinity cove; ideal for portraits, products, cinematic scenes.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/ferndale_studio_09.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/ferndale_studio_09.png?width=256&height=256&format=webp&v=8c07152e",
+      "polyhaven_page": "https://polyhaven.com/a/ferndale_studio_09",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "ferndale_studio_10",
+      "name": "Ferndale Studio 10",
+      "category_raw": "Studio/Photo Studios/Coloured & Gel Lighting",
+      "tags": [
+        "photo",
+        "lamp",
+        "infinity",
+        "dark ceiling",
+        "umbrella",
+        "reflector",
+        "weathered",
+        "blue",
+        "teal"
+      ],
+      "description": "Free studio HDRI with high-contrast magenta key and teal fill from umbrella lamp and reflector, in a weathered space - ideal for moody portraits & cinematic product shots.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/ferndale_studio_10.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/ferndale_studio_10.png?width=256&height=256&format=webp&v=ff1e0c4d",
+      "polyhaven_page": "https://polyhaven.com/a/ferndale_studio_10",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "graaff_reinet_groote_kerk",
+      "name": "Graaff Reinet Groote Kerk",
+      "category_raw": "Interiors/Religious/Churches & Cathedrals",
+      "tags": [
+        "church",
+        "religion",
+        "stained glass",
+        "altar",
+        "pew",
+        "arched windows",
+        "wooden ceiling"
+      ],
+      "description": "Unclipped, free 24K HDRI of a grand wooden church interior with warm lamps, soft window daylight, rich reds, balanced contrast and subtle speculars.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/graaff_reinet_groote_kerk.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/graaff_reinet_groote_kerk.png?width=256&height=256&format=webp&v=3c5ca5e8",
+      "polyhaven_page": "https://polyhaven.com/a/graaff_reinet_groote_kerk",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "hall_of_finfish",
+      "name": "Hall of Finfish",
+      "category_raw": "Interiors/Cultural & Civic/Museums & Galleries",
+      "tags": [
+        "fish",
+        "shark",
+        "museum"
+      ],
+      "description": "Free 16K unclipped HDRI: a quiet museum hall with mounted sharks and fish, cool low-contrast artificial lighting and warm wooden floor reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/hall_of_finfish.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/hall_of_finfish.png?width=256&height=256&format=webp&v=a4574068",
+      "polyhaven_page": "https://polyhaven.com/a/hall_of_finfish",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "hall_of_mammals",
+      "name": "Hall of Mammals",
+      "category_raw": "Interiors/Cultural & Civic/Museums & Galleries",
+      "tags": [
+        "museum",
+        "bone",
+        "lion",
+        "tiger",
+        "whale",
+        "skeleton"
+      ],
+      "description": "Free 17K unclipped HDRI - museum hall with warm overhead artificial light, medium contrast, slight green cast, glass-case highlights and soft floor reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/hall_of_mammals.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/hall_of_mammals.png?width=256&height=256&format=webp&v=3bf30df0",
+      "polyhaven_page": "https://polyhaven.com/a/hall_of_mammals",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "hamburg_hbf",
+      "name": "Hamburg Hbf",
+      "category_raw": "Interiors/Halls & Venues/Transit Stations",
+      "tags": [
+        "hall",
+        "windows",
+        "sun",
+        "train",
+        "station"
+      ],
+      "description": "Free 16K unclipped HDRI of Hamburg Hbf. Natural sun through arched windows, medium contrast indoor hall lighting, urban train-station mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/hamburg_hbf.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/hamburg_hbf.png?width=256&height=256&format=webp&v=6dbef442",
+      "polyhaven_page": "https://polyhaven.com/a/hamburg_hbf",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "large_corridor",
+      "name": "Large Corridor",
+      "category_raw": "Interiors/Halls & Venues/Arcades & Colonnades",
+      "tags": [
+        "entrance",
+        "hall",
+        "arch",
+        "empty",
+        "victorian",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI. Warm morning/afternoon light fills a Victorian corridor, with medium-contrast natural shadows and arched-window highlights casting patterned beams.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/large_corridor.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/large_corridor.png?width=256&height=256&format=webp&v=2e2a0d1b",
+      "polyhaven_page": "https://polyhaven.com/a/large_corridor",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "leadenhall_market",
+      "name": "Leadenhall Market",
+      "category_raw": "Interiors/Retail & Commercial/Malls & Markets",
+      "tags": [
+        "hall",
+        "mall",
+        "europe",
+        "architecture",
+        "london",
+        "cobblestone",
+        "street",
+        "road"
+      ],
+      "description": "Unclipped, free 16K HDRI of Leadenhall Market - covered London arcade, daytime mix of skylight and warm shop lamps; medium contrast, cobblestones.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/leadenhall_market.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/leadenhall_market.png?width=256&height=256&format=webp&v=88d29230",
+      "polyhaven_page": "https://polyhaven.com/a/leadenhall_market",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "machine_shop_01",
+      "name": "Machine Shop 01",
+      "category_raw": "Interiors/Workshops & Garages/Industrial Workshops",
+      "tags": [
+        "workshop",
+        "hall",
+        "warehouse",
+        "industrial",
+        "machine",
+        "metal"
+      ],
+      "description": "Free 16K unclipped HDRI of an industrial machine shop with natural window light, medium contrast, warm daylight, soft shadows and metal reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/machine_shop_01.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/machine_shop_01.png?width=256&height=256&format=webp&v=a7999596",
+      "polyhaven_page": "https://polyhaven.com/a/machine_shop_01",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "machine_shop_02",
+      "name": "Machine Shop 02",
+      "category_raw": "Interiors/Workshops & Garages/Industrial Workshops",
+      "tags": [
+        "workshop",
+        "hall",
+        "warehouse",
+        "industrial",
+        "machine",
+        "metal"
+      ],
+      "description": "Free 16K unclipped HDRI of a machine shop - natural daylight from high windows and an open door, medium contrast, soft shadows, and warm metal highlights.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/machine_shop_02.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/machine_shop_02.png?width=256&height=256&format=webp&v=c950b689",
+      "polyhaven_page": "https://polyhaven.com/a/machine_shop_02",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "machine_shop_03",
+      "name": "Machine Shop 03",
+      "category_raw": "Interiors/Workshops & Garages/Industrial Workshops",
+      "tags": [
+        "hall",
+        "industrial",
+        "machine",
+        "warehouse",
+        "workshop"
+      ],
+      "description": "Free 16K unclipped HDRI of an industrial machine shop hall with skylit morning/afternoon natural light, medium contrast and warm, dusty atmosphere.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/machine_shop_03.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/machine_shop_03.png?width=256&height=256&format=webp&v=be0dc394",
+      "polyhaven_page": "https://polyhaven.com/a/machine_shop_03",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "metro_noord",
+      "name": "Metro: Noord",
+      "category_raw": "Interiors/Halls & Venues/Transit Stations",
+      "tags": [
+        "train",
+        "metro",
+        "station",
+        "modern",
+        "bench",
+        "glass",
+        "architecture",
+        "empty",
+        "platform",
+        "europe",
+        "amsterdam"
+      ],
+      "description": "Free 24K unclipped HDRI: night Amsterdam metro platform with warm artificial lights, arched glass roof, reflective train cars; medium contrast, soft shadows.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/metro_noord.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/metro_noord.png?width=256&height=256&format=webp&v=f69ef385",
+      "polyhaven_page": "https://polyhaven.com/a/metro_noord",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "metro_vijzelgracht",
+      "name": "Metro: Vijzelgracht",
+      "category_raw": "Interiors/Halls & Venues/Transit Stations",
+      "tags": [
+        "underground",
+        "metro",
+        "train",
+        "station",
+        "platform",
+        "metal",
+        "concrete",
+        "subway",
+        "architecture",
+        "modern",
+        "europe",
+        "amsterdam"
+      ],
+      "description": "Free 24K unclipped HDRI: soft, low-contrast artificial night lighting in an Amsterdam metro - cool-neutral tones, subtle metal reflections, quiet sterile mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/metro_vijzelgracht.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/metro_vijzelgracht.png?width=256&height=256&format=webp&v=5d1c2a0c",
+      "polyhaven_page": "https://polyhaven.com/a/metro_vijzelgracht",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "mirrored_hall",
+      "name": "Mirrored Hall",
+      "category_raw": "Abandoned & Ruins/Buildings/Derelict Interiors",
+      "tags": [
+        "hall",
+        "mirror",
+        "window",
+        "victorian",
+        "high ceiling",
+        "abandoned"
+      ],
+      "description": "Free 29K HDRI, unclipped - midday natural light pours into an abandoned Victorian mirrored hall with high ceilings, warm wood reflections and medium contrast.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/mirrored_hall.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/mirrored_hall.png?width=256&height=256&format=webp&v=831fc63d",
+      "polyhaven_page": "https://polyhaven.com/a/mirrored_hall",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "moon_lab",
+      "name": "Moon Lab",
+      "category_raw": "Interiors/Cultural & Civic/Museums & Galleries",
+      "tags": [
+        "lamp",
+        "lunar",
+        "sand",
+        "simulation",
+        "science",
+        "museum",
+        "laboratory"
+      ],
+      "description": "Free 24K HDRI of Spaceport Rostock's lunar test facility. Includes artificial regolith, simulated sunlight with a high-power halogen lamp at a low angle.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/moon_lab.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/moon_lab.png?width=256&height=256&format=webp&v=92a5e7cd",
+      "polyhaven_page": "https://polyhaven.com/a/moon_lab",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "museum_of_ethnography",
+      "name": "Museum of Ethnography",
+      "category_raw": "Interiors/Cultural & Civic/Museums & Galleries",
+      "tags": [
+        "museum",
+        "antique",
+        "display"
+      ],
+      "description": "Free 17K unclipped HDRI: warm museum interior with medium contrast, soft overhead fluorescents, warm wood reflections and a cozy antique mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/museum_of_ethnography.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/museum_of_ethnography.png?width=256&height=256&format=webp&v=71f3aa7c",
+      "polyhaven_page": "https://polyhaven.com/a/museum_of_ethnography",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "music_hall_01",
+      "name": "Music Hall 01",
+      "category_raw": "Interiors/Halls & Venues/Concert & Music Halls",
+      "tags": [
+        "theater",
+        "organ",
+        "chair",
+        "victorian",
+        "hall"
+      ],
+      "description": "Free 16K unclipped HDRI of an opulent Victorian music hall with warm, artificial chandelier light, medium contrast, soft fills and dramatic stage highlights.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/music_hall_01.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/music_hall_01.png?width=256&height=256&format=webp&v=a870cf69",
+      "polyhaven_page": "https://polyhaven.com/a/music_hall_01",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "old_hall",
+      "name": "Old Hall",
+      "category_raw": "Abandoned & Ruins/Buildings/Civic & Leisure Ruins",
+      "tags": [
+        "victorian",
+        "abandoned",
+        "empty",
+        "hall",
+        "europe",
+        "building",
+        "arch",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI of an abandoned Victorian hall - soft morning natural light, medium contrast, warm tones, arched windows and ornate decayed interiors.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/old_hall.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/old_hall.png?width=256&height=256&format=webp&v=f57f5143",
+      "polyhaven_page": "https://polyhaven.com/a/old_hall",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "outdoor_chapel",
+      "name": "Outdoor Chapel",
+      "category_raw": "Parks & Gardens/Gardens/Courtyard Gardens",
+      "tags": [
+        "bench",
+        "altar",
+        "wedding",
+        "stone wall",
+        "arch",
+        "transparent roof",
+        "airy",
+        "flower decorations",
+        "concrete floor"
+      ],
+      "description": "Free 20K unclipped HDRI. Airy outdoor chapel with warm morning-afternoon light, medium contrast and transparent roof - perfect for wedding renders.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/outdoor_chapel.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/outdoor_chapel.png?width=256&height=256&format=webp&v=5182d174",
+      "polyhaven_page": "https://polyhaven.com/a/outdoor_chapel",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "paul_lobe_haus",
+      "name": "Paul Lobe Haus",
+      "category_raw": "Interiors/Cultural & Civic/Museums & Galleries",
+      "tags": [
+        "architecture",
+        "berlin",
+        "germany",
+        "autumn",
+        "glass",
+        "skylight"
+      ],
+      "description": "Free 16K unclipped HDRI. Midday overcast skylight with soft, neutral light, medium contrast; glass reflections, urban Berlin architecture and autumn foliage.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/paul_lobe_haus.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/paul_lobe_haus.png?width=256&height=256&format=webp&v=74e358bd",
+      "polyhaven_page": "https://polyhaven.com/a/paul_lobe_haus",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "penguin_museum",
+      "name": "Penguin Museum",
+      "category_raw": "Interiors/Cultural & Civic/Museums & Galleries",
+      "tags": [
+        "museum",
+        "carpet",
+        "display",
+        "fish",
+        "penguin",
+        "vaulted ceiling",
+        "wooden beams",
+        "exhibition cases",
+        "wall-mounted specimens"
+      ],
+      "description": "Unclipped, free 24K indoor penguin museum HDRI with thatch ceiling, soft window daylight and overhead lamps, balanced exposure, gentle shadows, calm feel.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/penguin_museum.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/penguin_museum.png?width=256&height=256&format=webp&v=f6403d4f",
+      "polyhaven_page": "https://polyhaven.com/a/penguin_museum",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "photo_studio_broadway_hall",
+      "name": "Photo Studio Broadway Hall",
+      "category_raw": "Studio/Photo Studios/Natural-Light Studios",
+      "tags": [
+        "wood",
+        "wall",
+        "chair",
+        "flash",
+        "umbrella",
+        "studio",
+        "photo",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI of soft, low-contrast morning light in an overcast indoor photo studio - large softbox, wooden floor, plaster ceiling and muted natural tones.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/photo_studio_broadway_hall.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/photo_studio_broadway_hall.png?width=256&height=256&format=webp&v=c7bfa16e",
+      "polyhaven_page": "https://polyhaven.com/a/photo_studio_broadway_hall",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "pillars",
+      "name": "Pillars",
+      "category_raw": "Interiors/Halls & Venues/Arcades & Colonnades",
+      "tags": [
+        "column",
+        "architecture",
+        "monument"
+      ],
+      "description": "Free 16K unclipped HDRI of a sunlit stone colonnade with soft, warm morning/afternoon natural light, low-contrast shadows and gentle ambient fill.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/pillars.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/pillars.png?width=256&height=256&format=webp&v=cc72d36c",
+      "polyhaven_page": "https://polyhaven.com/a/pillars",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "pretville_cinema",
+      "name": "Pretville Cinema",
+      "category_raw": "Interiors/Cultural & Civic/Theatres & Cinemas",
+      "tags": [
+        "chair",
+        "seat",
+        "stage",
+        "cinema",
+        "theater",
+        "movie",
+        "red",
+        "piano",
+        "chandelier",
+        "projector"
+      ],
+      "description": "Free 24K HDRI, unclipped - warm, intimate cinema interior lit by golden chandeliers and projector glow, medium contrast with rich red velvet seats and stage.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/pretville_cinema.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/pretville_cinema.png?width=256&height=256&format=webp&v=1a13a75c",
+      "polyhaven_page": "https://polyhaven.com/a/pretville_cinema",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "rostock_laage_airport",
+      "name": "Rostock-Laage Airport",
+      "category_raw": "Interiors/Halls & Venues/Transit Stations",
+      "tags": [
+        "airport",
+        "hall",
+        "warehouse",
+        "high ceiling",
+        "tiles",
+        "europe",
+        "building",
+        "aviation",
+        "museum",
+        "modern"
+      ],
+      "description": "Free 24K unclipped HDRI, Rostock-Laage Airport: high ceiling hall with tiled floors, soft natural light mixed with warm artificial lights, low-contrast, calm airy mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/rostock_laage_airport.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/rostock_laage_airport.png?width=256&height=256&format=webp&v=ec7b62d4",
+      "polyhaven_page": "https://polyhaven.com/a/rostock_laage_airport",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "sculpture_exhibition",
+      "name": "Sculpture Exhibition",
+      "category_raw": "Interiors/Cultural & Civic/Museums & Galleries",
+      "tags": [
+        "horse",
+        "art",
+        "exhibition",
+        "museum"
+      ],
+      "description": "Free 17K unclipped HDRI of an indoor sculpture exhibition: soft overhead fluorescent panels and spotlights, warm neutral tones, medium contrast, gentle shadows and subtle reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/sculpture_exhibition.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/sculpture_exhibition.png?width=256&height=256&format=webp&v=30da7e5c",
+      "polyhaven_page": "https://polyhaven.com/a/sculpture_exhibition",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "sepulchral_chapel_basement",
+      "name": "Sepulchral Chapel Basement",
+      "category_raw": "Interiors/Religious/Crypts & Cloisters",
+      "tags": [
+        "tiles",
+        "architecture",
+        "dome",
+        "circular"
+      ],
+      "description": "Free 22K unclipped HDRI of a sepulchral chapel basement: warm amber alcove light and cool dome skylight, medium-contrast shadows on a tiled circular floor.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/sepulchral_chapel_basement.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/sepulchral_chapel_basement.png?width=256&height=256&format=webp&v=647c57bb",
+      "polyhaven_page": "https://polyhaven.com/a/sepulchral_chapel_basement",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "sepulchral_chapel_rotunda",
+      "name": "Sepulchral Chapel Rotunda",
+      "category_raw": "Interiors/Religious/Chapels",
+      "tags": [
+        "tiles",
+        "architecture",
+        "roman",
+        "hall",
+        "dome",
+        "pantheon",
+        "circular"
+      ],
+      "description": "Free 19K unclipped HDRI of a sepulchral chapel rotunda: soft natural skylight through a domed oculus, cool indoor light with gentle beams and medium contrast.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/sepulchral_chapel_rotunda.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/sepulchral_chapel_rotunda.png?width=256&height=256&format=webp&v=209bb0eb",
+      "polyhaven_page": "https://polyhaven.com/a/sepulchral_chapel_rotunda",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "small_cathedral",
+      "name": "Small Cathedral",
+      "category_raw": "Interiors/Religious/Churches & Cathedrals",
+      "tags": [
+        "church",
+        "chapel",
+        "carpet",
+        "painting",
+        "religion",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI of a small cathedral interior with soft, natural low-contrast daylight, warm wood floors, red carpet and gentle stained-glass highlights.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/small_cathedral.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/small_cathedral.png?width=256&height=256&format=webp&v=0cbab97d",
+      "polyhaven_page": "https://polyhaven.com/a/small_cathedral",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "small_cathedral_02",
+      "name": "Small Cathedral 02",
+      "category_raw": "Streets & Town/Squares & Plazas/Courtyards & Quads",
+      "tags": [
+        "sun",
+        "europe",
+        "architecture",
+        "arch",
+        "church",
+        "tree",
+        "cobblestone",
+        "brick",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI: sunrise, partly cloudy sky with warm low sun and medium contrast light on a cathedral courtyard framed by arches and cobblestones.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/small_cathedral_02.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/small_cathedral_02.png?width=256&height=256&format=webp&v=26b7e1d4",
+      "polyhaven_page": "https://polyhaven.com/a/small_cathedral_02",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "solitude_interior",
+      "name": "Solitude Interior",
+      "category_raw": "Interiors/Halls & Venues/Arcades & Colonnades",
+      "tags": [
+        "architecture",
+        "europe",
+        "building",
+        "column",
+        "pillar",
+        "arch",
+        "victorian",
+        "backplates"
+      ],
+      "description": "Free 20K unclipped HDRI of a Victorian interior arcade, soft morning/afternoon natural light, medium contrast, gentle shadows on columns and arches.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/solitude_interior.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/solitude_interior.png?width=256&height=256&format=webp&v=9afdca22",
+      "polyhaven_page": "https://polyhaven.com/a/solitude_interior",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "subway_entrance",
+      "name": "Subway Entrance",
+      "category_raw": "Interiors/Halls & Venues/Transit Stations",
+      "tags": [
+        "tile",
+        "fluorescent",
+        "stair",
+        "map",
+        "tunnel",
+        "station",
+        "escalator"
+      ],
+      "description": "Free 16K HDRI, unclipped. Midday subway entrance lit by cool fluorescents and warm display lights, tiled floors, escalator and stairs, medium-contrast mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/subway_entrance.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/subway_entrance.png?width=256&height=256&format=webp&v=ba5b0282",
+      "polyhaven_page": "https://polyhaven.com/a/subway_entrance",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "theater_01",
+      "name": "Theater 01",
+      "category_raw": "Interiors/Cultural & Civic/Theatres & Cinemas",
+      "tags": [
+        "theater",
+        "theatre",
+        "seat",
+        "orchestra",
+        "stage",
+        "curtain"
+      ],
+      "description": "Unclipped, free 17K HDRI of a theater: warm artificial stage lighting, medium contrast, soft ceiling spotlights, glossy reflections and rich red curtain.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/theater_01.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/theater_01.png?width=256&height=256&format=webp&v=6de7678d",
+      "polyhaven_page": "https://polyhaven.com/a/theater_01",
+      "archetype": "hospitality_gallery",
+      "archetype_vn": "Sảnh tiệc, Bảo tàng & Hội trường"
+    },
+    {
+      "id": "abandoned_construction",
+      "name": "Abandoned Construction",
+      "category_raw": "Abandoned & Ruins/Industrial/Derelict Factories & Warehouses",
+      "tags": [
+        "brick",
+        "pillar",
+        "warehouse",
+        "rubble",
+        "abandoned",
+        "debris",
+        "desolate",
+        "empty",
+        "ruin",
+        "gloomy"
+      ],
+      "description": "Free, unclipped 16K HDRI of an abandoned brick warehouse interior - soft overcast natural light, medium contrast, desolate, dusty, rubble-filled atmosphere.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/abandoned_construction.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/abandoned_construction.png?width=256&height=256&format=webp&v=eceb934e",
+      "polyhaven_page": "https://polyhaven.com/a/abandoned_construction",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "abandoned_games_room_01",
+      "name": "Abandoned Games Room 01",
+      "category_raw": "Abandoned & Ruins/Buildings/Civic & Leisure Ruins",
+      "tags": [
+        "abandoned",
+        "room",
+        "window",
+        "tile",
+        "rubble"
+      ],
+      "description": "Unclipped, free 16K HDRI of an abandoned games room: soft midday natural light through large windows, low-contrast, dusty interior with tile and rubble.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/abandoned_games_room_01.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/abandoned_games_room_01.png?width=256&height=256&format=webp&v=b15eb519",
+      "polyhaven_page": "https://polyhaven.com/a/abandoned_games_room_01",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "abandoned_games_room_02",
+      "name": "Abandoned Games Room 02",
+      "category_raw": "Abandoned & Ruins/Buildings/Civic & Leisure Ruins",
+      "tags": [
+        "abandoned",
+        "room",
+        "window",
+        "tile",
+        "arcade",
+        "rubble"
+      ],
+      "description": "Free 16K unclipped HDRI of an abandoned games room. Soft midday natural light through dirty windows, low-contrast diffuse fill with warm-yellow cast.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/abandoned_games_room_02.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/abandoned_games_room_02.png?width=256&height=256&format=webp&v=3ca7e764",
+      "polyhaven_page": "https://polyhaven.com/a/abandoned_games_room_02",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "abandoned_garage",
+      "name": "Abandoned Garage",
+      "category_raw": "Abandoned & Ruins/Buildings/Derelict Interiors",
+      "tags": [
+        "abandoned",
+        "graffiti",
+        "grunge",
+        "workshop",
+        "tire",
+        "debris",
+        "trash"
+      ],
+      "description": "Free 29K unclipped HDRI: abandoned garage with soft midday overcast natural light, medium contrast; grungy, graffiti-strewn interior with tires and debris.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/abandoned_garage.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/abandoned_garage.png?width=256&height=256&format=webp&v=b8a779e1",
+      "polyhaven_page": "https://polyhaven.com/a/abandoned_garage",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "abandoned_greenhouse",
+      "name": "Abandoned Greenhouse",
+      "category_raw": "Abandoned & Ruins/Buildings/Derelict Interiors",
+      "tags": [
+        "warehouse",
+        "concrete",
+        "greenhouse",
+        "abandoned",
+        "industrial",
+        "graffiti"
+      ],
+      "description": "Free 20K unclipped HDRI of an abandoned greenhouse: low-contrast, natural midday overcast light indoors, cool urban industrial concrete and graffiti atmosphere.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/abandoned_greenhouse.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/abandoned_greenhouse.png?width=256&height=256&format=webp&v=f749ba9c",
+      "polyhaven_page": "https://polyhaven.com/a/abandoned_greenhouse",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "abandoned_tiled_room",
+      "name": "Abandoned Tiled Room",
+      "category_raw": "Abandoned & Ruins/Industrial/Derelict Factories & Warehouses",
+      "tags": [
+        "abandoned",
+        "industrial",
+        "rubble",
+        "ruin",
+        "trash",
+        "weathered",
+        "broken",
+        "neglected",
+        "decay",
+        "debris",
+        "grunge",
+        "window"
+      ],
+      "description": "Free 16K unclipped HDRI of an abandoned tiled industrial room, warm sunrise/sunset natural light, medium contrast, broken-window shafts, gritty debris and decay.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/abandoned_tiled_room.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/abandoned_tiled_room.png?width=256&height=256&format=webp&v=ccdcc9ee",
+      "polyhaven_page": "https://polyhaven.com/a/abandoned_tiled_room",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "acoustical_shell",
+      "name": "Acoustical Shell",
+      "category_raw": "Parks & Gardens/Parks/Outdoor Stages & Bandstands",
+      "tags": [
+        "stage",
+        "promenade",
+        "tree",
+        "garden",
+        "bay"
+      ],
+      "description": "Unclipped, free 21K HDRI. Partly cloudy morning/afternoon natural light under an acoustical shell on a seaside promenade - medium contrast with soft, subtle reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/acoustical_shell.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/acoustical_shell.png?width=256&height=256&format=webp&v=dd536cb5",
+      "polyhaven_page": "https://polyhaven.com/a/acoustical_shell",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "adams_place_bridge",
+      "name": "Adams Place Bridge",
+      "category_raw": "Streets & Town/Bridges & Underpasses/Covered Walkways",
+      "tags": [
+        "building",
+        "architecture",
+        "europe",
+        "bridge",
+        "tunnel",
+        "path"
+      ],
+      "description": "Free 16K unclipped HDRI of a covered urban bridge walkway - cool daylight through windows with strong linear artificial lights and high-contrast reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/adams_place_bridge.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/adams_place_bridge.png?width=256&height=256&format=webp&v=1dd3115f",
+      "polyhaven_page": "https://polyhaven.com/a/adams_place_bridge",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "aerodynamics_workshop",
+      "name": "Aerodynamics Workshop",
+      "category_raw": "Interiors/Workshops & Garages/Industrial Workshops",
+      "tags": [
+        "machine",
+        "industrial",
+        "workshop",
+        "wind tunnel",
+        "window"
+      ],
+      "description": "Unclipped, free 17K HDRI: industrial workshop with warm morning sunlight through large windows, cool fluorescent fill, medium contrast and industrial reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/aerodynamics_workshop.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/aerodynamics_workshop.png?width=256&height=256&format=webp&v=a692478a",
+      "polyhaven_page": "https://polyhaven.com/a/aerodynamics_workshop",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "aircraft_workshop_01",
+      "name": "Aircraft Workshop 01",
+      "category_raw": "Interiors/Workshops & Garages/Industrial Workshops",
+      "tags": [
+        "workshop",
+        "industrial",
+        "warehouse",
+        "scaffold"
+      ],
+      "description": "Free 17K unclipped HDRI of an aircraft workshop interior with morning natural and warm artificial light, medium contrast, busy industrial warehouse atmosphere.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/aircraft_workshop_01.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/aircraft_workshop_01.png?width=256&height=256&format=webp&v=75df447a",
+      "polyhaven_page": "https://polyhaven.com/a/aircraft_workshop_01",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "art_studio",
+      "name": "Art Studio",
+      "category_raw": "Interiors/Workshops & Garages/Domestic Garages & Studios",
+      "tags": [
+        "painting",
+        "art",
+        "workshop",
+        "window",
+        "atelier"
+      ],
+      "description": "Free, unclipped 17K HDRI: indoor art studio with mixed window daylight and warm ceiling lights, medium contrast, soft shadows and gentle reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/art_studio.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/art_studio.png?width=256&height=256&format=webp&v=8c8d8ea4",
+      "polyhaven_page": "https://polyhaven.com/a/art_studio",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "artist_workshop",
+      "name": "Artist Workshop",
+      "category_raw": "Interiors/Workshops & Garages/Domestic Garages & Studios",
+      "tags": [
+        "painting",
+        "canvas",
+        "window",
+        "art",
+        "atelier"
+      ],
+      "description": "Unclipped, free 17K HDRI with soft midday natural window light - low-contrast, diffuse illumination in a cluttered artist's painting studio, warm, calm mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/artist_workshop.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/artist_workshop.png?width=256&height=256&format=webp&v=33e6d773",
+      "polyhaven_page": "https://polyhaven.com/a/artist_workshop",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "auto_service",
+      "name": "Auto Service",
+      "category_raw": "Interiors/Workshops & Garages/Industrial Workshops",
+      "tags": [
+        "workshop",
+        "warehouse",
+        "industrial",
+        "concrete",
+        "backplates"
+      ],
+      "description": "Unclipped, free 16K HDRI of an industrial concrete auto workshop with warm artificial ceiling lights, soft daylight at an open door, medium contrast, gritty mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/auto_service.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/auto_service.png?width=256&height=256&format=webp&v=72da390a",
+      "polyhaven_page": "https://polyhaven.com/a/auto_service",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "autoshop_01",
+      "name": "Autoshop 01",
+      "category_raw": "Interiors/Workshops & Garages/Industrial Workshops",
+      "tags": [
+        "garage",
+        "warehouse",
+        "industrial",
+        "car",
+        "workshop"
+      ],
+      "description": "Free 17K, unclipped HDRI with even, low-contrast garage lighting: cool fluorescent + skylight mix, soft diffuse shadows and a neutral industrial mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/autoshop_01.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/autoshop_01.png?width=256&height=256&format=webp&v=4fb0b21d",
+      "polyhaven_page": "https://polyhaven.com/a/autoshop_01",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "basement_boxing_ring",
+      "name": "Basement Boxing Ring",
+      "category_raw": "Interiors/Sports & Recreation/Combat & Martial Arts",
+      "tags": [
+        "sport",
+        "boxing",
+        "ring",
+        "basement",
+        "fluorescent"
+      ],
+      "description": "Unclipped, free 16K HDRI of a basement boxing ring with harsh fluorescent tubes, soft reflections, low ceiling and a gritty, indoor urban mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/basement_boxing_ring.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/basement_boxing_ring.png?width=256&height=256&format=webp&v=ae13ac9f",
+      "polyhaven_page": "https://polyhaven.com/a/basement_boxing_ring",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "bathroom",
+      "name": "Bathroom",
+      "category_raw": "Interiors/Residential/Bathrooms",
+      "tags": [
+        "bath",
+        "basin",
+        "tiles",
+        "sink"
+      ],
+      "description": "Free 16K unclipped HDRI of a bathroom with soft daylight from a high window plus warm artificial light, medium contrast, tiled surfaces with gentle reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/bathroom.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/bathroom.png?width=256&height=256&format=webp&v=1def55a1",
+      "polyhaven_page": "https://polyhaven.com/a/bathroom",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "birbeck_street_underpass",
+      "name": "Birbeck Street Underpass",
+      "category_raw": "Streets & Town/Bridges & Underpasses/Underpasses & Tunnels",
+      "tags": [
+        "road",
+        "asphalt",
+        "tunnel",
+        "underpass",
+        "brick",
+        "graffiti"
+      ],
+      "description": "Free 16K unclipped HDRI: daytime urban underpass with natural light from both ends and warm tubular lamps; medium contrast on wet asphalt, brick and graffiti.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/birbeck_street_underpass.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/birbeck_street_underpass.png?width=256&height=256&format=webp&v=09b7653e",
+      "polyhaven_page": "https://polyhaven.com/a/birbeck_street_underpass",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "blocky_photo_studio",
+      "name": "Blocky Photo Studio",
+      "category_raw": "Studio/Photo Studios/Natural-Light Studios",
+      "tags": [
+        "studio",
+        "stair",
+        "ramp",
+        "stand",
+        "modern",
+        "concrete"
+      ],
+      "description": "Free 16K unclipped HDRI of a modern concrete studio with soft window light and cool studio lamps, low-contrast with diffuse shadows and subtle highlights.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/blocky_photo_studio.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/blocky_photo_studio.png?width=256&height=256&format=webp&v=87b5ed0d",
+      "polyhaven_page": "https://polyhaven.com/a/blocky_photo_studio",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "boiler_room",
+      "name": "Boiler Room",
+      "category_raw": "Interiors/Workshops & Garages/Industrial Workshops",
+      "tags": [
+        "machine",
+        "industrial",
+        "pipes",
+        "factory"
+      ],
+      "description": "Free 17K unclipped HDRI of a boiler room with soft daylight from high windows and cool lamps; low-contrast, warm highlights and industrial reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/boiler_room.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/boiler_room.png?width=256&height=256&format=webp&v=b7e5075b",
+      "polyhaven_page": "https://polyhaven.com/a/boiler_room",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "burnt_warehouse",
+      "name": "Burnt Warehouse",
+      "category_raw": "Abandoned & Ruins/Industrial/Derelict Factories & Warehouses",
+      "tags": [
+        "abandoned",
+        "warehouse",
+        "industrial",
+        "concrete",
+        "burnt",
+        "trash",
+        "brick",
+        "rubble",
+        "ruin",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI: burnt warehouse interior with warm, dusty natural light through a scorched doorway; gritty urban ruin of brick, concrete and rubble.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/burnt_warehouse.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/burnt_warehouse.png?width=256&height=256&format=webp&v=b7ee73b4",
+      "polyhaven_page": "https://polyhaven.com/a/burnt_warehouse",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "carpentry_shop_02",
+      "name": "Carpentry Shop 02",
+      "category_raw": "Interiors/Workshops & Garages/Industrial Workshops",
+      "tags": [
+        "lamp",
+        "fluorescent",
+        "workshop",
+        "machine",
+        "tools",
+        "wood",
+        "carpentry",
+        "workbench"
+      ],
+      "description": "Free 16K unclipped HDRI of a dusty carpentry shop with warm fluorescent ceiling lamps, high-contrast shadows, gritty yellowed tones and strong fill.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/carpentry_shop_02.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/carpentry_shop_02.png?width=256&height=256&format=webp&v=570bece0",
+      "polyhaven_page": "https://polyhaven.com/a/carpentry_shop_02",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "castle_zavelstein_cellar",
+      "name": "Castle Zavelstein Cellar",
+      "category_raw": "Interiors/Cultural & Civic/Monuments & Heritage Interiors",
+      "tags": [
+        "cellar",
+        "basement",
+        "arch",
+        "tunnel",
+        "brick",
+        "castle"
+      ],
+      "description": "Free 20K unclipped HDRI of a castle cellar with strong directional daylight through an arched window, high-contrast shadows, and warm brick reflections.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/castle_zavelstein_cellar.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/castle_zavelstein_cellar.png?width=256&height=256&format=webp&v=1f7c7eea",
+      "polyhaven_page": "https://polyhaven.com/a/castle_zavelstein_cellar",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "cave_wall",
+      "name": "Cave Wall",
+      "category_raw": "Forest & Woodland/Clearings/Grottos & Caves",
+      "tags": [
+        "rock",
+        "tree",
+        "wall",
+        "river",
+        "vine",
+        "ledge",
+        "cave"
+      ],
+      "description": "Free 16K HDRI, unclipped. Morning/afternoon natural light fills a cave ledge with vines and river, medium-contrast soft shadows on damp rock and green foliage.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/cave_wall.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/cave_wall.png?width=256&height=256&format=webp&v=56107622",
+      "polyhaven_page": "https://polyhaven.com/a/cave_wall",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "christmas_photo_studio_02",
+      "name": "Christmas Photo Studio 02",
+      "category_raw": "Studio/Photo Studios/Themed & Set-Dressed",
+      "tags": [
+        "blanket",
+        "cloth",
+        "christmas",
+        "ladder",
+        "wood",
+        "studio",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI of a cozy Christmas studio: softbox key lights, medium contrast, warm fairy lights mixed with cool artificial light.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/christmas_photo_studio_02.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/christmas_photo_studio_02.png?width=256&height=256&format=webp&v=de877f22",
+      "polyhaven_page": "https://polyhaven.com/a/christmas_photo_studio_02",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "climbing_gym",
+      "name": "Climbing Gym",
+      "category_raw": "Interiors/Sports & Recreation/Gyms & Fitness",
+      "tags": [
+        "fitness",
+        "gym",
+        "exercise",
+        "mat",
+        "climbing",
+        "training",
+        "warehouse",
+        "high ceiling",
+        "wall"
+      ],
+      "description": "Free 20K HDRI, unclipped: climbing gym in a high-ceiling warehouse with mixed cool skylight and warm artificial lights, medium-contrast indoor mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/climbing_gym.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/climbing_gym.png?width=256&height=256&format=webp&v=09066146",
+      "polyhaven_page": "https://polyhaven.com/a/climbing_gym",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "concrete_tunnel",
+      "name": "Concrete Tunnel",
+      "category_raw": "Streets & Town/Bridges & Underpasses/Underpasses & Tunnels",
+      "tags": [
+        "tunnel",
+        "brick",
+        "concrete",
+        "lamp",
+        "bench"
+      ],
+      "description": "Free 16K unclipped HDRI of an indoor urban tunnel with warm overhead lamps, high-contrast lighting, brick and concrete surfaces, benches and deep directional shadows.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/concrete_tunnel.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/concrete_tunnel.png?width=256&height=256&format=webp&v=03405a76",
+      "polyhaven_page": "https://polyhaven.com/a/concrete_tunnel",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "concrete_tunnel_02",
+      "name": "Concrete Tunnel 02",
+      "category_raw": "Streets & Town/Bridges & Underpasses/Underpasses & Tunnels",
+      "tags": [
+        "asphalt",
+        "concrete",
+        "tunnel",
+        "road",
+        "underpass"
+      ],
+      "description": "Unclipped free 20K HDRI. Midday natural light in a concrete underpass - soft, medium-contrast fill with strong backlit exits and warm reflections on asphalt.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/concrete_tunnel_02.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/concrete_tunnel_02.png?width=256&height=256&format=webp&v=baad9ace",
+      "polyhaven_page": "https://polyhaven.com/a/concrete_tunnel_02",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "creepy_bathroom",
+      "name": "Creepy Bathroom",
+      "category_raw": "Abandoned & Ruins/Buildings/Derelict Interiors",
+      "tags": [
+        "dark",
+        "spooky",
+        "broken",
+        "abandoned",
+        "pipes",
+        "debris",
+        "grunge",
+        "window"
+      ],
+      "description": "Free 24K unclipped HDRI - dark, abandoned bathroom with low-contrast night indoor lighting: cold window fill, warm door spill, grunge, broken pipes and debris.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/creepy_bathroom.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/creepy_bathroom.png?width=256&height=256&format=webp&v=8152bc98",
+      "polyhaven_page": "https://polyhaven.com/a/creepy_bathroom",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "crossfit_gym",
+      "name": "Crossfit Gym",
+      "category_raw": "Interiors/Sports & Recreation/Gyms & Fitness",
+      "tags": [
+        "rubber floor",
+        "workout equipment",
+        "gym",
+        "metal roof",
+        "fluorescent",
+        "fitness",
+        "exercise",
+        "weights",
+        "training"
+      ],
+      "description": "Free 20k unclipped HDRI of a CrossFit gym with cool fluorescent indoor lighting, medium contrast, blue rubber floor and metal-roof.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/crossfit_gym.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/crossfit_gym.png?width=256&height=256&format=webp&v=77a92410",
+      "polyhaven_page": "https://polyhaven.com/a/crossfit_gym",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "cyclorama_hard_light",
+      "name": "Cyclorama Hard Light",
+      "category_raw": "Studio/Photo Studios/Softbox & Lamp Setups",
+      "tags": [
+        "studio",
+        "lamp",
+        "umbrella",
+        "white",
+        "infinity",
+        "clean"
+      ],
+      "description": "Free unclipped 16K HDRI of a white cyclorama studio with hard umbrella lamp, bright artificial light, crisp high-contrast shadows and specular highlights.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/cyclorama_hard_light.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/cyclorama_hard_light.png?width=256&height=256&format=webp&v=91b59b31",
+      "polyhaven_page": "https://polyhaven.com/a/cyclorama_hard_light",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "debris_basement_corridor",
+      "name": "Debris Basement Corridor",
+      "category_raw": "Abandoned & Ruins/Buildings/Derelict Interiors",
+      "tags": [
+        "basement",
+        "storage area",
+        "construction",
+        "debris",
+        "utility room",
+        "underground",
+        "maintenance"
+      ],
+      "description": "Unclipped, free 24K HDRI of a debris-filled basement corridor with cool fluorescent light, grey doors and concrete, soft even light, gritty mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/debris_basement_corridor.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/debris_basement_corridor.png?width=256&height=256&format=webp&v=1197f836",
+      "polyhaven_page": "https://polyhaven.com/a/debris_basement_corridor",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "distribution_board",
+      "name": "Distribution Board",
+      "category_raw": "Abandoned & Ruins/Industrial/Derelict Factories & Warehouses",
+      "tags": [
+        "abandoned",
+        "industrial",
+        "factory",
+        "rust",
+        "rubble",
+        "electrical",
+        "machine",
+        "brick"
+      ],
+      "description": "Free 16K unclipped HDRI with warm morning/afternoon natural light in an abandoned industrial interior, medium-contrast dusty atmosphere and rusty panels.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/distribution_board.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/distribution_board.png?width=256&height=256&format=webp&v=6c46fa05",
+      "polyhaven_page": "https://polyhaven.com/a/distribution_board",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "drachenfels_cellar",
+      "name": "Drachenfels Cellar",
+      "category_raw": "Interiors/Cultural & Civic/Monuments & Heritage Interiors",
+      "tags": [
+        "tunnel",
+        "brick",
+        "dirt",
+        "cave",
+        "castle",
+        "arch",
+        "shelter",
+        "doorway"
+      ],
+      "description": "Free 20K unclipped HDRI of a sunlit castle cellar: earthy, dusty interior with bright doorway backlight, medium-contrast natural light and subtle mossy green accents.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/drachenfels_cellar.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/drachenfels_cellar.png?width=256&height=256&format=webp&v=ce296c6c",
+      "polyhaven_page": "https://polyhaven.com/a/drachenfels_cellar",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "empty_warehouse_01",
+      "name": "Empty Warehouse 01",
+      "category_raw": "Abandoned & Ruins/Industrial/Derelict Factories & Warehouses",
+      "tags": [
+        "warehouse",
+        "derelict",
+        "fluorescent",
+        "concrete",
+        "industrial",
+        "backplates"
+      ],
+      "description": "Free 16K unclipped HDRI of an empty warehouse interior, cool fluorescent ceiling light with a warm side window glow, medium contrast and an industrial mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/empty_warehouse_01.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/empty_warehouse_01.png?width=256&height=256&format=webp&v=9cfec28e",
+      "polyhaven_page": "https://polyhaven.com/a/empty_warehouse_01",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "ferndale_studio_01",
+      "name": "Ferndale Studio 01",
+      "category_raw": "Studio/Photo Studios/Softbox & Lamp Setups",
+      "tags": [
+        "photo",
+        "lamp",
+        "infinity",
+        "dark ceiling",
+        "umbrella",
+        "white"
+      ],
+      "description": "Free HDRI - high-contrast indoor studio with white cyclorama, dark ceiling and single umbrella lamp; crisp directional light and reflections for product and portrait renders.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/ferndale_studio_01.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/ferndale_studio_01.png?width=256&height=256&format=webp&v=fbb8274f",
+      "polyhaven_page": "https://polyhaven.com/a/ferndale_studio_01",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "ferndale_studio_03",
+      "name": "Ferndale Studio 03",
+      "category_raw": "Studio/Photo Studios/Softbox & Lamp Setups",
+      "tags": [
+        "photo",
+        "lamp",
+        "infinity",
+        "dark ceiling",
+        "umbrella",
+        "rectangle",
+        "spotlight",
+        "white",
+        "warm"
+      ],
+      "description": "Free HDRI: warm studio infinity cove with spot, umbrella and rectangular softbox; medium-contrast directional artificial lighting for portraits and product.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/ferndale_studio_03.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/ferndale_studio_03.png?width=256&height=256&format=webp&v=c7bf7711",
+      "polyhaven_page": "https://polyhaven.com/a/ferndale_studio_03",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "ferndale_studio_04",
+      "name": "Ferndale Studio 04",
+      "category_raw": "Studio/Photo Studios/Coloured & Gel Lighting",
+      "tags": [
+        "photo",
+        "lamp",
+        "infinity",
+        "dark ceiling",
+        "umbrella",
+        "rectangle",
+        "spotlight",
+        "yellow",
+        "green",
+        "teal"
+      ],
+      "description": "Free HDRI: Ferndale Studio 04 - indoor studio with warm yellow key lamp and teal/green accent lights, medium contrast; ideal for product, portrait, and lookdev.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/ferndale_studio_04.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/ferndale_studio_04.png?width=256&height=256&format=webp&v=f5ad2966",
+      "polyhaven_page": "https://polyhaven.com/a/ferndale_studio_04",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "ferndale_studio_07",
+      "name": "Ferndale Studio 07",
+      "category_raw": "Studio/Photo Studios/Softbox & Lamp Setups",
+      "tags": [
+        "photo",
+        "lamp",
+        "infinity",
+        "dark ceiling",
+        "umbrella",
+        "spotlight",
+        "tube",
+        "rectangle",
+        "white",
+        "warm"
+      ],
+      "description": "Free HDRI - warm studio lighting with a large rectangular overhead softbox, umbrella, tubes and a spotlight. Ideal for portraits, product shots and lookdev.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/ferndale_studio_07.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/ferndale_studio_07.png?width=256&height=256&format=webp&v=62e64422",
+      "polyhaven_page": "https://polyhaven.com/a/ferndale_studio_07",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "ferndale_studio_08",
+      "name": "Ferndale Studio 08",
+      "category_raw": "Studio/Photo Studios/Softbox & Lamp Setups",
+      "tags": [
+        "photo",
+        "lamp",
+        "infinity",
+        "dark ceiling",
+        "umbrella",
+        "rectangle",
+        "spotlight",
+        "warm"
+      ],
+      "description": "Free warm indoor studio HDRI with rectangular softbox, umbrella and spotlight - medium contrast; ideal for portraits, product shots and studio lighting.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/ferndale_studio_08.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/ferndale_studio_08.png?width=256&height=256&format=webp&v=0b342573",
+      "polyhaven_page": "https://polyhaven.com/a/ferndale_studio_08",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "ferndale_studio_11",
+      "name": "Ferndale Studio 11",
+      "category_raw": "Studio/Photo Studios/Softbox & Lamp Setups",
+      "tags": [
+        "photo",
+        "lamp",
+        "infinity",
+        "dark ceiling",
+        "rectangle",
+        "tube",
+        "white",
+        "warm"
+      ],
+      "description": "Free studio HDRI: warm tube lamps and a rectangular softbox in an infinity cove. Medium contrast with controlled shadows - ideal for product, portrait, and lookdev lighting.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/ferndale_studio_11.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/ferndale_studio_11.png?width=256&height=256&format=webp&v=598a95c5",
+      "polyhaven_page": "https://polyhaven.com/a/ferndale_studio_11",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "ferndale_studio_12",
+      "name": "Ferndale Studio 12",
+      "category_raw": "Studio/Photo Studios/Coloured & Gel Lighting",
+      "tags": [
+        "photo",
+        "lamp",
+        "infinity",
+        "dark ceiling",
+        "rectangle",
+        "tube",
+        "blue",
+        "colors",
+        "white"
+      ],
+      "description": "Free indoor studio HDRI with neon tube lamps and a soft key, cool blue-magenta tones, medium contrast, great for product and portrait renders.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/ferndale_studio_12.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/ferndale_studio_12.png?width=256&height=256&format=webp&v=b027e18d",
+      "polyhaven_page": "https://polyhaven.com/a/ferndale_studio_12",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "floral_tent",
+      "name": "Floral Tent",
+      "category_raw": "Parks & Gardens/Gardens/Courtyard Gardens",
+      "tags": [
+        "bush",
+        "plant",
+        "sun",
+        "tiles",
+        "tent",
+        "canopy"
+      ],
+      "description": "Free 16K unclipped HDRI of a sunlit floral canopy: bright midday natural light, soft medium-contrast shadows over warm tiled paths, fences and plants.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/floral_tent.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/floral_tent.png?width=256&height=256&format=webp&v=88940b2f",
+      "polyhaven_page": "https://polyhaven.com/a/floral_tent",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "garage",
+      "name": "Garage",
+      "category_raw": "Interiors/Workshops & Garages/Domestic Garages & Studios",
+      "tags": [
+        "garage",
+        "fluorescent",
+        "concrete",
+        "parking",
+        "shelves",
+        "orange",
+        "mess",
+        "tools",
+        "junk"
+      ],
+      "description": "Free, unclipped 16K HDRI of a garage - warm fluorescent lighting with slight daylight, high-contrast orange concrete interior, cluttered shelves and scattered tools.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/garage.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/garage.png?width=256&height=256&format=webp&v=881e77cc",
+      "polyhaven_page": "https://polyhaven.com/a/garage",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "gear_store",
+      "name": "Gear Store",
+      "category_raw": "Interiors/Retail & Commercial/Shops & Stores",
+      "tags": [
+        "shelves",
+        "fluorescent",
+        "boxes",
+        "store"
+      ],
+      "description": "Free 24K unclipped HDRI of an indoor camera gear room: warm fluorescent overhead lighting, medium contrast, yellow-green cast, soft shadows.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/gear_store.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/gear_store.png?width=256&height=256&format=webp&v=a34a64ec",
+      "polyhaven_page": "https://polyhaven.com/a/gear_store",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "georgentor",
+      "name": "Georgentor",
+      "category_raw": "Streets & Town/Bridges & Underpasses/Underpasses & Tunnels",
+      "tags": [
+        "brick",
+        "architecture",
+        "tunnel",
+        "passage"
+      ],
+      "description": "Unclipped free 16K HDRI of a vaulted stone passage. Soft natural light and medium contrast with directional end-lighting for a calm urban indoor mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/georgentor.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/georgentor.png?width=256&height=256&format=webp&v=3305b8fb",
+      "polyhaven_page": "https://polyhaven.com/a/georgentor",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "glass_passage",
+      "name": "Glass Passage",
+      "category_raw": "Streets & Town/Bridges & Underpasses/Covered Walkways",
+      "tags": [
+        "tunnel",
+        "plant",
+        "tree",
+        "lamp",
+        "enclosure"
+      ],
+      "description": "Free 16K unclipped HDRI: glass-covered walkway with overcast soft daylight and warm low-contrast lamps, cool reflections and damp, leafy atmosphere",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/glass_passage.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/glass_passage.png?width=256&height=256&format=webp&v=07c2d969",
+      "polyhaven_page": "https://polyhaven.com/a/glass_passage",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "graffiti_shelter",
+      "name": "Graffiti Shelter",
+      "category_raw": "Parks & Gardens/Parks/Urban Parks",
+      "tags": [
+        "tree",
+        "shelter",
+        "bench",
+        "road",
+        "path",
+        "graffiti",
+        "hut",
+        "autumn"
+      ],
+      "description": "Free 16K unclipped HDRI: soft midday overcast light in a graffitied wooden shelter with benches, leaf-strewn floor, opening to autumn trees; medium contrast.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/graffiti_shelter.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/graffiti_shelter.png?width=256&height=256&format=webp&v=6cb25623",
+      "polyhaven_page": "https://polyhaven.com/a/graffiti_shelter",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "gym_01",
+      "name": "Gym 01",
+      "category_raw": "Interiors/Sports & Recreation/Gyms & Fitness",
+      "tags": [
+        "fluorescent",
+        "gym",
+        "weights",
+        "fitness",
+        "exercise"
+      ],
+      "description": "Free 16K unclipped HDRI of a gym interior with cool fluorescent lighting, medium contrast, high ceiling, vivid green turf and energetic mood.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/gym_01.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/gym_01.png?width=256&height=256&format=webp&v=0881473e",
+      "polyhaven_page": "https://polyhaven.com/a/gym_01",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "hangar_interior",
+      "name": "Hangar Interior",
+      "category_raw": "Industrial/Factories & Warehouses/Aircraft Hangars",
+      "tags": [
+        "hangar",
+        "plane",
+        "airport",
+        "concrete",
+        "aviation",
+        "warehouse"
+      ],
+      "description": "Unclipped, free 20K HDRI of a hangar interior with natural midday light - bright open-bay backlight, skylight patches, soft shadows and medium contrast.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/hangar_interior.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/hangar_interior.png?width=256&height=256&format=webp&v=cf1cc85e",
+      "polyhaven_page": "https://polyhaven.com/a/hangar_interior",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    },
+    {
+      "id": "hikers_cave",
+      "name": "Hiker's Cave",
+      "category_raw": "Forest & Woodland/Clearings/Grottos & Caves",
+      "tags": [
+        "forest",
+        "cave",
+        "rock"
+      ],
+      "description": "Unclipped, free 16K HDRI - soft midday light spilling into a rocky cave mouth, cool green-tinted fill, bright rim highlights and medium-contrast natural lighting.",
+      "panorama_url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/hikers_cave.jpg",
+      "thumbnail_url": "https://cdn.polyhaven.com/asset_img/thumbs/hikers_cave.png?width=256&height=256&format=webp&v=8b715114",
+      "polyhaven_page": "https://polyhaven.com/a/hikers_cave",
+      "archetype": "studio_workshop",
+      "archetype_vn": "Studio, Gác xép & Không gian sáng tạo"
+    }
+  ]
+}

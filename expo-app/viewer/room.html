@@ -3041,6 +3041,13 @@
           if (texPack.pbr_materials && texPack.pbr_materials[kind]) {
             const pbr = texPack.pbr_materials[kind];
             if (typeof pbr.roughness === 'number') material.roughness = pbr.roughness;
+            if (pbr.material_type && (pbr.material_type.includes('marble') || pbr.material_type.includes('stone'))) {
+              material.metalness = 0.08;
+            } else if (pbr.material_type && pbr.material_type.includes('leather')) {
+              material.metalness = 0.02;
+            } else if (pbr.material_type && (pbr.material_type.includes('linen') || pbr.material_type.includes('carpet'))) {
+              material.metalness = 0.0;
+            }
           }
           material.needsUpdate = true;
         });
