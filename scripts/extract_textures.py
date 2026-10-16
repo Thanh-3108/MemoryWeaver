@@ -547,17 +547,20 @@ def extract_textures(image_input, regions_input=None):
                 ai_surface_map[item["name"]] = item
 
     auto_patches = find_autonomous_patches(img_rgb)
-    target_surfaces = ["screen", "desk", "floor", "wall", "board", "chair", "ceiling", "sofa", "window"]
+    target_surfaces = ["screen", "desk", "table", "floor", "wall", "board", "chair", "ceiling", "sofa", "bed", "rug", "window"]
 
     surface_defaults = {
         "screen": {"material_type": "projector_slide", "dominant_color": "#FFFFFF", "secondary_color": "#1E3A8A", "roughness": 0.20},
         "desk": {"material_type": "varnished_wood", "dominant_color": "#C48A57", "secondary_color": "#A16637", "roughness": 0.35},
+        "table": {"material_type": "varnished_wood", "dominant_color": "#8D6E63", "secondary_color": "#5D4037", "roughness": 0.40},
         "floor": {"material_type": "ceramic_tile", "dominant_color": "#EAEAEA", "secondary_color": "#D0D0D0", "roughness": 0.45},
         "wall": {"material_type": "matte_wall_paint", "dominant_color": "#E2EBE5", "secondary_color": "#D2DDD7", "roughness": 0.85},
         "board": {"material_type": "whiteboard_enamel", "dominant_color": "#F2F2F2", "secondary_color": "#E0E0E0", "roughness": 0.20},
         "chair": {"material_type": "varnished_wood", "dominant_color": "#C48A57", "secondary_color": "#A16637", "roughness": 0.45},
         "ceiling": {"material_type": "matte_wall_paint", "dominant_color": "#F5F5F0", "secondary_color": "#E8E8E0", "roughness": 0.90},
         "sofa": {"material_type": "fabric", "dominant_color": "#A79A8D", "secondary_color": "#8C8074", "roughness": 0.75},
+        "bed": {"material_type": "fabric", "dominant_color": "#E5DFD5", "secondary_color": "#C8BFA8", "roughness": 0.80},
+        "rug": {"material_type": "fabric", "dominant_color": "#546E7A", "secondary_color": "#37474F", "roughness": 0.85},
         "window": {"material_type": "glass", "dominant_color": "#B0B5A9", "secondary_color": "#9AA092", "roughness": 0.15},
     }
 
@@ -595,8 +598,8 @@ def extract_textures(image_input, regions_input=None):
                     dom_color = get_dominant_color_hex(photo_patch)
                     clean_box = auto_entry.get("box")
 
-            # Chair fallback to desk wood color
-            if name == "chair" and photo_patch is None and "desk" in auto_patches:
+            # Chair or Table fallback to desk wood color
+            if name in ["chair", "table"] and photo_patch is None and "desk" in auto_patches:
                 dom_color = get_dominant_color_hex(auto_patches["desk"]["patch"])
 
             # Stage 3: High-Definition Realistic Texture Synthesis
@@ -605,9 +608,9 @@ def extract_textures(image_input, regions_input=None):
 
             if name == "screen":
                 synth_tile = synthesize_screen_texture(photo_patch=photo_patch, dom_hex=dom_color, size=(512, 384))
-            elif "carpet" in mat_type or "rug" in mat_type or (name == "floor" and ("carpet" in mat_type or "fabric" in mat_type or ("#2" in dom_color or "#3" in dom_color))):
+            elif "carpet" in mat_type or "rug" in mat_type or name == "rug" or (name == "floor" and ("carpet" in mat_type or "fabric" in mat_type or ("#2" in dom_color or "#3" in dom_color))):
                 synth_tile = synthesize_carpet_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
-            elif "wood" in mat_type or name in ["desk", "table"]:
+            elif "wood" in mat_type or "parquet" in mat_type or name in ["desk", "table"]:
                 synth_tile = synthesize_wood_texture(dom_color, sec_color, size=tile_size, grain_dir=grain_dir, photo_patch=photo_patch)
             elif "tile" in mat_type or "terrazzo" in mat_type or name == "floor":
                 synth_tile = synthesize_tile_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
@@ -615,7 +618,7 @@ def extract_textures(image_input, regions_input=None):
                 synth_tile = synthesize_wall_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
             elif "board" in mat_type or "whiteboard" in mat_type or name == "board":
                 synth_tile = synthesize_board_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)
-            elif "fabric" in mat_type or name == "sofa":
+            elif "fabric" in mat_type or "leather" in mat_type or "linen" in mat_type or name in ["sofa", "bed"]:
                 synth_tile = synthesize_fabric_texture(dom_color, sec_color, size=tile_size)
             else:
                 synth_tile = synthesize_wood_texture(dom_color, sec_color, size=tile_size, photo_patch=photo_patch)

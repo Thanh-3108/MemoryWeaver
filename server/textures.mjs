@@ -20,30 +20,34 @@ export async function extractTextures(image, signal, apiKey, fetchImpl = fetch, 
 Analyze this indoor photo to extract the TRUE, CLEAN architectural and furniture textures for realistic 3D reconstruction.
 
 For each surface present in the room:
-1. 'screen' (Projector screen, slide presentation display, or television screen)
-2. 'desk' (Table top / student desk surface)
-3. 'floor' (Room floor)
-4. 'wall' (Main walls)
-5. 'board' (Blackboard, whiteboard, or presentation screen)
-6. 'chair' (Chair seats / backrests)
-7. 'ceiling' (Ceiling)
-8. 'sofa' (Sofa / upholstery if present)
-9. 'window' (Window / glass / curtain)
+1. 'screen' (Projector screen, slide presentation display, or television OLED display)
+2. 'desk' (Work desk, student desk, or study desk surface)
+3. 'table' (Dining table, coffee table, or side table: wood, marble, stone, or glass)
+4. 'floor' (Room floor: hardwood parquet, wood planks, terrazzo, polished tile, or acoustic carpet)
+5. 'wall' (Main walls: matte paint, plaster, wallpaper, or wood paneling)
+6. 'board' (Blackboard, whiteboard, or presentation chalkboard)
+7. 'chair' (Chair seats / backrests: wood, leather, mesh, or fabric)
+8. 'ceiling' (Ceiling: acoustic tiles, plasterboard, or timber)
+9. 'sofa' (Sofa / couch upholstery: woven linen, velvet, leather, or bouclé fabric)
+10. 'bed' (Bed duvet, comforter, cotton linen, or upholstered headboard)
+11. 'rug' (Area rug, accent carpet, woven mat, or Persian rug)
+12. 'window' (Window glass, frame, or fabric curtain)
 
 CRITICAL INSTRUCTIONS:
-- IDENTIFY FOREIGN CLUTTER: Surfaces often have foreign objects (e.g., on desks: laptops, computer mice, calculators, notebooks, pens, books, hands; on floors: shoes, chair legs, backpacks, shadows).
+- IDENTIFY FOREIGN CLUTTER: Surfaces often have foreign objects (e.g., on desks/tables: laptops, mice, coffee mugs, notebooks, pens, books; on floors: shoes, chair legs, backpacks, shadows; on beds: pillows, phones).
 - If a surface has an area that is 100% CLEAN and exposed with NO clutter:
   Set 'has_clean_patch': true and provide the exact bounding box [ymin, xmin, ymax, xmax] (0-1000) of that clean patch.
 - If a surface is mostly covered or occluded (like the floor in a crowded classroom):
   Set 'has_clean_patch': false.
 - In ALL cases, specify:
-  * 'material_type': e.g., 'varnished_wood', 'acoustic_carpet', 'carpet_tile', 'ceramic_tile', 'terrazzo_tile', 'matte_wall_paint', 'whiteboard_enamel', 'metal', 'fabric'
-  * Floor note: In libraries, study halls, or modern offices, floors are often acoustic carpet or carpet tiles; if so, specify 'acoustic_carpet' (NOT ceramic tile).
-  * Desk note: Ensure dominant_color reflects authentic warm natural timber (oak, birch, walnut) without cool shadow or fluorescent green distortion.
+  * 'material_type': e.g., 'varnished_wood', 'hardwood_parquet', 'acoustic_carpet', 'carpet_tile', 'ceramic_tile', 'terrazzo_tile', 'matte_wall_paint', 'whiteboard_enamel', 'woven_fabric', 'leather', 'linen'
+  * Floor note: In living rooms and bedrooms, floors are frequently hardwood parquet ('hardwood_parquet') or acoustic carpet ('acoustic_carpet'). In classrooms/libraries, check for carpet tiles or ceramic.
+  * Sofa/Bed note: Living room sofas and bedroom duvets are tactile woven fabrics ('woven_fabric', 'linen', 'leather'). Sample the true upholstery color without cast shadows.
+  * Desk/Table note: Ensure dominant_color reflects authentic warm natural timber (oak, birch, walnut) or marble without cool shadow distortion.
   * 'dominant_color': Hex #RRGGBB sampled strictly from the pure material itself (NOT from clutter!).
   * 'secondary_color': Hex #RRGGBB for grain/veins/grout if applicable.
   * 'grain_direction': 'horizontal', 'vertical', 'none', or 'isotropic'.
-  * 'roughness': 0.0 to 1.0 (e.g., 0.35 for varnished wood desk, 0.45 for polished tile, 0.85 for matte wall, 0.90 for carpet).
+  * 'roughness': 0.0 to 1.0 (e.g., 0.35 for varnished wood, 0.45 for polished tile, 0.75 for sofa fabric, 0.85 for matte wall, 0.90 for carpet).
   * 'details': Short description of the real material appearance.
 
 Return strict JSON:

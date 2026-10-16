@@ -11,3 +11,4 @@ Logs/
 **/android/build/
 **/android/app/.cxx/
 *.exe
+scripts/downloaded_panoramas/
