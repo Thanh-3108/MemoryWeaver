@@ -1053,93 +1053,101 @@ export default function App() {
     );
   };
 
-  const renderAttachmentBar = () => (
-    <View style={styles.attachmentBar}>
-      {imageUri ? (
+  const renderAttachmentBar = () => {
+    if (!imageUri) return null;
+    return (
+      <View style={styles.attachmentBar}>
         <View style={styles.attachedRow}>
           <Image source={{ uri: imageUri }} style={styles.thumbImage} />
-          <Text style={styles.attachedText}>
-            {voiceLang === 'en' ? 'Image attached • Ready to send' : 'Đã chọn ảnh • Sẵn sàng gửi'}
-          </Text>
+          <View style={styles.attachedTextGroup}>
+            <Text style={styles.attachedText} numberOfLines={1}>
+              {voiceLang === 'en' ? 'Photo attached' : 'Ảnh phòng đã đính kèm'}
+            </Text>
+            <Text style={styles.attachedSubtext} numberOfLines={1}>
+              {voiceLang === 'en' ? 'Ready to analyze & generate 3D room' : 'Sẵn sàng phân tích bố cục & dựng không gian 3D'}
+            </Text>
+          </View>
           <TouchableOpacity disabled={isBusy} onPress={clearImage} style={styles.clearImgBtn}>
-            <Text style={styles.clearImgText}>{voiceLang === 'en' ? 'Remove' : 'Bỏ ảnh'}</Text>
+            <Text style={styles.clearImgText}>{voiceLang === 'en' ? '✕ Remove' : '✕ Bỏ ảnh'}</Text>
           </TouchableOpacity>
         </View>
-      ) : (
-        <Text style={styles.unattachedText}>
-          {voiceLang === 'en' ? 'No image attached' : 'Chưa chọn ảnh'}
-        </Text>
-      )}
-    </View>
-  );
+      </View>
+    );
+  };
 
   const renderInputRow = () => (
-    <View style={styles.inputRow}>
-      <TouchableOpacity
-        style={[styles.photoBtn, isBusy && styles.disabledBtn]}
-        onPress={pickImage}
-        disabled={isBusy || isPicking}
-      >
-        <Text style={styles.photoBtnText}>
-          {isPicking ? (voiceLang === 'en' ? 'Wait…' : 'Đợi…') : (voiceLang === 'en' ? '+ Photo' : '+ Ảnh')}
-        </Text>
-      </TouchableOpacity>
+    <View style={styles.inputContainer}>
+      <View style={styles.inputBoxRow}>
+        <TextInput
+          style={styles.textInput}
+          placeholder={
+            voiceLang === 'en'
+              ? 'Describe room (e.g.: Living room with sofa, warm sunlight)...'
+              : 'Mô tả căn phòng bạn muốn tạo (hoặc chạm gợi ý ở trên)...'
+          }
+          placeholderTextColor="#8d9b94"
+          value={inputText}
+          onChangeText={setInputText}
+          multiline
+          maxLength={4000}
+          editable={!isBusy}
+        />
+      </View>
 
-      <TouchableOpacity
-        style={[styles.textureBtn, usePhotoTexture && styles.textureBtnActive]}
-        disabled={isBusy}
-        onPress={handleTogglePhotoTexture}
-      >
-        <Text style={[styles.textureBtnText, usePhotoTexture && styles.textureBtnTextActive]}>
-          {usePhotoTexture ? 'Texture: ON' : 'Texture: OFF'}
-        </Text>
-      </TouchableOpacity>
+      <View style={styles.inputToolbarRow}>
+        <View style={styles.actionLeftGroup}>
+          <TouchableOpacity
+            style={[styles.photoBtn, isBusy && styles.disabledBtn]}
+            onPress={pickImage}
+            disabled={isBusy || isPicking}
+          >
+            <Text style={styles.photoBtnText}>
+              {isPicking ? (voiceLang === 'en' ? '⏳ Đợi…' : '⏳ Đợi…') : (voiceLang === 'en' ? '📷 + Photo' : '📷 + Ảnh')}
+            </Text>
+          </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.langPillBtn}
-        onPress={toggleVoiceLanguage}
-        accessibilityLabel="Đổi ngôn ngữ giọng nói"
-      >
-        <Text style={styles.langPillText}>{voiceLang === 'vi' ? '🇻🇳 VI' : '🇺🇸 EN'}</Text>
-      </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.textureBtn, usePhotoTexture && styles.textureBtnActive]}
+            disabled={isBusy}
+            onPress={handleTogglePhotoTexture}
+          >
+            <Text style={[styles.textureBtnText, usePhotoTexture && styles.textureBtnTextActive]}>
+              {usePhotoTexture ? (voiceLang === 'en' ? '✨ Texture: ON' : '✨ Texture: BẬT') : (voiceLang === 'en' ? 'Texture: OFF' : 'Texture: TẮT')}
+            </Text>
+          </TouchableOpacity>
 
-      <TouchableOpacity
-        style={[styles.voiceBtn, isListeningVoice && styles.voiceBtnActive]}
-        disabled={isBusy}
-        onPress={toggleVoiceListening}
-        accessibilityRole="button"
-        accessibilityLabel={voiceLang === 'en' ? 'Tap to speak' : 'Bấm để nói'}
-      >
-        <Text style={styles.voiceBtnText}>
-          {isListeningVoice ? (voiceLang === 'en' ? '🔴 Listening' : '🔴 Đang nghe') : (voiceLang === 'en' ? '🎙️ Speak' : '🎙️ Nói')}
-        </Text>
-      </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.langPillBtn}
+            onPress={toggleVoiceLanguage}
+            accessibilityLabel="Đổi ngôn ngữ giọng nói"
+          >
+            <Text style={styles.langPillText}>{voiceLang === 'vi' ? '🇻🇳 VI' : '🇺🇸 EN'}</Text>
+          </TouchableOpacity>
 
-      <TextInput
-        style={styles.textInput}
-        placeholder={
-          voiceLang === 'en'
-            ? 'e.g.: Classroom at 12pm, Thanh desk by window…'
-            : 'Ví dụ: Phòng học của Thành lúc 12h trưa, bàn ở góc cửa sổ…'
-        }
-        placeholderTextColor="#8d9b94"
-        value={inputText}
-        onChangeText={setInputText}
-        multiline
-        maxLength={4000}
-        editable={!isBusy}
-      />
+          <TouchableOpacity
+            style={[styles.voiceBtn, isListeningVoice && styles.voiceBtnActive]}
+            disabled={isBusy}
+            onPress={toggleVoiceListening}
+            accessibilityRole="button"
+            accessibilityLabel={voiceLang === 'en' ? 'Tap to speak' : 'Bấm để nói'}
+          >
+            <Text style={styles.voiceBtnText}>
+              {isListeningVoice ? (voiceLang === 'en' ? '🔴 Đang nghe' : '🔴 Đang nghe') : (voiceLang === 'en' ? '🎙️ Nói' : '🎙️ Nói')}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-      <TouchableOpacity
-        style={[styles.sendBtn, isBusy && styles.cancelBtn]}
-        accessibilityLabel={isBusy ? 'Hủy yêu cầu' : 'Gửi mô tả phòng'}
-        onPress={handleSendOrCancel}
-        disabled={isPicking}
-      >
-        <Text style={styles.sendBtnText}>
-          {isBusy ? (voiceLang === 'en' ? 'Cancel' : 'Hủy') : (voiceLang === 'en' ? 'Send' : 'Gửi')}
-        </Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.sendBtn, isBusy && styles.cancelBtn]}
+          accessibilityLabel={isBusy ? 'Hủy yêu cầu' : 'Gửi mô tả phòng'}
+          onPress={handleSendOrCancel}
+          disabled={isPicking}
+        >
+          <Text style={styles.sendBtnText}>
+            {isBusy ? (voiceLang === 'en' ? 'Cancel' : 'Hủy') : (voiceLang === 'en' ? 'Send' : 'Gửi')}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -1524,10 +1532,10 @@ export default function App() {
               {/* Cột Trái: Bộ xem phòng 3D */}
               <View style={[styles.landscapeViewerCol, isExpanded && { flex: 1 }]}>
                 <View style={styles.viewerHeader}>
-                  <View style={{ flex: 1 }}>
+                  <View style={{ flex: 1, marginRight: 8 }}>
                     <Text style={styles.roomTitleText} numberOfLines={1}>{roomTitle}</Text>
                     {povMode === 'focused' ? (
-                      <Text style={styles.povSubtitleText}>👁️ {focusedLabel}</Text>
+                      <Text style={styles.povSubtitleText} numberOfLines={1}>👁️ {focusedLabel}</Text>
                     ) : null}
                   </View>
                   <View style={styles.viewerControls}>
@@ -1536,10 +1544,10 @@ export default function App() {
                       onPress={() => setIsExpanded(prev => !prev)}
                       accessibilityLabel="Phóng to hoặc thu nhỏ căn phòng"
                     >
-                      <Text style={styles.expandBtnText}>{isExpanded ? '🗗 Thu gọn' : '⛶ Mở rộng'}</Text>
+                      <Text style={styles.expandBtnText}>{isExpanded ? '🗗 Thu' : '⛶ Mở'}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      style={styles.resetBtn}
+                      style={[styles.resetBtn, !currentRoom && styles.disabledControlBtn]}
                       disabled={!currentRoom}
                       onPress={() => setNavMode(mode => {
                         const next = mode === 'fpv' ? 'overview' : 'fpv';
@@ -1547,10 +1555,10 @@ export default function App() {
                         return next;
                       })}
                     >
-                      <Text style={styles.resetBtnText}>{navMode === 'fpv' ? 'Toàn cảnh' : '🕹️ Bước vào'}</Text>
+                      <Text style={styles.resetBtnText}>{navMode === 'fpv' ? 'Toàn cảnh' : '🕹️ Vào'}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.resetBtn} onPress={resetRoom}>
-                      <Text style={styles.resetBtnText}>Làm mới</Text>
+                      <Text style={styles.resetBtnText}>↺ Mới</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -1643,12 +1651,12 @@ export default function App() {
             {/* === 3D Room Viewer (Tập trung không gian 3D trực quan) === */}
             <View style={[styles.viewerContainer, isExpanded ? styles.viewerContainerExpanded : styles.viewerContainerNormal]}>
               <View style={styles.viewerHeader}>
-                <View style={{ flex: 1 }}>
+                <View style={{ flex: 1, marginRight: 8 }}>
                   <Text style={styles.roomTitleText} numberOfLines={1}>{roomTitle}</Text>
                   {povMode === 'focused' ? (
-                    <Text style={styles.povSubtitleText}>👁️ Đang đứng cạnh: {focusedLabel} (Vuốt để nhìn quanh)</Text>
+                    <Text style={styles.povSubtitleText} numberOfLines={1}>👁️ Đang đứng cạnh: {focusedLabel} (Vuốt để nhìn quanh)</Text>
                   ) : currentRoom ? (
-                    <Text style={styles.povSubtitleText}>🧠 Bộ nhớ bật • Gõ để chỉnh sửa tiếp đến khi đúng ý</Text>
+                    <Text style={styles.povSubtitleText} numberOfLines={1}>🧠 Đã lưu vị trí • Tiếp tục gõ để tinh chỉnh</Text>
                   ) : null}
                 </View>
                 <View style={styles.viewerControls}>
@@ -1657,10 +1665,10 @@ export default function App() {
                     onPress={() => setIsExpanded(prev => !prev)}
                     accessibilityLabel="Phóng to hoặc thu nhỏ căn phòng"
                   >
-                    <Text style={styles.expandBtnText}>{isExpanded ? '🗗 Thu gọn' : '⛶ Mở rộng'}</Text>
+                    <Text style={styles.expandBtnText}>{isExpanded ? '🗗 Thu' : '⛶ Mở'}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={styles.resetBtn}
+                    style={[styles.resetBtn, !currentRoom && styles.disabledControlBtn]}
                     disabled={!currentRoom}
                     onPress={() => setNavMode(mode => {
                       const next = mode === 'fpv' ? 'overview' : 'fpv';
@@ -1668,10 +1676,10 @@ export default function App() {
                       return next;
                     })}
                   >
-                    <Text style={styles.resetBtnText}>{navMode === 'fpv' ? 'Toàn cảnh' : '🕹️ Bước vào'}</Text>
+                    <Text style={styles.resetBtnText}>{navMode === 'fpv' ? 'Toàn cảnh' : '🕹️ Vào'}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.resetBtn} onPress={resetRoom}>
-                    <Text style={styles.resetBtnText}>Làm mới</Text>
+                    <Text style={styles.resetBtnText}>↺ Mới</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -1693,7 +1701,9 @@ export default function App() {
               {renderInputRow()}
 
               <Text style={styles.hintFooter}>
-                Soạn xong phòng? Bấm "🌟 Bắt đầu cho người bệnh" ở trên để vào chế độ trị liệu!
+                {currentRoom
+                  ? '🌟 Phòng đã sẵn sàng! Bấm "Bắt đầu cho người bệnh" ở trên để vào chế độ trị liệu.'
+                  : '💡 Gõ mô tả hoặc bấm "+ Ảnh" để gửi ảnh kỷ niệm, AI sẽ tự động dựng phòng 3D.'}
               </Text>
             </View>
           </>
@@ -1964,7 +1974,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1c2421',
   },
   viewerContainerNormal: {
-    flex: 1.55,
+    flex: 1.15,
   },
   viewerContainerExpanded: {
     flex: 3.5,
@@ -1973,30 +1983,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
     backgroundColor: '#161e1b',
     borderBottomWidth: 1,
     borderBottomColor: '#25302c',
   },
   roomTitleText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '700',
     color: '#95d1bd',
     letterSpacing: 0.5,
-    flexShrink: 1,
-    marginRight: 6,
   },
   viewerControls: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 5,
   },
   expandBtn: {
     backgroundColor: '#273e35',
     borderColor: '#436154',
     borderWidth: 1,
-    paddingHorizontal: 8,
+    paddingHorizontal: 7,
     paddingVertical: 4,
     borderRadius: 5,
   },
@@ -2007,14 +2015,17 @@ const styles = StyleSheet.create({
   },
   resetBtn: {
     backgroundColor: '#2e4e42',
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 4,
+    borderRadius: 5,
   },
   resetBtnText: {
     color: '#e4ece8',
-    fontSize: 11,
+    fontSize: 10.5,
     fontWeight: '600',
+  },
+  disabledControlBtn: {
+    opacity: 0.4,
   },
   povSubtitleText: {
     fontSize: 10.5,
@@ -2025,7 +2036,7 @@ const styles = StyleSheet.create({
 
   // ===== Chat & Design Section =====
   chatSection: {
-    flex: 0.9,
+    flex: 1.25,
     backgroundColor: '#f3f6f3',
     borderTopWidth: 1,
     borderTopColor: '#d6ded8',
@@ -2152,11 +2163,11 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   attachmentBar: {
-    paddingHorizontal: 14,
-    paddingVertical: 4,
-    backgroundColor: '#e9efe9',
-    flexDirection: 'row',
-    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: '#e7f0e9',
+    borderTopWidth: 1,
+    borderTopColor: '#c8d8ce',
   },
   unattachedText: {
     fontSize: 11,
@@ -2165,58 +2176,79 @@ const styles = StyleSheet.create({
   attachedRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
+    gap: 8,
   },
   thumbImage: {
-    width: 22,
-    height: 22,
-    borderRadius: 3,
-    marginRight: 8,
+    width: 30,
+    height: 30,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#2e6151',
+  },
+  attachedTextGroup: {
+    flex: 1,
   },
   attachedText: {
-    fontSize: 11,
-    color: '#2e6151',
-    fontWeight: '600',
-    flex: 1,
+    fontSize: 11.5,
+    color: '#214f40',
+    fontWeight: '700',
+  },
+  attachedSubtext: {
+    fontSize: 10,
+    color: '#4f7266',
   },
   clearImgBtn: {
     backgroundColor: '#d85140',
     paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 4,
+    paddingVertical: 4,
+    borderRadius: 6,
   },
   clearImgText: {
     color: '#fff',
     fontSize: 10,
-    fontWeight: '600',
+    fontWeight: '700',
   },
-  inputRow: {
+  inputContainer: {
+    backgroundColor: '#fbfcfb',
+    borderTopWidth: 1,
+    borderTopColor: '#d6dfd9',
+    paddingHorizontal: 10,
+    paddingTop: 8,
+    paddingBottom: 6,
+    gap: 6,
+  },
+  inputBoxRow: {
+    width: '100%',
+  },
+  inputToolbarRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    backgroundColor: '#fbfcfb',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  actionLeftGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
   },
   photoBtn: {
     backgroundColor: '#2e6151',
-    paddingHorizontal: 10,
-    paddingVertical: 9,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
     borderRadius: 6,
-    marginRight: 6,
   },
   photoBtnText: {
     color: '#fff',
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
   },
   textureBtn: {
     backgroundColor: '#e6eee9',
     borderWidth: 1,
     borderColor: '#c1d4c8',
-    paddingHorizontal: 8,
-    paddingVertical: 8,
+    paddingHorizontal: 7,
+    paddingVertical: 5.5,
     borderRadius: 6,
-    marginRight: 6,
   },
   textureBtnActive: {
     backgroundColor: '#2e6151',
@@ -2224,7 +2256,7 @@ const styles = StyleSheet.create({
   },
   textureBtnText: {
     color: '#2c594b',
-    fontSize: 11,
+    fontSize: 10.5,
     fontWeight: '600',
   },
   textureBtnTextActive: {
@@ -2233,10 +2265,9 @@ const styles = StyleSheet.create({
   },
   voiceBtn: {
     backgroundColor: '#386c87',
-    paddingHorizontal: 9,
-    paddingVertical: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
     borderRadius: 6,
-    marginRight: 6,
   },
   voiceBtnActive: {
     backgroundColor: '#dc2626',
@@ -2307,40 +2338,46 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   textInput: {
-    flex: 1,
-    backgroundColor: '#fff',
+    width: '100%',
+    backgroundColor: '#ffffff',
     borderWidth: 1,
-    borderColor: '#cad4ce',
-    borderRadius: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    borderColor: '#c4d3ca',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     fontSize: 13,
-    maxHeight: 70,
-    color: '#213835',
+    lineHeight: 18,
+    minHeight: 46,
+    maxHeight: 85,
+    color: '#1a2e29',
+    textAlignVertical: 'top',
   },
   sendBtn: {
-    backgroundColor: '#2e6151',
-    paddingHorizontal: 14,
-    paddingVertical: 9,
-    borderRadius: 6,
-    marginLeft: 6,
+    backgroundColor: '#1b4d3e',
+    paddingHorizontal: 16,
+    paddingVertical: 7,
+    borderRadius: 7,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 60,
   },
   cancelBtn: {
     backgroundColor: '#c44536',
   },
   sendBtnText: {
     color: '#fff',
-    fontSize: 13,
+    fontSize: 12.5,
     fontWeight: '700',
   },
   disabledBtn: {
     opacity: 0.5,
   },
   hintFooter: {
-    fontSize: 10,
+    fontSize: 10.5,
     textAlign: 'center',
     color: '#496b61',
     paddingVertical: 4,
+    paddingHorizontal: 10,
     backgroundColor: '#edf4ef',
   },
 
@@ -2727,8 +2764,7 @@ const styles = StyleSheet.create({
     borderColor: '#98c0ac',
     borderRadius: 6,
     paddingHorizontal: 7,
-    paddingVertical: 8,
-    marginRight: 6,
+    paddingVertical: 5.5,
     alignItems: 'center',
     justifyContent: 'center',
   },
