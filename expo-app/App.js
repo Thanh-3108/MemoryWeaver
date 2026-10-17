@@ -434,11 +434,11 @@ export default function App() {
 
   // Settings
   const [settingsVisible, setSettingsVisible] = useState(false);
-  const [serverEndpoint, setServerEndpoint] = useState('');
-  const [appToken, setAppToken] = useState('');
+  const [serverEndpoint, setServerEndpoint] = useState(DEFAULT_REMOTE_ENDPOINT);
+  const [appToken, setAppToken] = useState(DEFAULT_APP_TOKEN);
   const [geminiApiKey, setGeminiApiKey] = useState('');
-  const [inputEndpoint, setInputEndpoint] = useState('');
-  const [inputToken, setInputToken] = useState('');
+  const [inputEndpoint, setInputEndpoint] = useState(DEFAULT_REMOTE_ENDPOINT);
+  const [inputToken, setInputToken] = useState(DEFAULT_APP_TOKEN);
   const [inputApiKey, setInputApiKey] = useState('');
 
   // Voice Interaction & Smart Placement
@@ -730,7 +730,7 @@ export default function App() {
   const loadSettings = async () => {
     try {
       const savedEndpoint = await AsyncStorage.getItem('mw_server_endpoint');
-      const savedToken = await SecureStore.getItemAsync('mw_app_token');
+      let savedToken = await SecureStore.getItemAsync('mw_app_token');
       const savedKey = await SecureStore.getItemAsync('mw_gemini_api_key');
       await AsyncStorage.removeItem('mw_app_token');
 
@@ -739,12 +739,17 @@ export default function App() {
         effectiveEndpoint = savedEndpoint;
       }
 
+      const effectiveToken = savedToken || DEFAULT_APP_TOKEN;
       setServerEndpoint(effectiveEndpoint);
-      setAppToken(savedToken || DEFAULT_APP_TOKEN);
+      setAppToken(effectiveToken);
+      setInputEndpoint(effectiveEndpoint);
+      setInputToken(effectiveToken);
       if (savedKey && savedKey !== 'test') setGeminiApiKey(savedKey);
     } catch (e) {
       setServerEndpoint(DEFAULT_REMOTE_ENDPOINT);
       setAppToken(DEFAULT_APP_TOKEN);
+      setInputEndpoint(DEFAULT_REMOTE_ENDPOINT);
+      setInputToken(DEFAULT_APP_TOKEN);
     }
   };
 
@@ -768,12 +773,13 @@ export default function App() {
       Alert.alert('Lỗi địa chỉ', 'Dùng URL HTTPS của Cloudflare hoặc IP mạng nội bộ dạng http://192.168.x.x:8787 (ví dụ: http://192.168.1.207:8787).');
       return;
     }
+    const tokenToUse = inputToken.trim() || appToken || DEFAULT_APP_TOKEN;
     const probe = new AbortController();
     const probeTimer = setTimeout(() => probe.abort(), 15000);
     try {
       const response = await fetch(`${ep}/api/connection`, { signal: probe.signal,
         headers: {
-          Authorization: `Bearer ${inputToken.trim()}`,
+          Authorization: `Bearer ${tokenToUse}`,
           ...(inputApiKey.trim() && inputApiKey.trim() !== 'test' ? { 'X-Gemini-API-Key': inputApiKey.trim() } : {})
         }
       });
@@ -787,7 +793,7 @@ export default function App() {
       return;
     } finally { clearTimeout(probeTimer); }
     try {
-      await SecureStore.setItemAsync('mw_app_token', inputToken.trim());
+      await SecureStore.setItemAsync('mw_app_token', tokenToUse);
       await AsyncStorage.setItem('mw_server_endpoint', ep);
       if (inputApiKey.trim() && inputApiKey.trim() !== 'test') {
         await SecureStore.setItemAsync('mw_gemini_api_key', inputApiKey.trim());
@@ -798,7 +804,8 @@ export default function App() {
       }
     } catch (e) { Alert.alert('Chưa lưu cài đặt', 'Không ghi được cấu hình trên thiết bị. Hãy thử lại.'); return; }
     setServerEndpoint(ep);
-    setAppToken(inputToken.trim());
+    setAppToken(tokenToUse);
+    setInputToken(tokenToUse);
     setSettingsVisible(false);
     setStatus('Đã lưu kết nối server');
   };
@@ -3184,13 +3191,12 @@ export default function App() {
             autoCorrect={false}
           />
 
-          <Text style={styles.inputLabel}>Mã truy cập APP_ACCESS_TOKEN:</Text>
+          <Text style={styles.inputLabel}>Mã truy cập APP_ACCESS_TOKEN (Đã tự động điền sẵn):</Text>
           <TextInput
             style={styles.modalInput}
             value={inputToken}
             onChangeText={setInputToken}
-            placeholder="Mã 48 ký tự trong file server/.env"
-            secureTextEntry
+            placeholder="Mã 48 ký tự trong file server/.env (mặc định đã tự điền)"
             autoCapitalize="none"
           />
 
@@ -3319,7 +3325,7 @@ export default function App() {
 
               <TouchableOpacity
                 style={styles.patientSettingsBtn}
-                onPress={() => setSettingsVisible(true)}
+                onPress={openSettings}
                 activeOpacity={0.8}
                 accessibilityRole="button"
                 accessibilityLabel="Cài đặt"

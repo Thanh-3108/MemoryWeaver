@@ -2,8 +2,8 @@
 
 > **Dự án**: MemoryWeaver — Không gian phục hồi ký ức 3D hỗ trợ người cao tuổi và bệnh nhân Alzheimer
 > **Kho mã nguồn**: [Thanh-3108/MemoryWeaver](https://github.com/Thanh-3108/MemoryWeaver)
-> **Tổng số yêu cầu (prompts)**: 104 yêu cầu
-> **Thời gian phát triển**: 2026-09-19T21:20:11+07:00 → 2026-10-17T17:08:31+07:00
+> **Tổng số yêu cầu (prompts)**: 111 yêu cầu
+> **Thời gian phát triển**: 2026-09-19T21:20:11+07:00 → 2026-10-17T18:00:33+07:00
 
 ---
 
@@ -14,8 +14,8 @@
 | **Giai đoạn 1** | #1 – #15 | Khởi tạo dự án, sửa lỗi kết nối Expo/Node.js, kiểm tra IP LAN, cấu hình môi trường |
 | **Giai đoạn 2** | #16 – #35 | Triển khai mô hình AI Gemini, kiểm soát ảo giác (anti-hallucination), chuẩn hóa schema không gian |
 | **Giai đoạn 3** | #36 – #60 | Dựng không gian 3D Three.js, bóc tách texture đồ vật, hỗ trợ tải ảnh và đa phòng kết nối |
-| **Giai đoạn 4** | #61 – #85 | Trải nghiệm đa giác quan: âm thanh môi trường, lồng tiếng ký ức, tương tác mở tủ/ngăn kéo/lật sách |
-| **Giai đoạn 5** | #86 – #104 | Chuyển đổi mô hình Point-and-Explore, góc nhìn nội thất không thấy the void, tối ưu UI di động & xoay ngang, mở rộng thư viện đồ vật |
+| **Giai đoạn 4** | #61 – #89 | Trải nghiệm đa giác quan: âm thanh môi trường, lồng tiếng ký ức, tương tác mở tủ/ngăn kéo/lật sách |
+| **Giai đoạn 5** | #90 – #111 | Chuyển đổi mô hình Point-and-Explore, góc nhìn nội thất không thấy the void, tối ưu UI xoay ngang, mở rộng thư viện đồ vật, live sync PC-Mobile, xuất file APK & Zero-Config Auto-Fill |
 
 ---
 
@@ -1257,6 +1257,63 @@ Với lại sao texture generation từ việc tách object ngày càng tệ v�
 với mình cần bạn làm cho thư viện đồ vật lớn hơn nữa, thậm chí là phải tạo ra một bộ khung instruction cực dài, để instruct cho con AI nó biết để mà đối với các đồ vật unexpected như là mô hình đồ chơi, nhạc cụ, vật phẩm không có trong thư viện vật thì nó vẫn có thể tự động generate ra được, và tất nhiên phải nhiều shapes rồi không được chỉ là hình vuông chữ nhật
 với lại setup mọi thứ để update lên [Thanh-3108/MemoryWeaver](https://github.com/Thanh-3108/MemoryWeaver)
 và xuất cho mình promptlog đầy đủ từ lúc đầu đến giờ
+```
+
+---
+
+### 💬 Yêu Cầu #105 — 2026-10-17T17:44:06+07:00 (Step 10288)
+
+```markdown
+thế là vận hạnh ntn sync máy tính với điện thoại? kết nối vào server cloudflare chung hả
+```
+
+---
+
+### 💬 Yêu Cầu #106 — 2026-10-17T17:45:24+07:00 (Step 10298)
+
+```markdown
+thế quy trình ntn
+```
+
+---
+
+### 💬 Yêu Cầu #107 — 2026-10-17T17:46:55+07:00 (Step 10300)
+
+```markdown
+xuất thành file apk đầy đủ nha
+```
+
+---
+
+### 💬 Yêu Cầu #108 — 2026-10-17T17:55:26+07:00 (Step 10344)
+
+```markdown
+cái app access token llấyddaau
+```
+
+---
+
+### 💬 Yêu Cầu #109 — 2026-10-17T17:56:59+07:00 (Step 10358)
+
+```markdown
+không tự điền cho luôn được à sao tốn công v
+```
+
+---
+
+### 💬 Yêu Cầu #110 — 2026-10-17T17:59:40+07:00 (Step 10418)
+
+```markdown
+update lại promptlog cho, với lại cho một cái readme nữa ghi nhận TẤT CẢ những cải tiến đã có so với bản trước đó là bản ngày hôm qua mình kêu bạn á
+```
+
+---
+
+### 💬 Yêu Cầu #111 — 2026-10-17T18:00:33+07:00 (Step 10418)
+
+```markdown
+update lại promptlog cho, với lại cho một cái readme nữa ghi nhận TẤT CẢ những cải tiến đã có so với bản trước đó là bản ngày hôm qua mình kêu bạn á
+với lại update github nha
 ```
 
 ---
