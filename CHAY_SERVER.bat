@@ -19,7 +19,11 @@ if not exist "server\.env" (
     if errorlevel 1 exit /b 1
 )
 
-:: 2. Them quyen firewall neu co quyen admin
+:: 2. Doc ma token tu server\.env
+set TOKEN=
+for /f "tokens=2 delims==" %%i in ('findstr "APP_ACCESS_TOKEN=" server\.env') do set TOKEN=%%i
+
+:: 3. Them quyen firewall neu co quyen admin
 netsh advfirewall firewall show rule name="MemoryWeaver Server 8787" >nul 2>nul
 if errorlevel 1 (
     netsh advfirewall firewall add rule name="MemoryWeaver Server 8787" dir=in action=allow protocol=TCP localport=8787 profile=any >nul 2>nul
@@ -30,6 +34,9 @@ if "%opt%"=="1" (
     echo ======================================================================
     echo  DANG KHOI DONG SERVER VA KET NOI CLOUDFLARE CLOUD...
     echo ======================================================================
+    echo.
+    echo  THONG TIN DANG NHAP APP:
+    echo    - Ma APP_ACCESS_TOKEN: %TOKEN%
     echo.
     start "MemoryWeaver - Backend Server (Port 8787)" /min cmd /c "cd server && npm start"
     timeout /t 2 /nobreak >nul
@@ -55,6 +62,7 @@ echo ======================================================================
 echo  THONG TIN KET NOI:
 echo    - May tinh (Nguoi cham soc mo trinh duyet): http://localhost:8787
 echo    - Mang Wi-Fi (Cho dien thoai nguoi benh):   http://%LOCAL_IP%:8787
+echo    - Ma APP_ACCESS_TOKEN:                      %TOKEN%
 echo.
 echo  PHAN CHIA RO RANG NGUOI CHAM SOC VA NGUOI BENH:
 echo   1. NGUOI CHAM SOC (Tren may tinh):
