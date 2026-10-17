@@ -2,8 +2,8 @@
 
 > **Dự án**: MemoryWeaver — Không gian phục hồi ký ức 3D hỗ trợ người cao tuổi và bệnh nhân Alzheimer
 > **Kho mã nguồn**: [Thanh-3108/MemoryWeaver](https://github.com/Thanh-3108/MemoryWeaver)
-> **Tổng số yêu cầu (prompts)**: 112 yêu cầu
-> **Thời gian phát triển**: 2026-09-19T21:20:11+07:00 → 2026-10-17T18:06:00+07:00
+> **Tổng số yêu cầu (prompts)**: 113 yêu cầu
+> **Thời gian phát triển**: 2026-09-19T21:20:11+07:00 → 2026-10-17T18:10:45+07:00
 
 ---
 
@@ -15,7 +15,7 @@
 | **Giai đoạn 2** | #16 – #35 | Triển khai mô hình AI Gemini, kiểm soát ảo giác (anti-hallucination), chuẩn hóa schema không gian |
 | **Giai đoạn 3** | #36 – #60 | Dựng không gian 3D Three.js, bóc tách texture đồ vật, hỗ trợ tải ảnh và đa phòng kết nối |
 | **Giai đoạn 4** | #61 – #89 | Trải nghiệm đa giác quan: âm thanh môi trường, lồng tiếng ký ức, tương tác mở tủ/ngăn kéo/lật sách |
-| **Giai đoạn 5** | #90 – #112 | Chuyển đổi mô hình Point-and-Explore, góc nhìn nội thất không thấy the void, tối ưu UI xoay ngang, mở rộng thư viện đồ vật, live sync PC-Mobile, xuất file APK & Zero-Config Auto-Fill token cho cả Web & Mobile |
+| **Giai đoạn 5** | #90 – #113 | Chuyển đổi mô hình Point-and-Explore, góc nhìn nội thất không thấy the void, tối ưu UI xoay ngang, mở rộng thư viện đồ vật, live sync PC-Mobile, xuất file APK & Zero-Config Auto-Fill token cho cả Web & Mobile |
 
 ---
 
@@ -1322,6 +1322,14 @@ với lại update github nha
 
 ```markdown
 trên web bị lỗi mã truy cập chưa đúng
+```
+
+---
+
+### 💬 Yêu Cầu #113 — 2026-10-17T18:10:45+07:00 (Step 10531)
+
+```markdown
+push lên git
 ```
 
 ---
