@@ -149,6 +149,7 @@ test('createRoom sanitizes dimensions, bounds, synonyms and invalid objects from
   assert.ok(Math.abs(room.objects[1].z) + room.objects[1].depth / 2 <= room.depth / 2);
   assert.equal(room.objects[2].kind, 'sofa');
   assert.ok(Math.abs(room.objects[2].x) + room.objects[2].depth / 2 <= room.width / 2);
+  assert.equal(room.connectedRooms?.length || 0, 0);
   assert.doesNotThrow(() => validateRoom(room));
 });
 
@@ -232,7 +233,7 @@ test('createRoom generates connected rooms, enriched interactions, and self-refl
       { kind: 'book', label: 'Sổ nhật ký', description: 'Cuốn sổ bìa da', color: '#1A365D', x: 2.0, y: 0, z: 1.0, yaw: 0, width: 0.2, height: 0.05, depth: 0.15 }
     ]
   };
-  const room = createRoom(raw, 'phòng khách thời bao cấp');
+  const room = createRoom(raw, 'phòng khách thời bao cấp, có kết nối nhiều phòng gồm gian bếp và vườn');
   // 1. Geriatric anti-blue adjustment
   assert.notEqual(room.wallColor, '#0000FF');
   assert.equal(room.wallColor, '#F7F3EB');

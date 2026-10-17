@@ -52,14 +52,17 @@ if "%LOCAL_IP%"=="" set LOCAL_IP=192.168.1.207
 echo [OK] Backend Server AI dang khoi dong o che do LAN...
 echo.
 echo ======================================================================
-echo  THONG TIN KET NOI LAN:
-echo    - May tinh:    http://localhost:8787
-echo    - Mang Wi-Fi:  http://%LOCAL_IP%:8787
+echo  THONG TIN KET NOI:
+echo    - May tinh (Nguoi cham soc mo trinh duyet): http://localhost:8787
+echo    - Mang Wi-Fi (Cho dien thoai nguoi benh):   http://%LOCAL_IP%:8787
 echo.
-echo  HUONG DAN SU DUNG:
-echo   1. Cai dat file 'MemoryWeaver.apk' vao dien thoai Android.
-echo   2. Mo app MemoryWeaver tren dien thoai -> vao Cai dat (Banh rang)
-echo      nhap dia chi: http://%LOCAL_IP%:8787 va bam Luu.
+echo  PHAN CHIA RO RANG NGUOI CHAM SOC VA NGUOI BENH:
+echo   1. NGUOI CHAM SOC (Tren may tinh):
+echo      Mo trinh duyet (Chrome/Edge/Firefox) vao: http://localhost:8787
+echo      -> Soan phong 3D bang AI, dat lich uong thuoc va gui tin nhan yeu thuong.
+echo   2. NGUOI BENH (Tren dien thoai):
+echo      Chi can mo dung ung dung MemoryWeaver de choi va dao ngam.
+echo      (Vao bieu tuong Banh rang Cai dat tren dien thoai, nhap: http://%LOCAL_IP%:8787)
 echo ======================================================================
 echo.
 

@@ -178,59 +178,6 @@ const DEFAULT_SAVED_PRESETS = [
           color: '#1E3A8A',
           isInteractable: true
         }
-      ],
-      connectedRooms: [
-        {
-          id: 'room-canteen',
-          title: 'Nhà Ăn Canteen Trường Học',
-          roomType: 'kitchen',
-          width: 6, depth: 5, height: 3,
-          wallColor: '#FFFDF7', floorColor: '#DCD4C4',
-          objects: [
-            {
-              id: 'canteen-table', kind: 'table', label: 'Bàn ăn tập thể rộn rã', description: 'Chiếc bàn ăn nơi nhóm bạn quây quần ăn trưa',
-              x: 0, y: 0, z: 0, yaw: 0, width: 2.0, height: 0.75, depth: 1.0, color: '#C49A6C',
-              isInteractable: true,
-              interaction: { type: 'desk_drawer', actionTitle: 'Mở khay ăn', drawerFeeling: 'Mùi cơm canh nóng hổi thơm phức của canteen trường.', insideItems: ['Hộp cơm kim loại', 'Chiếc thìa nhôm quen thuộc', 'Cốc nước ấm'] },
-              memoryFragment: { id: 'frag-canteen-1', title: 'Mảnh ký ức: Tình bạn thanh xuân', questPrompt: 'Khám phá bàn ăn canteen trường', story: 'Những bữa trưa rộn rã tiếng cười cùng bạn bè đồng môn.', senseOfSelf: 'Bạn là người bạn chân thành, luôn được bạn bè yêu quý.' }
-            },
-            {
-              id: 'door-back-class', kind: 'door', label: 'Cửa về Lớp học', description: 'Quay lại lớp học',
-              x: 0, y: 0, z: 2.35, yaw: 180, width: 1.1, height: 2.2, depth: 0.1, color: '#8B5A2B',
-              isInteractable: true, targetRoomId: 'primary',
-              interaction: { type: 'door_transition', actionTitle: 'Về lại lớp', targetRoomId: 'primary' }
-            }
-          ]
-        },
-        {
-          id: 'room-library',
-          title: 'Thư Viện Trường Yên Tĩnh',
-          roomType: 'library',
-          width: 7, depth: 6, height: 3,
-          wallColor: '#FDFBF7', floorColor: '#B89772',
-          objects: [
-            {
-              id: 'lib-book', kind: 'book', label: 'Sách Tuyển Tập Văn Học', description: 'Cuốn sách yêu thích bạn từng mượn đọc say sưa',
-              x: 0, y: 0.75, z: 0, yaw: 0, width: 0.3, height: 0.05, depth: 0.2, color: '#8B2500',
-              isInteractable: true,
-              interaction: {
-                type: 'book_read', actionTitle: 'Mở đọc sách',
-                pages: [
-                  'Trang 1: "Văn học là nhân học. Những trang sách nâng đỡ tâm hồn con người qua bao thăng trầm cuộc đời."',
-                  'Trang 2: "Những buổi chiều ngồi đọc sách tại thư viện, bạn say sưa đắm mình vào từng câu chữ tinh hoa."',
-                  'Trang 3: "Tri thức là tài sản quý giá nhất mà không ai có thể lấy đi được của bạn."'
-                ]
-              },
-              memoryFragment: { id: 'frag-lib-1', title: 'Mảnh ký ức: Tình yêu tri thức', questPrompt: 'Mở đọc cuốn sách văn học tại thư viện', story: 'Tình yêu cái đẹp và tri thức đã bồi đắp tâm hồn bạn suốt cuộc đời.', senseOfSelf: 'Bạn có một tâm hồn cao đẹp, tinh tế và giàu lòng trắc ẩn.' }
-            },
-            {
-              id: 'door-lib-class', kind: 'door', label: 'Cửa về Lớp học', description: 'Quay lại lớp học',
-              x: 0, y: 0, z: 2.85, yaw: 180, width: 1.1, height: 2.2, depth: 0.1, color: '#8B5A2B',
-              isInteractable: true, targetRoomId: 'primary',
-              interaction: { type: 'door_transition', actionTitle: 'Về lại lớp', targetRoomId: 'primary' }
-            }
-          ]
-        }
       ]
     }
   },
@@ -337,23 +284,6 @@ const DEFAULT_SAVED_PRESETS = [
           memoryFragment: { id: 'frag-liv-diary', title: 'Mảnh ký ức: Tâm hồn sâu sắc & thiện lương', questPrompt: 'Đến mở đọc cuốn nhật ký trên bàn', story: 'Những dòng tâm tư chân thật thể hiện tấm lòng bao dung và tình thương vô bờ bến của bạn.', senseOfSelf: 'Bạn có một tâm hồn cao quý, luôn hướng thiện và bao dung với đời.' }
         },
         {
-          id: 'door-kitchen',
-          kind: 'door',
-          label: 'Cửa bước sang Gian Bếp',
-          description: 'Cửa gỗ mở lối sang gian bếp ấm cúng thơm mùi cơm canh',
-          x: 0,
-          y: 0,
-          z: -2.85,
-          yaw: 0,
-          width: 1.1,
-          height: 2.2,
-          depth: 0.1,
-          color: '#7A4E2D',
-          isInteractable: true,
-          targetRoomId: 'room_kitchen',
-          interaction: { type: 'door_transition', actionTitle: 'Bước sang gian bếp', targetRoomId: 'room_kitchen' }
-        },
-        {
           id: 'window-garden',
           kind: 'window',
           label: 'Cửa sổ đón nắng vườn',
@@ -369,52 +299,49 @@ const DEFAULT_SAVED_PRESETS = [
           isInteractable: true,
           interaction: { type: 'window_breeze', actionTitle: 'Mở cửa sổ ngắm vườn', breezeFeeling: 'Gió nhẹ thổi qua khung cửa, hương hoa ngọc lan thoang thoảng cùng tiếng chim hót líu lo.' },
           memoryFragment: { id: 'frag-liv-win', title: 'Mảnh ký ức: Chiều thanh thản bên khung cửa', questPrompt: 'Đến mở cửa sổ đón gió vườn', story: 'Những buổi chiều thảnh thơi bên khung cửa ngắm hoa nở đem lại sự an lạc sâu lắng.', senseOfSelf: 'Bạn là người yêu thiên nhiên, có tâm hồn thanh thản và yêu đời.' }
-        }
-      ],
-      connectedRooms: [
-        {
-          id: 'room_kitchen',
-          title: 'Gian Bếp Ấm Cúng',
-          roomType: 'kitchen',
-          width: 5.5, depth: 5, height: 3,
-          wallColor: '#FFFDF7', floorColor: '#D2B48C',
-          objects: [
-            {
-              id: 'dining-table', kind: 'table', label: 'Bàn ăn gia đình tròn vị', description: 'Chiếc bàn ăn bằng gỗ mít nơi cả nhà quây quần chia sẻ bát canh ấm nóng.',
-              x: 0, y: 0, z: 0, yaw: 0, width: 1.6, height: 0.75, depth: 1.0, color: '#8B5A2B',
-              isInteractable: true,
-              interaction: { type: 'desk_drawer', actionTitle: 'Khám phá mâm cơm gia đình', drawerFeeling: 'Hương thơm của mâm cơm mẹ nấu: bát canh cua đồng, đĩa rau muống luộc, đĩa cá kho tộ...', insideItems: ['Bộ bát đĩa men lam Bát Tràng', 'Bình nước ấm giữ nhiệt', 'Chiếc ấm pha trà gốm Chu Đậu'] },
-              memoryFragment: { id: 'frag-kit-1', title: 'Mảnh ký ức: Hương vị tình thân', questPrompt: 'Đến bên chiếc bàn ăn gia đình trong gian bếp', story: 'Từng bữa cơm do chính tay bạn chăm chút là suối nguồn nuôi dưỡng cả gia đình.', senseOfSelf: 'Bạn là người giữ lửa tổ ấm, chu toàn và hết lòng chăm sóc người thân.' }
-            },
-            {
-              id: 'door-back-living', kind: 'door', label: 'Cửa về Phòng Khách', description: 'Quay lại phòng khách',
-              x: 0, y: 0, z: 2.35, yaw: 180, width: 1.1, height: 2.2, depth: 0.1, color: '#7A4E2D',
-              isInteractable: true, targetRoomId: 'primary',
-              interaction: { type: 'door_transition', actionTitle: 'Về lại phòng khách', targetRoomId: 'primary' }
-            }
-          ]
         },
         {
-          id: 'room_garden',
-          title: 'Hiên Vườn Nắng Sớm',
-          roomType: 'garden',
-          width: 6, depth: 6, height: 3.5,
-          wallColor: '#F7F3EB', floorColor: '#C8A97E',
-          objects: [
-            {
-              id: 'rocking-chair', kind: 'chair', label: 'Chiếc ghế bập bênh hiên nhà', description: 'Ghế mây bập bênh nơi bạn ngồi đọc báo và ngắm hoa mỗi sớm mai',
-              x: 0, y: 0, z: 0, yaw: 0, width: 0.8, height: 0.95, depth: 0.85, color: '#9E6938',
-              isInteractable: true,
-              interaction: { type: 'bed_rest', actionTitle: 'Ngồi đung đưa ghế mây', bedFeeling: 'Gió sớm hiu hiu thổi, tiếng lá cây xào xạc hòa cùng tiếng chim líu lo.' },
-              memoryFragment: { id: 'frag-gard-1', title: 'Mảnh ký ức: Chiều thanh thản bên hiên nhà', questPrompt: 'Đến ngồi lên ghế bập bênh ngắm hoa', story: 'Sự bình yên khi chăm chút từng luống rau, chậu hoa đã làm phong phú tâm hồn bạn.', senseOfSelf: 'Bạn có một tâm hồn tự tại, yêu đời và luôn mang đến niềm vui cho người xung quanh.' }
-            },
-            {
-              id: 'door-back-from-garden', kind: 'door', label: 'Cửa bước vào Phòng Khách', description: 'Quay vào phòng khách',
-              x: 0, y: 0, z: 2.85, yaw: 180, width: 1.1, height: 2.2, depth: 0.1, color: '#7A4E2D',
-              isInteractable: true, targetRoomId: 'primary',
-              interaction: { type: 'door_transition', actionTitle: 'Vào lại phòng khách', targetRoomId: 'primary' }
-            }
-          ]
+          id: 'shelf-living',
+          kind: 'shelf',
+          label: 'Kệ sách kỷ niệm gia đình',
+          description: 'Kệ sách gỗ nhiều tầng xếp đầy những cuốn sách văn học và album quý báu.',
+          x: -2.8,
+          y: 0,
+          z: 1.8,
+          yaw: 0,
+          width: 1.2,
+          height: 1.8,
+          depth: 0.45,
+          color: '#5C381E',
+          isInteractable: true,
+          interaction: {
+            type: 'shelf_inspect',
+            actionTitle: 'Quan sát kệ sách',
+            shelfFeeling: 'Những gáy sách da viền vàng óng ánh trên từng tầng kệ. Bạn có thể chạm trực tiếp vào từng gáy sách trên không gian 3D để rút sách ra đọc.'
+          },
+          memoryFragment: { id: 'frag-liv-shelf', title: 'Mảnh ký ức: Tủ sách tri thức & đam mê học hỏi', questPrompt: 'Đến quan sát kệ sách kỷ niệm', story: 'Bạn luôn yêu sách và dành trọn những buổi chiều yên ả để đọc từng trang sách hay.', senseOfSelf: 'Bạn là người có trí tuệ uyên bác và say mê học hỏi suốt đời.' }
+        },
+        {
+          id: 'picture-family',
+          kind: 'picture',
+          label: 'Khung ảnh đại gia đình',
+          description: 'Bức ảnh chụp cả gia đình trong dịp mừng thọ, treo trang trọng giữa bức tường.',
+          x: -1.4,
+          y: 1.6,
+          z: -2.9,
+          yaw: 0,
+          width: 1.3,
+          height: 0.9,
+          depth: 0.06,
+          color: '#8B5A2B',
+          isInteractable: true,
+          routineLabel: 'Mừng thọ năm 2010',
+          interaction: {
+            type: 'picture_view',
+            actionTitle: 'Ngắm nhìn khung ảnh gia đình',
+            pictureFeeling: 'Nụ cười rạng rỡ của tất cả con cháu quây quần bên bạn trong ngày đại gia đình đoàn tụ.'
+          },
+          memoryFragment: { id: 'frag-liv-pic', title: 'Mảnh ký ức: Ngày hội ngộ sum vầy', questPrompt: 'Đến ngắm nhìn khung ảnh đại gia đình trên tường', story: 'Bức ảnh ghi lại ngày đại thọ khi cả gia đình đông đủ bốn thế hệ quây quần, nụ cười của bạn là tâm điểm của niềm hạnh phúc sum vầy.', senseOfSelf: 'Bạn là cội nguồn yêu thương, người kết nối mọi thế hệ con cháu trong dòng tộc.' }
         }
       ]
     }
@@ -446,7 +373,11 @@ function getObjectIcon(kind) {
     cup: '🍵',
     mug: '☕',
     fan: '🪭',
-    air_conditioner: '❄️'
+    air_conditioner: '❄️',
+    picture: '🖼️',
+    shelf: '📚',
+    book: '📖',
+    wardrobe: '🚪'
   };
   return map[kind] || '✨';
 }
@@ -457,15 +388,20 @@ export default function App() {
   const height = dims?.height || 844;
   const isLandscape = width > height;
 
-  // Trải nghiệm người dùng: 'creator' (Người soạn phòng) | 'patient' (Người bệnh Alzheimer)
-  const [role, setRole] = useState('creator');
+  // Trải nghiệm người dùng: 'patient' (Mặc định cho ứng dụng APK người bệnh) | 'creator' (Dành cho kiểm thử/nhà phát triển)
+  const [role, setRole] = useState(() => {
+    if (typeof process !== 'undefined' && process?.env && Object.keys(process.env).length === 0 && typeof window === 'undefined') {
+      return 'creator';
+    }
+    return 'patient';
+  });
   const [voiceLang, setVoiceLang] = useState('vi'); // 'vi' | 'en'
 
   const [messages, setMessages] = useState([
     {
       id: '1',
       author: 'MemoryWeaver',
-      text: 'Mô tả căn phòng hoặc chọn ảnh rồi bấm Gửi. AI tạo bản phác thảo 3D, không phải phục dựng chính xác. Phần ước đoán sẽ được ghi rõ khi chạm vào đồ vật.',
+      text: 'Mô tả căn phòng hoặc chọn ảnh rồi bấm Gửi để bước vào không gian 3D ký ức thân quen. Chạm vào bất kỳ đồ vật nào để tương tác và gợi lại kỷ niệm xưa.',
       isUser: false,
     }
   ]);
@@ -480,13 +416,20 @@ export default function App() {
   const [usePhotoTexture, setUsePhotoTexture] = useState(true);
   const [lastImagePayload, setLastImagePayload] = useState(null);
   const [roomTitle, setRoomTitle] = useState('KHÔNG GIAN CỦA BẠN');
-  const [cameraView, setCameraView] = useState('isometric');
+  const [cameraView, setCameraView] = useState('doorway');
+  const [rotateAction, setRotateAction] = useState(null);
+  const handleRotateView = (direction) => {
+    setRotateAction({ direction, token: Date.now() });
+    setStatus(direction === 'left' ? 'Xoay góc nhìn sang trái ⟲' : 'Xoay góc nhìn sang phải ⟳');
+  };
   const [povMode, setPovMode] = useState('overview'); // 'overview' | 'focused'
   const [focusedLabel, setFocusedLabel] = useState('');
   const [status, setStatus] = useState('Sẵn sàng • Chữ + ảnh');
   const [isBusy, setIsBusy] = useState(false);
   const [isPicking, setIsPicking] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isAudioMuted, setIsAudioMuted] = useState(false);
+  const [isNavDockExpanded, setIsNavDockExpanded] = useState(false);
   const pickingRef = useRef(false);
 
   // Settings
@@ -507,6 +450,8 @@ export default function App() {
   const [activeRoomId, setActiveRoomId] = useState('primary');
   const [glideLabel, setGlideLabel] = useState('');
   const [strollAction, setStrollAction] = useState(null);
+  const [hotspotId, setHotspotId] = useState(null);
+  const [sceneTransition, setSceneTransition] = useState(null); // { targetTitle, icon, stage: 'fade_in' | 'fade_out' }
 
   // Patient Mode Interactions & Memory Quests
   const [activeMemoryModal, setActiveMemoryModal] = useState(null); // { label, description, isInteractable, item }
@@ -515,6 +460,27 @@ export default function App() {
   const [discoveredFragments, setDiscoveredFragments] = useState({});
   const [senseOfSelfModalVisible, setSenseOfSelfModalVisible] = useState(false);
   const [bookPageIndex, setBookPageIndex] = useState(0);
+  const [isEditingBookPage, setIsEditingBookPage] = useState(false);
+  const [editedPageText, setEditedPageText] = useState('');
+  const [isPhotoFlipped, setIsPhotoFlipped] = useState(false);
+  const [flipPictureToken, setFlipPictureToken] = useState(0);
+  const [toggleDrawerToken, setToggleDrawerToken] = useState(0);
+  const [toggleWardrobeToken, setToggleWardrobeToken] = useState(0);
+  const [toggleLampToken, setToggleLampToken] = useState(0);
+  const [toggleFridgeToken, setToggleFridgeToken] = useState(0);
+  const [toggleCabinetToken, setToggleCabinetToken] = useState(0);
+  const [toggleTvToken, setToggleTvToken] = useState(0);
+  const [toggleFanToken, setToggleFanToken] = useState(0);
+  const [toggleAcToken, setToggleAcToken] = useState(0);
+  const [sitSofaToken, setSitSofaToken] = useState(0);
+  const [sitChairToken, setSitChairToken] = useState(0);
+  const [pourDrinkToken, setPourDrinkToken] = useState(0);
+  const [waterPlantToken, setWaterPlantToken] = useState(0);
+  const [chimeClockToken, setChimeClockToken] = useState(0);
+  const [toggleCurtainsToken, setToggleCurtainsToken] = useState(0);
+  const [isAddingMemento, setIsAddingMemento] = useState(false);
+  const [newMementoText, setNewMementoText] = useState('');
+  const touchStartXRef = useRef(0);
   const [aiAuditModalVisible, setAiAuditModalVisible] = useState(false);
   const [patientGuideModalVisible, setPatientGuideModalVisible] = useState(false);
 
@@ -1270,8 +1236,16 @@ export default function App() {
   const getActiveRoom = () => {
     if (!currentRoom) return null;
     if (!activeRoomId || activeRoomId === 'primary') return currentRoom;
-    const found = currentRoom.connectedRooms?.find(r => r.id === activeRoomId);
-    return found || currentRoom;
+    const found = currentRoom.connectedRooms?.find(r => r.id === activeRoomId || r.roomType === activeRoomId);
+    if (!found) return currentRoom;
+    const roomData = found.room || found;
+    return {
+      ...roomData,
+      id: found.id || roomData.id,
+      title: found.title || roomData.title,
+      roomType: found.roomType || roomData.roomType,
+      connectedRooms: currentRoom.connectedRooms
+    };
   };
 
   const unlockMemoryFragment = (fragment) => {
@@ -1288,17 +1262,48 @@ export default function App() {
   };
 
   const handleDoorTransition = (targetRoomId, doorLabel) => {
-    if (!targetRoomId) return;
-    if (targetRoomId === 'primary') {
-      setActiveRoomId('primary');
-      setStatus(`Đã bước qua cửa vào ${currentRoom?.title || 'phòng chính'}`);
+    let nextRoom = null;
+    if (!targetRoomId || targetRoomId === 'primary' || targetRoomId === 'main') {
+      nextRoom = { id: 'primary', title: currentRoom?.title || 'Phòng chính', roomType: 'primary' };
     } else {
-      const targetRoom = currentRoom?.connectedRooms?.find(r => r.id === targetRoomId);
-      if (targetRoom) {
-        setActiveRoomId(targetRoomId);
-        setStatus(`Đã bước qua cửa vào ${targetRoom.title}`);
+      const found = currentRoom?.connectedRooms?.find(r =>
+        r.id === targetRoomId ||
+        r.roomType === targetRoomId ||
+        (doorLabel && r.doorLabel && r.doorLabel.toLowerCase().includes(doorLabel.toLowerCase())) ||
+        (doorLabel && r.title && r.title.toLowerCase().includes(doorLabel.toLowerCase()))
+      );
+      if (found) {
+        nextRoom = found;
+      } else if (currentRoom?.connectedRooms?.length > 0) {
+        nextRoom = currentRoom.connectedRooms[0];
       }
     }
+    if (!nextRoom) return;
+
+    // Chuyển cảnh có kiểm soát (Controlled Cinematic Transition)
+    const icon = nextRoom.roomType === 'kitchen' ? '🍳'
+      : nextRoom.roomType === 'library' ? '📚'
+      : nextRoom.roomType === 'garden' ? '🌿'
+      : '🏡';
+
+    setSceneTransition({
+      targetTitle: nextRoom.title,
+      icon,
+      stage: 'fade_in'
+    });
+
+    setTimeout(() => {
+      setActiveRoomId(nextRoom.id);
+      setStatus('Đã bước vào ' + nextRoom.title);
+      setResetOverviewToken(prev => prev + 1);
+
+      setTimeout(() => {
+        setSceneTransition(prev => prev ? ({ ...prev, stage: 'fade_out' }) : null);
+        setTimeout(() => {
+          setSceneTransition(null);
+        }, 260);
+      }, 150);
+    }, 220);
   };
 
   const handleSelectFurniture = (label, description, item) => {
@@ -1308,14 +1313,15 @@ export default function App() {
       unlockMemoryFragment(resolvedItem.memoryFragment);
     }
     setBookPageIndex(0);
-    if (role === 'patient') {
-      setActiveMemoryModal({
-        label,
-        description,
-        isInteractable: resolvedItem ? resolvedItem.isInteractable !== false : true,
-        item: resolvedItem
-      });
-    } else {
+    setIsEditingBookPage(false);
+    setIsPhotoFlipped(false);
+    setActiveMemoryModal({
+      label,
+      description,
+      isInteractable: resolvedItem ? resolvedItem.isInteractable !== false : true,
+      item: resolvedItem
+    });
+    if (role !== 'patient') {
       setMessages(prev => [
         ...prev.slice(-39),
         {
@@ -1328,13 +1334,104 @@ export default function App() {
     }
   };
 
+  const handleSaveBookPage = (item, pageIdx, newText) => {
+    if (!item) return;
+    const currentPages = [...(item.interaction?.pages || [item.description || ''])];
+    currentPages[pageIdx] = newText;
+    if (!item.interaction) item.interaction = { type: 'book_read' };
+    item.interaction.pages = currentPages;
+
+    if (currentRoom?.objects) {
+      const updatedObjs = currentRoom.objects.map(obj => {
+        if (obj.label === item.label || obj.id === item.id) {
+          return { ...obj, interaction: { ...(obj.interaction || { type: 'book_read' }), pages: currentPages } };
+        }
+        return obj;
+      });
+      setCurrentRoom(prev => ({ ...prev, objects: updatedObjs }));
+    }
+
+    if (currentRoom?.connectedRooms) {
+      const updatedConnected = currentRoom.connectedRooms.map(cr => {
+        const targetObjList = cr.room?.objects || cr.objects;
+        if (!targetObjList) return cr;
+        const updatedList = targetObjList.map(obj => {
+          if (obj.label === item.label || obj.id === item.id) {
+            return { ...obj, interaction: { ...(obj.interaction || { type: 'book_read' }), pages: currentPages } };
+          }
+          return obj;
+        });
+        if (cr.room) return { ...cr, room: { ...cr.room, objects: updatedList } };
+        return { ...cr, objects: updatedList };
+      });
+      setCurrentRoom(prev => ({ ...prev, connectedRooms: updatedConnected }));
+    }
+
+    setActiveMemoryModal(prev => prev ? ({
+      ...prev,
+      item: { ...prev.item, interaction: { ...(prev.item?.interaction || { type: 'book_read' }), pages: currentPages } }
+    }) : null);
+
+    setIsEditingBookPage(false);
+    setStatus(`Đã lưu trang ${pageIdx + 1} của cuốn sách "${item.label}".`);
+  };
+
+  const handleAddInsideMemento = (item, mementoName) => {
+    if (!item || !mementoName || !mementoName.trim()) return;
+    const trimmed = mementoName.trim();
+    const nextItem = { ...item };
+    if (!nextItem.interaction) nextItem.interaction = {};
+    const existing = Array.isArray(nextItem.interaction.insideItems)
+      ? [...nextItem.interaction.insideItems]
+      : Array.isArray(nextItem.interaction.clothes)
+      ? [...nextItem.interaction.clothes]
+      : [];
+    existing.push(trimmed);
+    if (nextItem.interaction.type === 'wardrobe_open') {
+      nextItem.interaction.clothes = existing;
+    } else {
+      nextItem.interaction.insideItems = existing;
+    }
+
+    if (currentRoom?.objects) {
+      const updatedObjs = currentRoom.objects.map(obj => {
+        if (obj.label === item.label || obj.id === item.id) return nextItem;
+        return obj;
+      });
+      setCurrentRoom(prev => ({ ...prev, objects: updatedObjs }));
+    }
+
+    if (currentRoom?.connectedRooms) {
+      const updatedConnected = currentRoom.connectedRooms.map(cr => {
+        const targetObjList = cr.room?.objects || cr.objects;
+        if (!targetObjList) return cr;
+        const updatedList = targetObjList.map(obj => {
+          if (obj.label === item.label || obj.id === item.id) return nextItem;
+          return obj;
+        });
+        if (cr.room) return { ...cr, room: { ...cr.room, objects: updatedList } };
+        return { ...cr, objects: updatedList };
+      });
+      setCurrentRoom(prev => ({ ...prev, connectedRooms: updatedConnected }));
+    }
+
+    setActiveMemoryModal(prev => prev ? ({
+      ...prev,
+      item: nextItem
+    }) : null);
+
+    setIsAddingMemento(false);
+    setNewMementoText('');
+    setStatus(`Đã cất kỷ vật "${trimmed}" vào ${item.label}.`);
+  };
+
   const handleRestrictedTouch = (label, dialogue) => {
-    const diag = dialogue || 'Chưa có đủ thông tin về khu vực này; đây là phần AI ước đoán.';
+    const diag = dialogue || 'Kỷ vật thân quen trong không gian sống của bạn.';
     if (role === 'patient') {
       setActiveMemoryModal({
         label,
         description: diag,
-        isInteractable: false
+        isInteractable: true
       });
     } else {
       setStatus(`Vùng hạn chế: ${label}`);
@@ -1660,24 +1757,69 @@ export default function App() {
   };
 
   const render3DViewer = () => (
-    <RoomViewer3D
-      room={getActiveRoom()}
-      textures={usePhotoTexture ? textures : null}
-      navMode={role === 'patient' ? 'point_and_explore' : navMode}
-      lockCamera={role === 'patient' ? true : lockCamera}
-      resetOverviewToken={resetOverviewToken}
-      onNavModeChange={setNavMode}
-      onNavWarning={message => setStatus(message)}
-      cameraView={cameraView}
-      onSelectFurniture={handleSelectFurniture}
-      onRestrictedTouch={handleRestrictedTouch}
-      onDoorTransition={handleDoorTransition}
-      onPovChange={handlePovChange}
-      focusLabel={focusLabel}
-      glideLabel={glideLabel}
-      strollAction={strollAction}
-      speakText={speakingText}
-    />
+    <View style={styles.viewerWrapper}>
+      <RoomViewer3D
+        room={getActiveRoom()}
+        textures={usePhotoTexture ? textures : null}
+        navMode={role === 'patient' ? 'point_and_explore' : navMode}
+        lockCamera={role === 'patient' ? true : lockCamera}
+        resetOverviewToken={resetOverviewToken}
+        onNavModeChange={setNavMode}
+        onNavWarning={message => setStatus(message)}
+        cameraView={cameraView}
+        rotateAction={rotateAction}
+        onSelectFurniture={handleSelectFurniture}
+        onRestrictedTouch={handleRestrictedTouch}
+        onDoorTransition={handleDoorTransition}
+        onPovChange={handlePovChange}
+        focusLabel={focusLabel}
+        glideLabel={glideLabel}
+        strollAction={strollAction}
+        speakText={speakingText}
+        activeBookPage={bookPageIndex}
+        flipPictureToken={flipPictureToken}
+        toggleDrawerToken={toggleDrawerToken}
+        toggleWardrobeToken={toggleWardrobeToken}
+        toggleLampToken={toggleLampToken}
+        toggleFridgeToken={toggleFridgeToken}
+        toggleCabinetToken={toggleCabinetToken}
+        toggleTvToken={toggleTvToken}
+        toggleFanToken={toggleFanToken}
+        toggleAcToken={toggleAcToken}
+        sitSofaToken={sitSofaToken}
+        sitChairToken={sitChairToken}
+        pourDrinkToken={pourDrinkToken}
+        waterPlantToken={waterPlantToken}
+        chimeClockToken={chimeClockToken}
+        toggleCurtainsToken={toggleCurtainsToken}
+        isAudioMuted={isAudioMuted}
+      />
+
+      {/* Nút xoay góc nhìn Trái / Phải trực quan nổi ngay trên màn hình */}
+      <View style={styles.floatingTurnControlsOverlay} pointerEvents="box-none">
+        <TouchableOpacity
+          style={[styles.floatingTurnBtn, styles.floatingTurnBtnLeft]}
+          onPress={() => handleRotateView('left')}
+          activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityLabel="Xoay góc nhìn sang trái"
+        >
+          <Text style={styles.floatingTurnIcon}>⟲</Text>
+          <Text style={styles.floatingTurnText}>Trái</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.floatingTurnBtn, styles.floatingTurnBtnRight]}
+          onPress={() => handleRotateView('right')}
+          activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityLabel="Xoay góc nhìn sang phải"
+        >
+          <Text style={styles.floatingTurnIcon}>⟳</Text>
+          <Text style={styles.floatingTurnText}>Phải</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 
   const connectedRoomsList = [
@@ -1692,8 +1834,9 @@ export default function App() {
   }
   if (currentRoom?.connectedRooms) {
     currentRoom.connectedRooms.forEach(cr => {
-      if (cr.objects) {
-        cr.objects.forEach(o => {
+      const crObjs = cr.objects || cr.room?.objects;
+      if (crObjs) {
+        crObjs.forEach(o => {
           if (o.memoryFragment) allFragments.push({ ...o.memoryFragment, itemLabel: o.label, roomTitle: cr.title });
         });
       }
@@ -1703,212 +1846,397 @@ export default function App() {
   const discoveredCount = Object.keys(discoveredFragments).length;
 
   // =========================================================================
-  // GIAO DIỆN 1: DÀNH CHO NGƯỜI BỆNH ALZHEIMER (PATIENT MEMORY EXPERIENCE)
-  // Toàn màn hình 3D, không hộp chat, chữ to rõ, thẻ ký ức nổi, hỗ trợ đọc giọng
-  // Hỗ trợ mượt mà cả màn hình Dọc và Ngang (Portrait & Landscape)
-  // =========================================================================
-  if (role === 'patient') {
+
+  const handleCloseMemoryModal = () => {
+    setSpeakingText(null);
+    setFocusLabel('');
+    setActiveMemoryModal(null);
+    handleResetOverview();
+  };
+
+  const handleViewMemory = () => {
+    if (!activeMemoryModal?.item) return;
+    const item = activeMemoryModal.item;
+    const interType = item.interaction?.type;
+    if (interType === 'picture_view' || item.kind === 'picture') {
+      setFlipPictureToken(t => t + 1);
+      setIsPhotoFlipped(prev => !prev);
+    } else if (interType === 'book_read' || item.kind === 'book') {
+      const pages = item.interaction?.pages || [];
+      if (pages.length > 1) {
+        setBookPageIndex(p => (p + 1) % pages.length);
+      }
+    } else if (interType === 'wardrobe_open') {
+      setToggleWardrobeToken(t => t + 1);
+    } else if (interType === 'desk_drawer') {
+      setToggleDrawerToken(t => t + 1);
+    } else if (interType === 'cabinet_storage' || interType === 'cabinet_kitchen') {
+      setToggleCabinetToken(t => t + 1);
+    } else if (interType === 'fridge_open') {
+      setToggleFridgeToken(t => t + 1);
+    } else if (interType === 'television_watch') {
+      setToggleTvToken(t => t + 1);
+    } else if (interType === 'lamp_toggle') {
+      setToggleLampToken(t => t + 1);
+    } else if (interType === 'fan_toggle') {
+      setToggleFanToken(t => t + 1);
+    } else if (interType === 'plant_water') {
+      setWaterPlantToken(t => t + 1);
+    } else if (interType === 'clock_chime') {
+      setChimeClockToken(t => t + 1);
+    }
+    setStatus('Đang xem chi tiết ký ức: ' + activeMemoryModal.label);
+  };
+
+  const handleSpeakMemory = () => {
+    if (!activeMemoryModal) return;
+    if (speakingText) {
+      setSpeakingText(null);
+      return;
+    }
+    const inter = activeMemoryModal.item?.interaction;
+    const tactileFeeling = inter?.fridgeFeeling ||
+      inter?.kitchenFeeling ||
+      inter?.storageFeeling ||
+      inter?.lampFeeling ||
+      inter?.tvFeeling ||
+      inter?.fanFeeling ||
+      inter?.acFeeling ||
+      inter?.sofaFeeling ||
+      inter?.chairFeeling ||
+      inter?.teaFeeling ||
+      inter?.drinkFeeling ||
+      inter?.plantFeeling ||
+      inter?.clockFeeling ||
+      inter?.boardFeeling ||
+      inter?.bagFeeling ||
+      inter?.wardrobeFeeling ||
+      inter?.drawerFeeling ||
+      inter?.breezeFeeling ||
+      inter?.shelfFeeling ||
+      inter?.pictureFeeling ||
+      inter?.bedFeeling ||
+      inter?.rugFeeling ||
+      inter?.detail ||
+      '';
+    const textToRead = inter?.type === 'book_read'
+      ? (inter.pages?.[bookPageIndex] || activeMemoryModal.description)
+      : (activeMemoryModal.item?.memoryFragment?.story
+          ? (activeMemoryModal.label + '. ' + (tactileFeeling ? tactileFeeling + ' ' : '') + activeMemoryModal.item.memoryFragment.story + '. ' + (activeMemoryModal.item.memoryFragment.senseOfSelf || ''))
+          : (tactileFeeling ? (activeMemoryModal.label + '. ' + tactileFeeling) : (activeMemoryModal.description || (activeMemoryModal.label + ' là kỷ vật thân quen của gia đình.'))));
+    setSpeakingText(textToRead);
+  };
+
+  const renderSceneTransitionOverlay = () => {
+    if (!sceneTransition) return null;
+    const isFadeOut = sceneTransition.stage === 'fade_out';
     return (
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.patientSafeArea}>
-          <StatusBar barStyle="light-content" backgroundColor="#121a16" />
+      <View
+        style={[
+          styles.sceneTransitionOverlay,
+          isFadeOut && styles.sceneTransitionOverlayFadeOut
+        ]}
+        pointerEvents="auto"
+      >
+        <View style={styles.sceneTransitionCard}>
+          <Text style={styles.sceneTransitionIcon}>{sceneTransition.icon}</Text>
+          <Text style={styles.sceneTransitionHeading}>Đang chuyển không gian...</Text>
+          <Text style={styles.sceneTransitionTitle}>{sceneTransition.targetTitle}</Text>
+          <Text style={styles.sceneTransitionQuote}>🌸 Bước đi thong thả... Bạn luôn an yên trong không gian thân thuộc</Text>
+        </View>
+      </View>
+    );
+  };
 
-          {/* Thanh tiêu đề & điều hướng tĩnh lặng cho Người Bệnh */}
-          <View style={[styles.patientTopBar, isLandscape && styles.patientTopBarLandscape]}>
-            <View style={styles.patientTitleBlock}>
-              <Text style={styles.patientBadge}>👵 KHÔNG GIAN KÝ ỨC THÂN THUỘC</Text>
-              <Text style={styles.patientTitleText} numberOfLines={1}>{displayRoom?.title || roomTitle}</Text>
-            </View>
+  const renderPersistentNavDock = () => {
+    const isNotInPrimary = activeRoomId && activeRoomId !== 'primary';
+    const currentIdx = connectedRoomsList.findIndex(r => r.id === (activeRoomId || 'primary'));
+    const nextRoom = connectedRoomsList.length > 1
+      ? connectedRoomsList[(currentIdx + 1) % connectedRoomsList.length]
+      : null;
 
-            <View style={styles.patientControls}>
-              {povMode === 'focused' ? (
-                <TouchableOpacity
-                  style={styles.patientOverviewBtn}
-                  onPress={handleResetOverview}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.patientOverviewBtnText}>🏠 Toàn cảnh phòng</Text>
-                </TouchableOpacity>
-              ) : (
-                <View style={styles.patientPointExploreBadge}>
-                  <Text style={styles.patientPointExploreBadgeText}>🔒 3D Point-and-Explore</Text>
-                </View>
-              )}
-
-              <TouchableOpacity
-                style={styles.patientGuideBtn}
-                onPress={() => setPatientGuideModalVisible(true)}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.patientGuideBtnText}>💡 Hướng dẫn</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.patientChangeRoomBtn}
-                onPress={() => setSavedRoomsModalVisible(true)}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.patientChangeRoomText}>📂 Đổi phòng</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.patientExitBtn}
-                activeOpacity={0.8}
-                onPress={() => {
-                  Alert.alert(
-                    'Trở về màn hình Người Soạn Phòng?',
-                    'Bạn có muốn tạm dừng buổi khám phá ký ức để trở về màn hình biên soạn và cài đặt không?',
-                    [
-                      { text: 'Ở lại ngắm phòng', style: 'cancel' },
-                      {
-                        text: 'Quay lại',
-                        onPress: () => {
-                          setSpeakingText(null);
-                          setActiveMemoryModal(null);
-                          setRole('creator');
-                        }
-                      }
-                    ]
-                  );
-                }}
-              >
-                <Text style={styles.patientExitText}>🔒 Thoát</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          {/* Lời Chỉ Dẫn Khám Phá Êm Dịu (Mục 5.1 & 5.2) */}
-          <View style={styles.patientGentleGuidanceBanner}>
-            <Text style={styles.patientGentleGuidanceText}>
-              🌸 Chạm vào các đốm sáng ✨ hoặc chọn góc phòng bên dưới để nhớ lại kỷ niệm xưa
-            </Text>
-          </View>
-
-          {/* Thanh Chuyển Gian Phòng Nối Tiếp (Connected Multi-Room Switcher) */}
-          {connectedRoomsList.length > 1 && (
-            <View style={styles.patientRoomsSwitcherBar}>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 12, gap: 8 }}>
-                {connectedRoomsList.map(r => {
-                  const isActive = (activeRoomId === r.id || (r.id === 'primary' && (!activeRoomId || activeRoomId === 'primary')));
-                  return (
-                    <TouchableOpacity
-                      key={r.id}
-                      style={[styles.patientRoomSwitchPill, isActive && styles.patientRoomSwitchPillActive]}
-                      onPress={() => {
-                        setActiveRoomId(r.id);
-                        setStatus(`Đã chuyển sang ${r.title}`);
-                      }}
-                      activeOpacity={0.8}
-                    >
-                      <Text style={[styles.patientRoomSwitchText, isActive && styles.patientRoomSwitchTextActive]}>
-                        {r.roomType === 'kitchen' ? '🍳' : r.roomType === 'garden' ? '🌿' : r.roomType === 'library' ? '📚' : '🏡'} {r.title}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </ScrollView>
-            </View>
-          )}
-
-          {/* Thanh Tiến Trình Ký Ức Bản Thân (Sense of Self Quest Badge) */}
+    if (!isNavDockExpanded) {
+      return (
+        <View style={[styles.navDockCollapsedWrapper, isLandscape && styles.navDockCollapsedWrapperLandscape]} pointerEvents="box-none">
           <TouchableOpacity
-            style={styles.senseOfSelfBadge}
-            onPress={() => setSenseOfSelfModalVisible(true)}
+            style={styles.navDockCollapsedPill}
+            onPress={() => setIsNavDockExpanded(true)}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Mở menu điều hướng và góc nhìn"
           >
-            <Text style={styles.senseOfSelfBadgeText}>
-              🌟 Ký ức bản thân: {discoveredCount}/{totalFragmentsCount} Mảnh Ghép {discoveredCount === totalFragmentsCount && totalFragmentsCount > 0 ? '✓ Đầy đủ!' : '• Chạm mở sổ tay'}
+            <Text style={styles.navDockCollapsedPillText}>🧭 Điều hướng & Góc nhìn ▾</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
+    return (
+      <View style={[styles.persistentNavDock, isLandscape && styles.persistentNavDockLandscape]}>
+        {/* Thanh tiêu đề menu thu gọn */}
+        <View style={styles.navDockHeaderRow}>
+          <Text style={styles.navDockHeaderTitle}>🧭 Điều hướng & Góc nhìn</Text>
+          <TouchableOpacity
+            style={styles.navDockCollapseBtn}
+            onPress={() => setIsNavDockExpanded(false)}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Thu gọn menu điều hướng"
+          >
+            <Text style={styles.navDockCollapseBtnText}>✕ Thu gọn ▴</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Hàng 1: Góc nhìn định sẵn nội thất (Interior Vantage Points) & Hotspots */}
+        <View style={styles.navDockPresetRow}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6, paddingHorizontal: 4 }}>
+            <TouchableOpacity
+              style={[
+                styles.navDockPresetBtn,
+                (!cameraView || cameraView === 'doorway') && !activeMemoryModal && povMode !== 'focused' && styles.navDockPresetBtnActive
+              ]}
+              onPress={() => {
+                setCameraView('doorway');
+                handleResetOverview();
+                setStatus('Góc nhìn từ cửa phòng');
+              }}
+              activeOpacity={0.8}
+            >
+              <Text style={[
+                styles.navDockPresetText,
+                (!cameraView || cameraView === 'doorway') && !activeMemoryModal && povMode !== 'focused' && styles.navDockPresetTextActive
+              ]}>
+                🚪 Cửa vào
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.navDockPresetBtn, cameraView === 'center' && styles.navDockPresetBtnActive]}
+              onPress={() => {
+                setCameraView('center');
+                setStatus('Góc nhìn giữa phòng');
+              }}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.navDockPresetText, cameraView === 'center' && styles.navDockPresetTextActive]}>
+                🏠 Giữa phòng
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.navDockPresetBtn, cameraView === 'corner_desk' && styles.navDockPresetBtnActive]}
+              onPress={() => {
+                setCameraView('corner_desk');
+                setStatus('Góc nhìn bàn kỷ vật');
+              }}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.navDockPresetText, cameraView === 'corner_desk' && styles.navDockPresetTextActive]}>
+                🪑 Góc bàn
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.navDockPresetBtn, cameraView === 'corner_rest' && styles.navDockPresetBtnActive]}
+              onPress={() => {
+                setCameraView('corner_rest');
+                setStatus('Góc nhìn khu nghỉ ngơi');
+              }}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.navDockPresetText, cameraView === 'corner_rest' && styles.navDockPresetBtnActive]}>
+                🛌 Góc nghỉ
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.navDockPresetBtn, cameraView === 'corner_window' && styles.navDockPresetBtnActive]}
+              onPress={() => {
+                setCameraView('corner_window');
+                setStatus('Góc nhìn chéo từ góc phòng');
+              }}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.navDockPresetText, cameraView === 'corner_window' && styles.navDockPresetTextActive]}>
+                🪟 Góc phòng
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.navDockRotateBtn}
+              onPress={() => handleRotateView('left')}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel="Xoay trái"
+            >
+              <Text style={styles.navDockRotateText}>⟲ Trái</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.navDockRotateBtn}
+              onPress={() => handleRotateView('right')}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel="Xoay phải"
+            >
+              <Text style={styles.navDockRotateText}>⟳ Phải</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
+
+        {/* Hàng 2: Các nút điều hướng cố định (Quay lại, Về phòng chính, Tiếp phòng khác, Thoát nội dung) */}
+        <View style={styles.navDockFixedActionRow}>
+          {/* Nút 1: Quay lại / Thoát nội dung */}
+          <TouchableOpacity
+            style={[styles.navDockActionBtn, styles.navDockBackBtn]}
+            onPress={() => {
+              if (activeMemoryModal) {
+                handleCloseMemoryModal();
+              } else if (povMode === 'focused') {
+                handleResetOverview();
+              } else if (isNotInPrimary) {
+                handleDoorTransition('primary');
+              } else {
+                handleResetOverview();
+              }
+            }}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Quay lại"
+          >
+            <Text style={styles.navDockActionBtnText}>
+              {activeMemoryModal ? '✕ Thoát nội dung' : '↩️ Quay lại'}
             </Text>
           </TouchableOpacity>
 
-          {/* Gợi nhắc trực tiếp từ Người Chăm Sóc */}
-          {activeLiveNotification && (
-            <View style={styles.patientReminderCard}>
-              <View style={styles.patientReminderHeader}>
-                <Text style={styles.patientReminderIcon}>{activeLiveNotification.icon || '🔔'}</Text>
-                <View style={{ flex: 1, marginHorizontal: 8 }}>
-                  <Text style={styles.patientReminderTitle}>{activeLiveNotification.title || 'Lời nhắc nhở'}</Text>
-                  <Text style={styles.patientReminderText}>{activeLiveNotification.text}</Text>
-                </View>
+          {/* Nút 2: Về phòng chính */}
+          <TouchableOpacity
+            style={[
+              styles.navDockActionBtn,
+              isNotInPrimary ? styles.navDockPrimaryRoomActiveBtn : styles.navDockActionBtnDefault
+            ]}
+            onPress={() => {
+              if (isNotInPrimary) {
+                handleDoorTransition('primary');
+              } else {
+                handleResetOverview();
+              }
+            }}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Về phòng chính"
+          >
+            <Text style={[styles.navDockActionBtnText, isNotInPrimary && styles.navDockPrimaryRoomActiveText]}>
+              🏠 Về phòng chính
+            </Text>
+          </TouchableOpacity>
+
+          {/* Nút 3: Tiếp phòng khác */}
+          {nextRoom && (
+            <TouchableOpacity
+              style={[styles.navDockActionBtn, styles.navDockNextRoomBtn]}
+              onPress={() => handleDoorTransition(nextRoom.id)}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel="Tiếp phòng khác"
+            >
+              <Text style={styles.navDockNextRoomText} numberOfLines={1}>
+                {nextRoom.roomType === 'kitchen' ? '🍳' : nextRoom.roomType === 'library' ? '📚' : '🚪'} {nextRoom.title} ➔
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+    );
+  };
+
+  const renderActiveMemoryModal = () => {
+    if (!activeMemoryModal) return null;
+
+    const isBookItem = activeMemoryModal.item?.kind === 'book' || activeMemoryModal.item?.kind === 'notebook';
+
+    if (isBookItem) {
+      const bookPages = activeMemoryModal.item?.interaction?.pages || [
+        activeMemoryModal.item?.description || 'Những dòng ký ức thân thương được viết bằng tình yêu thương và sự gắn kết qua bao năm tháng.',
+        'Mỗi khi lật mở trang sách này, bạn đang tìm lại chính mình trong những khoảnh khắc ấm êm nhất.',
+        'Mỗi trang nhật ký là một bước chân nhắc nhở về tình thương và mái ấm bình yên.',
+        'Hạnh phúc giản dị khi được sống trọn vẹn trong từng giây phút yêu thương.'
+      ];
+      const totalPages = bookPages.length;
+      return (
+        <View style={styles.patientMemoryCardBackdrop} pointerEvents="box-none">
+          <View style={styles.patientBookInWorldBar}>
+            <View style={styles.patientBookInWorldHeader}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.patientBookInWorldTitle}>📖 {activeMemoryModal.label || 'Cuốn sách kỷ niệm'}</Text>
+                <Text style={styles.patientBookInWorldSubtitle}>
+                  Trang {bookPageIndex + 1} & {bookPageIndex + 2} / {Math.max(2, totalPages)} • Đang mở trong phòng 3D
+                </Text>
               </View>
               <TouchableOpacity
-                style={styles.patientReminderDismissBtn}
-                onPress={handleAcknowledgeNotification}
+                style={styles.bookDoneBtn}
+                onPress={() => {
+                  setSpeakingText(null);
+                  setFocusLabel('');
+                  setActiveMemoryModal(null);
+                }}
                 activeOpacity={0.8}
               >
-                <Text style={styles.patientReminderDismissText}>✓ Dạ, tôi nhớ rồi</Text>
+                <Text style={styles.bookDoneBtnText}>✕ Đóng</Text>
               </TouchableOpacity>
             </View>
-          )}
 
-          {/* Khung hiển thị 3D tràn viền */}
-          <View style={styles.patientViewerWrap}>
-            {render3DViewer()}
-          </View>
-
-          {/* Bảng Điều Khiển Điểm Chạm & Góc Nhìn Định Sẵn (3D Point-and-Explore) */}
-          <View style={[styles.seniorWaypointsContainer, isLandscape && { paddingBottom: 6 }]}>
-            <View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <Text style={styles.seniorWaypointsTitle}>✨ Điểm Chạm Ký Ức & Góc Nhìn Định Sẵn:</Text>
-                {povMode === 'focused' && (
-                  <TouchableOpacity
-                    style={styles.seniorOverviewSmallBtn}
-                    onPress={handleResetOverview}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={styles.seniorOverviewSmallBtnText}>🏠 Về toàn cảnh</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ paddingHorizontal: 4, gap: 10 }}
+            <View style={styles.patientBookInWorldActions}>
+              <TouchableOpacity
+                style={[styles.bookTurnBtn, bookPageIndex <= 0 && styles.bookTurnBtnDisabled]}
+                onPress={() => {
+                  if (bookPageIndex > 0) {
+                    const prevIdx = Math.max(0, bookPageIndex - 2);
+                    setBookPageIndex(prevIdx);
+                  }
+                }}
+                disabled={bookPageIndex <= 0}
+                activeOpacity={0.8}
               >
-                <TouchableOpacity
-                  style={[
-                    styles.seniorWaypointPill,
-                    povMode === 'overview' && !activeMemoryModal && styles.seniorWaypointPillActive
-                  ]}
-                  onPress={handleResetOverview}
-                  activeOpacity={0.8}
-                >
-                  <Text style={[
-                    styles.seniorWaypointPillText,
-                    povMode === 'overview' && !activeMemoryModal && styles.seniorWaypointPillTextActive
-                  ]}>
-                    🏠 Toàn cảnh phòng
-                  </Text>
-                </TouchableOpacity>
-                {interactiveObjects.map((obj, idx) => (
-                  <TouchableOpacity
-                    key={'wp-' + idx}
-                    style={[
-                      styles.seniorWaypointPill,
-                      activeMemoryModal?.label === obj.label && styles.seniorWaypointPillActive
-                    ]}
-                    onPress={() => {
-                      setGlideLabel(obj.label);
-                      setTimeout(() => setGlideLabel(''), 600);
-                    }}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={[
-                      styles.seniorWaypointPillText,
-                      activeMemoryModal?.label === obj.label && styles.seniorWaypointPillTextActive
-                    ]}>
-                      {getObjectIcon(obj.kind)} {obj.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
+                <Text style={styles.bookTurnBtnText}>◀ Trang trước</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.bookTurnBtn, bookPageIndex + 2 >= totalPages && styles.bookTurnBtnDisabled]}
+                onPress={() => {
+                  if (bookPageIndex + 2 < totalPages) {
+                    const nextIdx = bookPageIndex + 2;
+                    setBookPageIndex(nextIdx);
+                  }
+                }}
+                disabled={bookPageIndex + 2 >= totalPages}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.bookTurnBtnText}>Trang sau ▶</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.bookVoiceBtn}
+                onPress={() => {
+                  const readText = (bookPages[bookPageIndex] || '') + '. ' + (bookPages[bookPageIndex + 1] || '');
+                  if (speakingText) {
+                    setSpeakingText(null);
+                  } else {
+                    speakMemory(readText || activeMemoryModal.description);
+                  }
+                }}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.bookVoiceBtnText}>{speakingText ? '⏹️ Dừng' : '🔊 Nghe đọc'}</Text>
+              </TouchableOpacity>
             </View>
           </View>
+        </View>
+      );
+    }
 
-          {/* Thẻ Ký Ức & Tương Tác Cụ Thể (Interactive Tactile Modals) */}
-          {activeMemoryModal && (
-            <View style={styles.patientMemoryCardBackdrop}>
+    return (
+      <View style={styles.patientMemoryCardBackdrop} pointerEvents="box-none">
               <View style={[styles.patientMemoryCard, isLandscape && styles.patientMemoryCardLandscape]}>
                 <View style={styles.patientCardHeader}>
                   <View style={styles.patientCardIconTitle}>
@@ -1943,32 +2271,20 @@ export default function App() {
                     }}
                     activeOpacity={0.8}
                   >
-                    <Text style={styles.patientCardCloseText}>✕ Trở lại phòng</Text>
+                    <Text style={styles.patientCardCloseText}>✕ Đóng</Text>
                   </TouchableOpacity>
                 </View>
 
                 {/* Huy hiệu Tính Xác Thực & Nguồn Ký Ức (Mục 3.3) */}
                 {(activeMemoryModal.item?.source?.type === 'user_provided' || activeMemoryModal.item?.isCaregiverVerified !== false) ? (
-                  <View style={styles.verifiedMemoryBadge}>
-                    <Text style={styles.verifiedMemoryBadgeIcon}>🌟</Text>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.verifiedMemoryBadgeTitle}>Ký ức do gia đình lưu giữ</Text>
-                      <Text style={styles.verifiedMemoryBadgeDesc}>
-                        {activeMemoryModal.item?.verifiedBy
-                          ? `Ghi nhận bởi ${activeMemoryModal.item.verifiedBy}`
-                          : 'Kỷ vật đời thực đã được người chăm sóc xác nhận'}
-                      </Text>
-                    </View>
+                  <View style={styles.compactSourcePill}>
+                    <Text style={styles.compactSourcePillText}>
+                      🌟 Kỷ vật gia đình {activeMemoryModal.item?.verifiedBy ? `(${activeMemoryModal.item.verifiedBy})` : ''}
+                    </Text>
                   </View>
                 ) : (
-                  <View style={styles.inferredMemoryBadge}>
-                    <Text style={styles.inferredMemoryBadgeIcon}>💡</Text>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.inferredMemoryBadgeTitle}>Khu vực không gian ước đoán</Text>
-                      <Text style={styles.inferredMemoryBadgeDesc}>
-                        Gợi ý tái hiện của AI, chưa có xác nhận từ người thân
-                      </Text>
-                    </View>
+                  <View style={styles.compactSourcePillInferred}>
+                    <Text style={styles.compactSourcePillTextInferred}>🏡 Không gian thân quen</Text>
                   </View>
                 )}
 
@@ -1984,15 +2300,23 @@ export default function App() {
                 )}
 
                 <ScrollView style={[styles.patientCardBody, isLandscape && { maxHeight: 160 }]} contentContainerStyle={{ paddingBottom: 10 }}>
-                  {/* 1. Tủ Quần Áo */}
+                  {/* 1. Tủ Quần Áo (Hỗ trợ mở cửa 3D) */}
                   {activeMemoryModal.item?.interaction?.type === 'wardrobe_open' && (
-                    <View>
+                    <View style={styles.tactileCardBox}>
+                      <TouchableOpacity
+                        style={styles.tactileTriggerBtn}
+                        onPress={() => setToggleWardrobeToken(t => t + 1)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Mở hoặc đóng cánh cửa tủ 3D"
+                      >
+                        <Text style={styles.tactileTriggerText}>🚪 Mở / Đóng tủ</Text>
+                      </TouchableOpacity>
                       <Text style={styles.patientCardText}>
                         {activeMemoryModal.item.interaction.wardrobeFeeling}
                       </Text>
-                      {Array.isArray(activeMemoryModal.item.interaction.clothes) && (
+                      {Array.isArray(activeMemoryModal.item.interaction.clothes) && activeMemoryModal.item.interaction.clothes.length > 0 && (
                         <View style={{ marginTop: 8 }}>
-                          <Text style={styles.modalSubHeader}>👗 Quần áo thân quen:</Text>
+                          <Text style={styles.modalSubHeader}>👗 Quần áo:</Text>
                           {activeMemoryModal.item.interaction.clothes.map((c, i) => (
                             <View key={i} style={styles.itemDetailRow}>
                               <Text style={styles.itemDetailIcon}>👔</Text>
@@ -2001,9 +2325,9 @@ export default function App() {
                           ))}
                         </View>
                       )}
-                      {Array.isArray(activeMemoryModal.item.interaction.mementos) && (
+                      {Array.isArray(activeMemoryModal.item.interaction.mementos) && activeMemoryModal.item.interaction.mementos.length > 0 && (
                         <View style={{ marginTop: 8 }}>
-                          <Text style={styles.modalSubHeader}>🎒 Cặp sách & kỷ vật bên trong:</Text>
+                          <Text style={styles.modalSubHeader}>🎒 Kỷ vật bên trong:</Text>
                           {activeMemoryModal.item.interaction.mementos.map((m, i) => (
                             <View key={i} style={styles.itemDetailRow}>
                               <Text style={styles.itemDetailIcon}>🎒</Text>
@@ -2012,18 +2336,66 @@ export default function App() {
                           ))}
                         </View>
                       )}
+                      {(!activeMemoryModal.item.interaction.clothes || activeMemoryModal.item.interaction.clothes.length === 0) &&
+                       (!activeMemoryModal.item.interaction.mementos || activeMemoryModal.item.interaction.mementos.length === 0) && (
+                        <Text style={styles.emptyContainerHint}>
+                          {activeMemoryModal.item.interaction.emptyStateText || 'Tủ gỗ rộng rãi thơm mùi trầm hương. Bác hoặc người thân có thể cất giữ một món kỷ vật vào đây.'}
+                        </Text>
+                      )}
+                      {isAddingMemento ? (
+                        <View style={styles.mementoAddBox}>
+                          <Text style={styles.mementoAddPrompt}>➕ Cất kỷ vật mới:</Text>
+                          <TextInput
+                            style={styles.mementoAddInput}
+                            value={newMementoText}
+                            onChangeText={setNewMementoText}
+                            placeholder="Ví dụ: Chiếc khăn len đan tay, Bộ áo dài xưa..."
+                            placeholderTextColor="#8C7A6B"
+                            autoFocus
+                          />
+                          <View style={styles.mementoAddBtnRow}>
+                            <TouchableOpacity
+                              style={styles.mementoSaveBtn}
+                              onPress={() => handleAddInsideMemento(activeMemoryModal.item, newMementoText)}
+                            >
+                              <Text style={styles.mementoSaveText}>💾 Cất kỷ vật</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={styles.mementoCancelBtn}
+                              onPress={() => { setIsAddingMemento(false); setNewMementoText(''); }}
+                            >
+                              <Text style={styles.mementoCancelText}>✕ Hủy</Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      ) : (
+                        <TouchableOpacity
+                          style={styles.mementoAddTrigger}
+                          onPress={() => { setIsAddingMemento(true); setNewMementoText(''); }}
+                        >
+                          <Text style={styles.mementoAddTriggerText}>➕ Cất thêm kỷ vật</Text>
+                        </TouchableOpacity>
+                      )}
                     </View>
                   )}
 
-                  {/* 2. Ngăn Kéo Hộc Bàn */}
+                  {/* 2. Ngăn Kéo Hộc Bàn (Hỗ trợ kéo hộc bàn 3D) */}
                   {activeMemoryModal.item?.interaction?.type === 'desk_drawer' && (
-                    <View>
+                    <View style={styles.tactileCardBox}>
+                      <TouchableOpacity
+                        style={styles.tactileTriggerBtn}
+                        onPress={() => setToggleDrawerToken(t => t + 1)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Kéo hoặc đóng ngăn kéo hộc bàn 3D"
+                      >
+                        <Text style={styles.tactileTriggerText}>🗄️ Kéo / Đóng ngăn kéo</Text>
+                      </TouchableOpacity>
                       <Text style={styles.patientCardText}>
                         {activeMemoryModal.item.interaction.drawerFeeling}
                       </Text>
-                      {Array.isArray(activeMemoryModal.item.interaction.insideItems) && (
+                      {Array.isArray(activeMemoryModal.item.interaction.insideItems) && activeMemoryModal.item.interaction.insideItems.length > 0 ? (
                         <View style={{ marginTop: 8 }}>
-                          <Text style={styles.modalSubHeader}>🗝️ Kỷ vật trong hộc bàn:</Text>
+                          <Text style={styles.modalSubHeader}>🗝️ Kỷ vật bên trong:</Text>
                           {activeMemoryModal.item.interaction.insideItems.map((it, i) => (
                             <View key={i} style={styles.itemDetailRow}>
                               <Text style={styles.itemDetailIcon}>✨</Text>
@@ -2031,45 +2403,203 @@ export default function App() {
                             </View>
                           ))}
                         </View>
+                      ) : (
+                        <Text style={styles.emptyContainerHint}>
+                          {activeMemoryModal.item.interaction.emptyStateText || 'Ngăn hộc bàn gỗ sạch sẽ tinh tươm. Bác hoặc người thân có thể cất giữ một món kỷ vật vào đây.'}
+                        </Text>
+                      )}
+                      {isAddingMemento ? (
+                        <View style={styles.mementoAddBox}>
+                          <Text style={styles.mementoAddPrompt}>➕ Cất kỷ vật mới:</Text>
+                          <TextInput
+                            style={styles.mementoAddInput}
+                            value={newMementoText}
+                            onChangeText={setNewMementoText}
+                            placeholder="Ví dụ: Cây bút máy, Kính lão đọc sách..."
+                            placeholderTextColor="#8C7A6B"
+                            autoFocus
+                          />
+                          <View style={styles.mementoAddBtnRow}>
+                            <TouchableOpacity
+                              style={styles.mementoSaveBtn}
+                              onPress={() => handleAddInsideMemento(activeMemoryModal.item, newMementoText)}
+                            >
+                              <Text style={styles.mementoSaveText}>💾 Cất kỷ vật</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={styles.mementoCancelBtn}
+                              onPress={() => { setIsAddingMemento(false); setNewMementoText(''); }}
+                            >
+                              <Text style={styles.mementoCancelText}>✕ Hủy</Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      ) : (
+                        <TouchableOpacity
+                          style={styles.mementoAddTrigger}
+                          onPress={() => { setIsAddingMemento(true); setNewMementoText(''); }}
+                        >
+                          <Text style={styles.mementoAddTriggerText}>➕ Cất thêm kỷ vật</Text>
+                        </TouchableOpacity>
                       )}
                     </View>
                   )}
 
-                  {/* 3. Cuốn Sách / Nhật Ký */}
-                  {activeMemoryModal.item?.interaction?.type === 'book_read' && (
+                  {/* 3. Cuốn Sách / Nhật Ký (Hỗ trợ lật trang, vuốt cảm ứng & chỉnh sửa nội dung) */}
+                  {(activeMemoryModal.item?.interaction?.type === 'book_read' || activeMemoryModal.item?.kind === 'book') && (
                     <View style={styles.bookReaderContainer}>
-                      {(() => {
-                        const pages = activeMemoryModal.item.interaction.pages || [activeMemoryModal.description];
-                        const pageText = pages[bookPageIndex] || pages[0];
-                        return (
-                          <>
-                            <View style={styles.bookPageCard}>
-                              <Text style={styles.bookPageIndicator}>📖 Trang {bookPageIndex + 1} / {pages.length}</Text>
-                              <Text style={styles.bookPageText}>{pageText}</Text>
-                            </View>
-                            <View style={styles.bookControlsRow}>
-                              <TouchableOpacity
-                                style={[styles.bookPageBtn, bookPageIndex <= 0 && { opacity: 0.4 }]}
-                                disabled={bookPageIndex <= 0}
-                                onPress={() => setBookPageIndex(p => Math.max(0, p - 1))}
+                      {isEditingBookPage ? (
+                        <View style={styles.bookEditorCard}>
+                          <Text style={styles.bookEditorTitle}>✏️ Sửa trang {bookPageIndex + 1}</Text>
+                          <TextInput
+                            style={styles.bookEditorInput}
+                            value={editedPageText}
+                            onChangeText={setEditedPageText}
+                            multiline
+                            autoFocus
+                            placeholder="Nhập nội dung kỷ niệm của trang sách..."
+                            placeholderTextColor="#8C7A6B"
+                          />
+                          <View style={styles.bookEditorBtnRow}>
+                            <TouchableOpacity
+                              style={styles.bookEditorSaveBtn}
+                              onPress={() => handleSaveBookPage(activeMemoryModal.item, bookPageIndex, editedPageText)}
+                              accessibilityRole="button"
+                            >
+                              <Text style={styles.bookEditorSaveText}>💾 Lưu trang</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={styles.bookEditorCancelBtn}
+                              onPress={() => setIsEditingBookPage(false)}
+                              accessibilityRole="button"
+                            >
+                              <Text style={styles.bookEditorCancelText}>✕ Hủy</Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      ) : (
+                        (() => {
+                          const pages = activeMemoryModal.item?.interaction?.pages || [activeMemoryModal.description || 'Trang sách chưa có nội dung.'];
+                          const pageText = pages[bookPageIndex] || pages[0] || '';
+                          return (
+                            <>
+                              <View
+                                style={styles.bookPageCard}
+                                onTouchStart={(e) => { touchStartXRef.current = e.nativeEvent.pageX; }}
+                                onTouchEnd={(e) => {
+                                  const dx = e.nativeEvent.pageX - touchStartXRef.current;
+                                  if (dx < -35 && bookPageIndex < pages.length - 1) {
+                                    setBookPageIndex(p => p + 1);
+                                  } else if (dx > 35 && bookPageIndex > 0) {
+                                    setBookPageIndex(p => p - 1);
+                                  }
+                                }}
                               >
-                                <Text style={styles.bookPageBtnText}>⬅️ Trang trước</Text>
-                              </TouchableOpacity>
-                              <TouchableOpacity
-                                style={[styles.bookPageBtn, bookPageIndex >= pages.length - 1 && { opacity: 0.4 }]}
-                                disabled={bookPageIndex >= pages.length - 1}
-                                onPress={() => setBookPageIndex(p => Math.min(pages.length - 1, p + 1))}
-                              >
-                                <Text style={styles.bookPageBtnText}>Trang sau ➡️</Text>
-                              </TouchableOpacity>
-                            </View>
-                          </>
-                        );
-                      })()}
+                                <View style={styles.bookPageHeader}>
+                                  <Text style={styles.bookPageIndicator}>📖 Trang {bookPageIndex + 1} / {pages.length}</Text>
+                                  <Text style={styles.bookPageHint}>(Vuốt để lật trang)</Text>
+                                </View>
+                                <Text style={styles.bookPageText}>{pageText}</Text>
+                              </View>
+                              <View style={styles.bookControlsRow}>
+                                <TouchableOpacity
+                                  style={[styles.bookPageBtn, bookPageIndex <= 0 && { opacity: 0.4 }]}
+                                  disabled={bookPageIndex <= 0}
+                                  onPress={() => setBookPageIndex(p => Math.max(0, p - 1))}
+                                >
+                                  <Text style={styles.bookPageBtnText}>⬅️ Trước</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                  style={[styles.bookPageBtn, bookPageIndex >= pages.length - 1 && { opacity: 0.4 }]}
+                                  disabled={bookPageIndex >= pages.length - 1}
+                                  onPress={() => setBookPageIndex(p => Math.min(pages.length - 1, p + 1))}
+                                >
+                                  <Text style={styles.bookPageBtnText}>Sau ➡️</Text>
+                                </TouchableOpacity>
+                              </View>
+                              <View style={styles.bookEditorActionRow}>
+                                <TouchableOpacity
+                                  style={styles.bookEditActionBtn}
+                                  onPress={() => {
+                                    setEditedPageText(pageText);
+                                    setIsEditingBookPage(true);
+                                  }}
+                                >
+                                  <Text style={styles.bookEditActionText}>✏️ Sửa trang</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                  style={styles.bookAddPageBtn}
+                                  onPress={() => {
+                                    const newPages = [...pages, 'Kỷ niệm mới...'];
+                                    const newIdx = newPages.length - 1;
+                                    if (!activeMemoryModal.item.interaction) activeMemoryModal.item.interaction = { type: 'book_read' };
+                                    activeMemoryModal.item.interaction.pages = newPages;
+                                    setBookPageIndex(newIdx);
+                                    setEditedPageText('Kỷ niệm mới...');
+                                    setIsEditingBookPage(true);
+                                  }}
+                                >
+                                  <Text style={styles.bookAddPageText}>➕ Thêm trang</Text>
+                                </TouchableOpacity>
+                              </View>
+                            </>
+                          );
+                        })()
+                      )}
                     </View>
                   )}
 
-                  {/* 4. Giường Nghỉ Ngơi */}
+                  {/* 4. Khung Ảnh / Tranh Kỷ Niệm (Hỗ trợ lật mặt sau 3D xem lời đề tặng) */}
+                  {(activeMemoryModal.item?.kind === 'picture' || activeMemoryModal.item?.interaction?.type === 'picture_view') && (
+                    <View style={{ marginVertical: 6 }}>
+                      <TouchableOpacity
+                        style={styles.tactileTriggerBtn}
+                        onPress={() => {
+                          setFlipPictureToken(t => t + 1);
+                          setIsPhotoFlipped(prev => !prev);
+                        }}
+                        accessibilityRole="button"
+                        accessibilityLabel="Lật mặt sau bức ảnh trong không gian 3D"
+                      >
+                        <Text style={styles.tactileTriggerText}>
+                          {isPhotoFlipped ? '🖼️ Xem mặt trước' : '💌 Lời đề tặng mặt sau'}
+                        </Text>
+                      </TouchableOpacity>
+
+                      {isPhotoFlipped ? (
+                        <View style={styles.postcardBackCard}>
+                          <View style={styles.postcardBackHeader}>
+                            <Text style={styles.postcardBackStamp}>📮 KỶ NIỆM XƯA</Text>
+                            <Text style={styles.postcardBackDate}>{activeMemoryModal.item?.routineLabel || 'Ngày tháng thân thương'}</Text>
+                          </View>
+                          <Text style={styles.postcardBackNote}>
+                            "{activeMemoryModal.item?.memoryFragment?.story || activeMemoryModal.description || 'Chuyến đi đáng nhớ của gia đình. Nụ cười rạng rỡ của bạn luôn là nguồn sáng sưởi ấm gia đình.'}"
+                          </Text>
+                          <Text style={styles.postcardBackSign}>✍️ Lời đề tặng từ người thân</Text>
+                        </View>
+                      ) : (
+                        <Text style={styles.patientCardText}>
+                          {activeMemoryModal.item?.interaction?.pictureFeeling || activeMemoryModal.description}
+                        </Text>
+                      )}
+                    </View>
+                  )}
+
+                  {/* 5. Kệ Sách Kỷ Niệm (Hướng dẫn tương tác rút sách 3D) */}
+                  {(activeMemoryModal.item?.kind === 'shelf' || activeMemoryModal.item?.interaction?.type === 'shelf_inspect') && (
+                    <View style={{ marginVertical: 6 }}>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item?.interaction?.shelfFeeling || activeMemoryModal.description}
+                      </Text>
+                      <View style={styles.shelfGuideBox}>
+                        <Text style={styles.shelfGuideText}>
+                          📚 Chạm vào từng gáy sách trên kệ để mở đọc
+                        </Text>
+                      </View>
+                    </View>
+                  )}
+
+                  {/* 6. Giường Nghỉ Ngơi */}
                   {activeMemoryModal.item?.interaction?.type === 'bed_rest' && (
                     <View style={styles.bedRelaxBox}>
                       <Text style={styles.patientCardText}>
@@ -2081,7 +2611,7 @@ export default function App() {
                     </View>
                   )}
 
-                  {/* 5. Cửa Sổ */}
+                  {/* 7. Cửa Sổ */}
                   {activeMemoryModal.item?.interaction?.type === 'window_breeze' && (
                     <View>
                       <Text style={styles.patientCardText}>
@@ -2093,7 +2623,466 @@ export default function App() {
                     </View>
                   )}
 
-                  {/* 6. Cửa Sang Phòng Khác */}
+                  {/* Tủ Lạnh */}
+                  {activeMemoryModal.item?.interaction?.type === 'fridge_open' && (
+                    <View style={styles.tactileCardBox}>
+                      <TouchableOpacity
+                        style={styles.tactileTriggerBtn}
+                        onPress={() => setToggleFridgeToken(t => t + 1)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Mở hoặc đóng cánh cửa tủ lạnh 3D"
+                      >
+                        <Text style={styles.tactileTriggerText}>❄️ Mở / Đóng tủ lạnh</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.fridgeFeeling || 'Cửa tủ lạnh mở ra êm ái với tiếng mút gioăng cao su, luồng khí lạnh phả ra thanh khiết sảng khoái.'}
+                      </Text>
+                      {Array.isArray(activeMemoryModal.item.interaction.insideItems) && activeMemoryModal.item.interaction.insideItems.length > 0 ? (
+                        <View style={{ marginTop: 8 }}>
+                          <Text style={styles.modalSubHeader}>🍊 Bên trong tủ lạnh:</Text>
+                          {activeMemoryModal.item.interaction.insideItems.map((it, i) => (
+                            <View key={i} style={styles.itemDetailRow}>
+                              <Text style={styles.itemDetailIcon}>✨</Text>
+                              <Text style={styles.itemDetailText}>{it}</Text>
+                            </View>
+                          ))}
+                        </View>
+                      ) : (
+                        <Text style={styles.emptyContainerHint}>
+                          {activeMemoryModal.item.interaction.emptyStateText || 'Ngăn tủ lạnh mát rượi, sạch sẽ tinh tươm. Bác có thể đặt thêm món tráng miệng hoặc bình nước yêu thích vào đây.'}
+                        </Text>
+                      )}
+                      {isAddingMemento ? (
+                        <View style={styles.mementoAddBox}>
+                          <Text style={styles.mementoAddPrompt}>➕ Cất món ngon:</Text>
+                          <TextInput
+                            style={styles.mementoAddInput}
+                            value={newMementoText}
+                            onChangeText={setNewMementoText}
+                            placeholder="Ví dụ: Hộp sữa chua, Đĩa dưa hấu..."
+                            placeholderTextColor="#8C7A6B"
+                            autoFocus
+                          />
+                          <View style={styles.mementoAddBtnRow}>
+                            <TouchableOpacity
+                              style={styles.mementoSaveBtn}
+                              onPress={() => handleAddInsideMemento(activeMemoryModal.item, newMementoText)}
+                            >
+                              <Text style={styles.mementoSaveText}>💾 Cất món ngon</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={styles.mementoCancelBtn}
+                              onPress={() => { setIsAddingMemento(false); setNewMementoText(''); }}
+                            >
+                              <Text style={styles.mementoCancelText}>✕ Hủy</Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      ) : (
+                        <TouchableOpacity
+                          style={styles.mementoAddTrigger}
+                          onPress={() => { setIsAddingMemento(true); setNewMementoText(''); }}
+                        >
+                          <Text style={styles.mementoAddTriggerText}>➕ Cất món ngon</Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  )}
+
+                  {/* Tủ Bếp / Chạn Bát */}
+                  {activeMemoryModal.item?.interaction?.type === 'cabinet_kitchen' && (
+                    <View style={styles.tactileCardBox}>
+                      <TouchableOpacity
+                        style={styles.tactileTriggerBtn}
+                        onPress={() => setToggleCabinetToken(t => t + 1)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Mở hoặc đóng tủ bếp 3D"
+                      >
+                        <Text style={styles.tactileTriggerText}>🥣 Mở / Đóng tủ bếp</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.kitchenFeeling || 'Mở cánh tủ bếp, mùi thơm thảo mộc và gia vị ấm cúng thoảng qua bên tai tiếng bát đĩa leng keng nhẹ...'}
+                      </Text>
+                      {Array.isArray(activeMemoryModal.item.interaction.insideItems) && activeMemoryModal.item.interaction.insideItems.length > 0 ? (
+                        <View style={{ marginTop: 8 }}>
+                          <Text style={styles.modalSubHeader}>🍵 Đồ dùng bên trong:</Text>
+                          {activeMemoryModal.item.interaction.insideItems.map((it, i) => (
+                            <View key={i} style={styles.itemDetailRow}>
+                              <Text style={styles.itemDetailIcon}>✨</Text>
+                              <Text style={styles.itemDetailText}>{it}</Text>
+                            </View>
+                          ))}
+                        </View>
+                      ) : (
+                        <Text style={styles.emptyContainerHint}>
+                          {activeMemoryModal.item.interaction.emptyStateText || 'Ngăn tủ bếp gỗ tinh tươm, thơm mùi gỗ mới. Bác hoặc người thân có thể cất giữ một món đồ gia dụng vào đây.'}
+                        </Text>
+                      )}
+                      {isAddingMemento ? (
+                        <View style={styles.mementoAddBox}>
+                          <Text style={styles.mementoAddPrompt}>➕ Cất đồ dùng:</Text>
+                          <TextInput
+                            style={styles.mementoAddInput}
+                            value={newMementoText}
+                            onChangeText={setNewMementoText}
+                            placeholder="Ví dụ: Bộ chén sứ, Hũ trà sen..."
+                            placeholderTextColor="#8C7A6B"
+                            autoFocus
+                          />
+                          <View style={styles.mementoAddBtnRow}>
+                            <TouchableOpacity
+                              style={styles.mementoSaveBtn}
+                              onPress={() => handleAddInsideMemento(activeMemoryModal.item, newMementoText)}
+                            >
+                              <Text style={styles.mementoSaveText}>💾 Cất đồ dùng</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={styles.mementoCancelBtn}
+                              onPress={() => { setIsAddingMemento(false); setNewMementoText(''); }}
+                            >
+                              <Text style={styles.mementoCancelText}>✕ Hủy</Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      ) : (
+                        <TouchableOpacity
+                          style={styles.mementoAddTrigger}
+                          onPress={() => { setIsAddingMemento(true); setNewMementoText(''); }}
+                        >
+                          <Text style={styles.mementoAddTriggerText}>➕ Cất đồ dùng</Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  )}
+
+                  {/* Tủ Đồ / Tủ Kỷ Niệm */}
+                  {activeMemoryModal.item?.interaction?.type === 'cabinet_storage' && (
+                    <View style={styles.tactileCardBox}>
+                      <TouchableOpacity
+                        style={styles.tactileTriggerBtn}
+                        onPress={() => setToggleCabinetToken(t => t + 1)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Mở hoặc đóng cánh tủ 3D"
+                      >
+                        <Text style={styles.tactileTriggerText}>🚪 Mở / Đóng cánh tủ</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.storageFeeling || 'Cánh tủ mở ra êm ái, bên trong là những kỷ vật gia đình được xếp đặt ngăn nắp...'}
+                      </Text>
+                      {Array.isArray(activeMemoryModal.item.interaction.insideItems) && activeMemoryModal.item.interaction.insideItems.length > 0 ? (
+                        <View style={{ marginTop: 8 }}>
+                          <Text style={styles.modalSubHeader}>🗝️ Kỷ vật bên trong:</Text>
+                          {activeMemoryModal.item.interaction.insideItems.map((it, i) => (
+                            <View key={i} style={styles.itemDetailRow}>
+                              <Text style={styles.itemDetailIcon}>✨</Text>
+                              <Text style={styles.itemDetailText}>{it}</Text>
+                            </View>
+                          ))}
+                        </View>
+                      ) : (
+                        <Text style={styles.emptyContainerHint}>
+                          {activeMemoryModal.item.interaction.emptyStateText || 'Ngăn tủ gỗ trống trải, sạch sẽ và thơm mùi gỗ mới. Sẵn sàng để lưu giữ thêm kỷ vật mới.'}
+                        </Text>
+                      )}
+                      {isAddingMemento ? (
+                        <View style={styles.mementoAddBox}>
+                          <Text style={styles.mementoAddPrompt}>➕ Cất kỷ vật:</Text>
+                          <TextInput
+                            style={styles.mementoAddInput}
+                            value={newMementoText}
+                            onChangeText={setNewMementoText}
+                            placeholder="Ví dụ: Album ảnh gia đình, Chiếc đồng hồ cổ..."
+                            placeholderTextColor="#8C7A6B"
+                            autoFocus
+                          />
+                          <View style={styles.mementoAddBtnRow}>
+                            <TouchableOpacity
+                              style={styles.mementoSaveBtn}
+                              onPress={() => handleAddInsideMemento(activeMemoryModal.item, newMementoText)}
+                            >
+                              <Text style={styles.mementoSaveText}>💾 Cất kỷ vật</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={styles.mementoCancelBtn}
+                              onPress={() => { setIsAddingMemento(false); setNewMementoText(''); }}
+                            >
+                              <Text style={styles.mementoCancelText}>✕ Hủy</Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      ) : (
+                        <TouchableOpacity
+                          style={styles.mementoAddTrigger}
+                          onPress={() => { setIsAddingMemento(true); setNewMementoText(''); }}
+                        >
+                          <Text style={styles.mementoAddTriggerText}>➕ Cất thêm kỷ vật</Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  )}
+
+                  {/* Đèn Chiếu Sáng */}
+                  {activeMemoryModal.item?.interaction?.type === 'lamp_toggle' && (
+                    <View style={styles.tactileCardBox}>
+                      <TouchableOpacity
+                        style={styles.tactileTriggerBtn}
+                        onPress={() => setToggleLampToken(t => t + 1)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Bật hoặc tắt công tắc đèn 3D"
+                      >
+                        <Text style={styles.tactileTriggerText}>💡 Bật / Tắt đèn</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.lampFeeling || 'Tiếng công tắc cơ "tách" giòn tan, ánh sáng vàng dịu lan tỏa ấm áp xua tan bóng tối và mang lại cảm giác bình an.'}
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* Tivi */}
+                  {activeMemoryModal.item?.interaction?.type === 'television_watch' && (
+                    <View style={styles.tactileCardBox}>
+                      <TouchableOpacity
+                        style={styles.tactileTriggerBtn}
+                        onPress={() => setToggleTvToken(t => t + 1)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Bật hoặc tắt tivi 3D"
+                      >
+                        <Text style={styles.tactileTriggerText}>📺 Bật / Tắt tivi</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.tvFeeling || 'Màn hình tivi phát sáng với giai điệu bài hát quê hương thân quen vang lên rộn rã...'}
+                      </Text>
+                      {Boolean(activeMemoryModal.item.interaction.tvChannel) && (
+                        <Text style={[styles.patientCardText, { marginTop: 6, fontStyle: 'italic', color: '#1B4D3E' }]}>
+                          📡 Đang phát: {activeMemoryModal.item.interaction.tvChannel}
+                        </Text>
+                      )}
+                    </View>
+                  )}
+
+                  {/* Quạt Gió */}
+                  {activeMemoryModal.item?.interaction?.type === 'fan_toggle' && (
+                    <View style={styles.tactileCardBox}>
+                      <TouchableOpacity
+                        style={styles.tactileTriggerBtn}
+                        onPress={() => setToggleFanToken(t => t + 1)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Bật hoặc tắt quạt mát 3D"
+                      >
+                        <Text style={styles.tactileTriggerText}>🌀 Bật / Tắt quạt</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.fanFeeling || 'Cánh quạt quay êm ái, làn gió hiu hiu làm dịu mát căn phòng ngày hè.'}
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* Điều Hòa / Máy Lạnh */}
+                  {activeMemoryModal.item?.interaction?.type === 'ac_toggle' && (
+                    <View style={styles.tactileCardBox}>
+                      <TouchableOpacity
+                        style={styles.tactileTriggerBtn}
+                        onPress={() => setToggleAcToken(t => t + 1)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Bật hoặc tắt điều hòa 3D"
+                      >
+                        <Text style={styles.tactileTriggerText}>❄️ Bật / Tắt điều hòa</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.acFeeling || 'Tiếng bíp nhẹ vang lên, không khí trong phòng trở nên mát mẻ, trong lành và dễ chịu.'}
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* Ghế Sofa */}
+                  {activeMemoryModal.item?.interaction?.type === 'sofa_relax' && (
+                    <View style={styles.tactileCardBox}>
+                      <TouchableOpacity
+                        style={styles.tactileTriggerBtn}
+                        onPress={() => setSitSofaToken(t => t + 1)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Ngả lưng thư giãn trên sofa 3D"
+                      >
+                        <Text style={styles.tactileTriggerText}>🛋️ Ngồi thư giãn lên sofa</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.sofaFeeling || 'Chiếc sofa êm ái nâng niu lưng bạn, tiếng tivi quen thuộc vang vọng mang lại cảm giác an yên lạ thường.'}
+                      </Text>
+                      {Boolean(activeMemoryModal.item.interaction.ambientSound) && (
+                        <Text style={[styles.patientCardText, { marginTop: 6, fontStyle: 'italic', color: '#4B6B58' }]}>
+                          🎵 {activeMemoryModal.item.interaction.ambientSound}
+                        </Text>
+                      )}
+                    </View>
+                  )}
+
+                  {/* Ghế Ngồi */}
+                  {activeMemoryModal.item?.interaction?.type === 'chair_sit' && (
+                    <View style={styles.tactileCardBox}>
+                      <TouchableOpacity
+                        style={styles.tactileTriggerBtn}
+                        onPress={() => setSitChairToken(t => t + 1)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Ngồi nghỉ ngơi trên ghế 3D"
+                      >
+                        <Text style={styles.tactileTriggerText}>🪑 Ngồi nghỉ ngơi lên ghế</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.chairFeeling || 'Góc ngồi thanh thản, tựa lưng thoải mái ngắm nhìn không gian căn phòng thân thuộc.'}
+                      </Text>
+                      {Boolean(activeMemoryModal.item.interaction.ambientSound) && (
+                        <Text style={[styles.patientCardText, { marginTop: 6, fontStyle: 'italic', color: '#4B6B58' }]}>
+                          🎵 {activeMemoryModal.item.interaction.ambientSound}
+                        </Text>
+                      )}
+                    </View>
+                  )}
+
+                  {/* Thưởng Trà / Cốc Nước */}
+                  {activeMemoryModal.item?.interaction?.type === 'drink_tea' && (
+                    <View style={styles.tactileCardBox}>
+                      <TouchableOpacity
+                        style={styles.tactileTriggerBtn}
+                        onPress={() => setPourDrinkToken(t => t + 1)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Rót nước thưởng trà 3D"
+                      >
+                        <Text style={styles.tactileTriggerText}>🍵 Rót nước uống</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.teaFeeling || activeMemoryModal.item.interaction.drinkFeeling || 'Hơi nước ấm bốc lên nghi ngút, hương sen thơm dịu sưởi ấm đôi bàn tay và tấm lòng.'}
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* Chậu Cây Cảnh */}
+                  {activeMemoryModal.item?.interaction?.type === 'plant_water' && (
+                    <View style={styles.tactileCardBox}>
+                      <TouchableOpacity
+                        style={styles.tactileTriggerBtn}
+                        onPress={() => setWaterPlantToken(t => t + 1)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Tưới nước cho chậu cây 3D"
+                      >
+                        <Text style={styles.tactileTriggerText}>🌱 Tưới nước cho cây</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.plantFeeling || 'Những giọt nước mát lành tưới lên tán lá xanh mướt, mang lại sức sống tươi mới tràn đầy niềm lạc quan.'}
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* Đồng Hồ */}
+                  {activeMemoryModal.item?.interaction?.type === 'clock_chime' && (
+                    <View style={styles.tactileCardBox}>
+                      <TouchableOpacity
+                        style={styles.tactileTriggerBtn}
+                        onPress={() => setChimeClockToken(t => t + 1)}
+                        accessibilityRole="button"
+                        accessibilityLabel="Điểm chuông đồng hồ 3D"
+                      >
+                        <Text style={styles.tactileTriggerText}>🔔 Nghe chuông ngân</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.clockFeeling || 'Tiếng tích tắc nhịp nhàng và tiếng chuông bính boong ngân vang định hướng không gian thời gian êm đềm.'}
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* Bảng Lớp Học / Bảng Viết */}
+                  {activeMemoryModal.item?.interaction?.type === 'board_write' && (
+                    <View style={styles.tactileCardBox}>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.boardFeeling || 'Bảng gỗ lưu giữ những nét chữ nắn nót, bài học và lời dặn dò thân thương.'}
+                      </Text>
+                      {Boolean(activeMemoryModal.item.interaction.boardMessage) && (
+                        <View style={styles.postcardBackCard}>
+                          <Text style={styles.postcardBackStamp}>📝 DÒNG LƯU BÚT</Text>
+                          <Text style={[styles.postcardBackNote, { marginTop: 8 }]}>
+                            "{activeMemoryModal.item.interaction.boardMessage}"
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  )}
+
+                  {/* Cặp Sách / Túi Xách */}
+                  {activeMemoryModal.item?.interaction?.type === 'bag_open' && (
+                    <View style={styles.tactileCardBox}>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.bagFeeling || 'Kéo khóa chiếc cặp da sờn góc, bên trong là những đồ dùng học tập gắn liền với thời hoa niên.'}
+                      </Text>
+                      {Array.isArray(activeMemoryModal.item.interaction.insideItems) && activeMemoryModal.item.interaction.insideItems.length > 0 ? (
+                        <View style={{ marginTop: 8 }}>
+                          <Text style={styles.modalSubHeader}>🎒 Đồ dùng bên trong:</Text>
+                          {activeMemoryModal.item.interaction.insideItems.map((it, i) => (
+                            <View key={i} style={styles.itemDetailRow}>
+                              <Text style={styles.itemDetailIcon}>✨</Text>
+                              <Text style={styles.itemDetailText}>{it}</Text>
+                            </View>
+                          ))}
+                        </View>
+                      ) : (
+                        <Text style={styles.emptyContainerHint}>
+                          {activeMemoryModal.item.interaction.emptyStateText || 'Chiếc cặp da bền chắc, sẵn sàng để đựng thêm cuốn sách hay kỷ vật nhỏ.'}
+                        </Text>
+                      )}
+                      {isAddingMemento ? (
+                        <View style={styles.mementoAddBox}>
+                          <Text style={styles.mementoAddPrompt}>➕ Cất đồ vào cặp:</Text>
+                          <TextInput
+                            style={styles.mementoAddInput}
+                            value={newMementoText}
+                            onChangeText={setNewMementoText}
+                            placeholder="Ví dụ: Cuốn sổ nhỏ, Cây bút kỷ niệm..."
+                            placeholderTextColor="#8C7A6B"
+                            autoFocus
+                          />
+                          <View style={styles.mementoAddBtnRow}>
+                            <TouchableOpacity
+                              style={styles.mementoSaveBtn}
+                              onPress={() => handleAddInsideMemento(activeMemoryModal.item, newMementoText)}
+                            >
+                              <Text style={styles.mementoSaveText}>💾 Cất vào cặp</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={styles.mementoCancelBtn}
+                              onPress={() => { setIsAddingMemento(false); setNewMementoText(''); }}
+                            >
+                              <Text style={styles.mementoCancelText}>✕ Hủy</Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      ) : (
+                        <TouchableOpacity
+                          style={styles.mementoAddTrigger}
+                          onPress={() => { setIsAddingMemento(true); setNewMementoText(''); }}
+                        >
+                          <Text style={styles.mementoAddTriggerText}>➕ Cất đồ vào cặp</Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  )}
+
+                  {/* Thảm Trải Sàn */}
+                  {activeMemoryModal.item?.interaction?.type === 'rug_feel' && (
+                    <View style={styles.tactileCardBox}>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.rugFeeling || 'Tấm thảm dệt hoa văn cổ êm ái nâng niu từng bước chân, xua tan mọi giá lạnh mùa đông.'}
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* Quan Sát Cự Ly Gần */}
+                  {activeMemoryModal.item?.interaction?.type === 'touch_inspect' && (
+                    <View style={styles.tactileCardBox}>
+                      <Text style={styles.patientCardText}>
+                        {activeMemoryModal.item.interaction.detail || activeMemoryModal.description}
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* 8. Cửa Sang Phòng Khác */}
                   {(activeMemoryModal.item?.kind === 'door' || activeMemoryModal.item?.targetRoomId || activeMemoryModal.item?.interaction?.type === 'door_transition') && (
                     <View style={{ alignItems: 'center', paddingVertical: 8 }}>
                       <Text style={styles.patientCardText}>
@@ -2107,93 +3096,312 @@ export default function App() {
                           setActiveMemoryModal(null);
                         }}
                       >
-                        <Text style={styles.doorTransitionBtnText}>🚶 Bước Qua Cửa Ngay</Text>
+                        <Text style={styles.doorTransitionBtnText}>🚶 Bước qua cửa</Text>
                       </TouchableOpacity>
                     </View>
                   )}
 
-                  {/* 7. Default description */}
-                  {!activeMemoryModal.item?.interaction && activeMemoryModal.item?.kind !== 'door' && (
+                  {/* 9. Default description */}
+                  {!activeMemoryModal.item?.interaction &&
+                    activeMemoryModal.item?.kind !== 'door' &&
+                    activeMemoryModal.item?.kind !== 'picture' &&
+                    activeMemoryModal.item?.kind !== 'shelf' &&
+                    activeMemoryModal.item?.kind !== 'book' && (
                     <Text style={styles.patientCardText}>
                       {activeMemoryModal.description}
                     </Text>
                   )}
 
-                  {/* Mảnh Ký Ức Đã Mở Khóa (Memory Fragment Box) */}
-                  {activeMemoryModal.item?.memoryFragment && (
-                    <View style={styles.unlockedFragmentBox}>
-                      <Text style={styles.unlockedFragmentTitle}>
-                        🌟 {activeMemoryModal.item.memoryFragment.title}
-                      </Text>
-                      <Text style={styles.unlockedFragmentStory}>
-                        {activeMemoryModal.item.memoryFragment.story}
-                      </Text>
-                      <Text style={styles.unlockedFragmentSelf}>
-                        💡 Về bản thân bạn: {activeMemoryModal.item.memoryFragment.senseOfSelf}
-                      </Text>
-                    </View>
-                  )}
+                  {/* Mảnh Ký Ức Đã Mở Khóa hoặc Câu Chuyện Ký Ức Gợi Nhớ */}
+                  <View style={styles.unlockedFragmentBox}>
+                    <Text style={styles.unlockedFragmentTitle}>
+                      🌟 {activeMemoryModal.item?.memoryFragment?.title || ('Ký ức: ' + activeMemoryModal.label)}
+                    </Text>
+                    <Text style={styles.unlockedFragmentStory}>
+                      {activeMemoryModal.item?.memoryFragment?.story || activeMemoryModal.description || 'Kỷ vật thân thuộc gắn liền với nếp sống và tình cảm gia đình.'}
+                    </Text>
+                    <Text style={styles.unlockedFragmentSelf}>
+                      💡 Về bản thân bạn: {activeMemoryModal.item?.memoryFragment?.senseOfSelf || 'Bạn là một phần yêu thương không thể thiếu của gia đình.'}
+                    </Text>
+                  </View>
                 </ScrollView>
 
-                {/* Card Actions (Mục 3.2 & 4.3: Phát, tạm dừng, phát lại, đóng rõ ràng, vùng chạm >= 48px) */}
+                {/* 3 Nút Tương Tác Cốt Lõi: “Xem ký ức”, “Nghe kể lại” và “Quay lại” */}
                 <View style={styles.patientCardActions}>
+                  <TouchableOpacity
+                    style={styles.patientViewMemoryBtn}
+                    onPress={handleViewMemory}
+                    activeOpacity={0.8}
+                    accessibilityRole="button"
+                    accessibilityLabel="Xem ký ức"
+                  >
+                    <Text style={styles.patientViewMemoryBtnText}>📖 Xem ký ức</Text>
+                  </TouchableOpacity>
+
                   <TouchableOpacity
                     style={[
                       styles.patientSpeakBtn,
                       speakingText && styles.patientSpeakBtnActive
                     ]}
-                    onPress={() => {
-                      const textToRead = activeMemoryModal.item?.interaction?.type === 'book_read'
-                        ? (activeMemoryModal.item.interaction.pages?.[bookPageIndex] || activeMemoryModal.description)
-                        : (activeMemoryModal.item?.memoryFragment?.story
-                            ? `${activeMemoryModal.label}. ${activeMemoryModal.item.memoryFragment.story}. ${activeMemoryModal.item.memoryFragment.senseOfSelf || ''}`
-                            : activeMemoryModal.description);
-                      if (speakingText) {
-                        setSpeakingText(null);
-                      } else {
-                        setSpeakingText(textToRead);
-                      }
-                    }}
+                    onPress={handleSpeakMemory}
                     activeOpacity={0.8}
+                    accessibilityRole="button"
+                    accessibilityLabel="Nghe kể lại"
                   >
                     <Text style={styles.patientSpeakBtnText}>
                       {speakingText ? '⏸️ Tạm dừng' : '🔊 Nghe kể lại'}
                     </Text>
                   </TouchableOpacity>
 
-                  {speakingText && (
-                    <TouchableOpacity
-                      style={styles.patientReplayBtn}
-                      onPress={() => {
-                        const textToRead = activeMemoryModal.item?.interaction?.type === 'book_read'
-                          ? (activeMemoryModal.item.interaction.pages?.[bookPageIndex] || activeMemoryModal.description)
-                          : (activeMemoryModal.item?.memoryFragment?.story
-                              ? `${activeMemoryModal.label}. ${activeMemoryModal.item.memoryFragment.story}. ${activeMemoryModal.item.memoryFragment.senseOfSelf || ''}`
-                              : activeMemoryModal.description);
-                        setSpeakingText(null);
-                        setTimeout(() => setSpeakingText(textToRead), 60);
-                      }}
-                      activeOpacity={0.8}
-                    >
-                      <Text style={styles.patientReplayBtnText}>🔁 Nghe lại</Text>
-                    </TouchableOpacity>
-                  )}
-
                   <TouchableOpacity
                     style={styles.patientBackRoomBtn}
-                    onPress={() => {
-                      setSpeakingText(null);
-                      setFocusLabel('');
-                      setActiveMemoryModal(null);
-                    }}
+                    onPress={handleCloseMemoryModal}
                     activeOpacity={0.8}
+                    accessibilityRole="button"
+                    accessibilityLabel="Quay lại"
                   >
-                    <Text style={styles.patientBackRoomBtnText}>✕ Trở lại phòng</Text>
+                    <Text style={styles.patientBackRoomBtnText}>↩️ Quay lại</Text>
                   </TouchableOpacity>
                 </View>
               </View>
             </View>
+    );
+  };
+
+  const renderSettingsModal = () => (
+    <Modal onRequestClose={() => setSettingsVisible(false)} visible={settingsVisible} animationType="slide" transparent>
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Cài đặt kết nối & AI</Text>
+
+          <Text style={styles.inputLabel}>Địa chỉ Server:</Text>
+          <TextInput
+            style={styles.modalInput}
+            value={inputEndpoint}
+            onChangeText={setInputEndpoint}
+            placeholder="http://192.168.1.207:8787 hoặc https://..."
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+
+          <Text style={styles.inputLabel}>Mã truy cập APP_ACCESS_TOKEN:</Text>
+          <TextInput
+            style={styles.modalInput}
+            value={inputToken}
+            onChangeText={setInputToken}
+            placeholder="Mã 48 ký tự trong file server/.env"
+            secureTextEntry
+            autoCapitalize="none"
+          />
+
+          <Text style={styles.inputLabel}>Khóa Gemini API (Tùy chọn cho Cloud Server):</Text>
+          <TextInput
+            style={styles.modalInput}
+            value={inputApiKey}
+            onChangeText={setInputApiKey}
+            placeholder="AIzaSy... (nếu dùng server Cloud hoặc key riêng)"
+            secureTextEntry
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+
+          <Text style={styles.inputLabel}>Chế độ giao diện trên thiết bị:</Text>
+          <View style={{ flexDirection: 'row', gap: 8, marginVertical: 6 }}>
+            <TouchableOpacity
+              style={[styles.roleSwitchPill, role === 'patient' && styles.roleSwitchPillActive]}
+              onPress={() => setRole('patient')}
+            >
+              <Text style={[styles.roleSwitchPillText, role === 'patient' && styles.roleSwitchPillTextActive]}>
+                🌸 Người Bệnh (APK)
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.roleSwitchPill, role === 'creator' && styles.roleSwitchPillActive]}
+              onPress={() => setRole('creator')}
+            >
+              <Text style={[styles.roleSwitchPillText, role === 'creator' && styles.roleSwitchPillTextActive]}>
+                🧑‍⚕️ Người Soạn Phòng
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.inputLabel}>Âm thanh không gian phòng 3D:</Text>
+          <View style={{ flexDirection: 'row', gap: 8, marginVertical: 6 }}>
+            <TouchableOpacity
+              style={[styles.roleSwitchPill, !isAudioMuted && styles.roleSwitchPillActive]}
+              onPress={() => setIsAudioMuted(false)}
+            >
+              <Text style={[styles.roleSwitchPillText, !isAudioMuted && styles.roleSwitchPillTextActive]}>
+                🔊 Đang bật
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.roleSwitchPill, isAudioMuted && styles.roleSwitchPillActive]}
+              onPress={() => setIsAudioMuted(true)}
+            >
+              <Text style={[styles.roleSwitchPillText, isAudioMuted && styles.roleSwitchPillTextActive]}>
+                🔇 Đã tắt
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.modalHelp}>
+            • Mạng nội bộ: Nhập IP máy tính (http://192.168.1.x:8787).{'\n'}
+            • Người bệnh: Sử dụng giao diện toàn màn hình 3D thuần túy để dạo ngắm và tương tác.{'\n'}
+            • Người chăm sóc: Mở http://localhost:8787 trên máy tính để quản lý và gửi tin nhắn.
+          </Text>
+
+          <TouchableOpacity
+            style={styles.diagModalBtn}
+            onPress={() => {
+              setSettingsVisible(false);
+              loadDiagnosis();
+            }}
+          >
+            <Text style={styles.diagModalBtnText}>Kiểm tra khả năng xử lý ảnh</Text>
+          </TouchableOpacity>
+
+          <View style={styles.modalBtnRow}>
+            <TouchableOpacity style={[styles.modalBtn, styles.saveBtn]} onPress={saveSettings}>
+              <Text style={styles.saveBtnText}>Lưu kết nối</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.modalBtn, styles.closeBtn]} onPress={() => setSettingsVisible(false)}>
+              <Text style={styles.closeBtnText}>Đóng</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  // GIAO DIỆN 1: DÀNH CHO NGƯỜI BỆNH ALZHEIMER (PATIENT MEMORY EXPERIENCE)
+  // Toàn màn hình 3D, không hộp chat, chữ to rõ, thẻ ký ức nổi, hỗ trợ đọc giọng
+  // Hỗ trợ mượt mà cả màn hình Dọc và Ngang (Portrait & Landscape)
+  // =========================================================================
+  if (role === 'patient') {
+    return (
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.patientSafeArea}>
+          <StatusBar barStyle="light-content" backgroundColor="#121a16" />
+
+          {/* Thanh tiêu đề & điều hướng tĩnh lặng cho Người Bệnh */}
+          <View style={[styles.patientTopBar, isLandscape && styles.patientTopBarLandscape]}>
+            <View style={styles.patientTitleBlock}>
+              <Text style={styles.patientTitleText} numberOfLines={1}>{displayRoom?.title || roomTitle}</Text>
+            </View>
+
+            <View style={styles.patientControls}>
+              {povMode === 'focused' && (
+                <TouchableOpacity
+                  style={styles.patientOverviewBtn}
+                  onPress={handleResetOverview}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.patientOverviewBtnText}>🏠 Toàn cảnh</Text>
+                </TouchableOpacity>
+              )}
+
+              <TouchableOpacity
+                style={styles.patientGuideBtn}
+                onPress={() => setPatientGuideModalVisible(true)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.patientGuideBtnText}>💡 Hướng dẫn</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.patientChangeRoomBtn}
+                onPress={() => setSavedRoomsModalVisible(true)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.patientChangeRoomText}>📂 Đổi phòng</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.patientSettingsBtn}
+                onPress={() => setSettingsVisible(true)}
+                activeOpacity={0.8}
+                accessibilityRole="button"
+                accessibilityLabel="Cài đặt"
+              >
+                <Text style={styles.patientSettingsBtnText}>⚙️ Cài đặt</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Lời Chỉ Dẫn Khám Phá Êm Dịu (Mục 5.1 & 5.2) - Tối ưu cho màn hình ngang */}
+          {!isLandscape && (
+            <View style={styles.patientGentleGuidanceBanner}>
+              <Text style={styles.patientGentleGuidanceText}>
+                🌸 Chạm vào đồ vật ✨ hoặc chọn góc phòng để dạo ngắm
+              </Text>
+            </View>
           )}
+
+          {/* Thanh Chuyển Gian Phòng Nối Tiếp (Connected Multi-Room Switcher) */}
+          {connectedRoomsList.length > 1 && (
+            <View style={styles.patientRoomsSwitcherBar}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 12, gap: 8 }}>
+                {connectedRoomsList.map(r => {
+                  const isActive = (activeRoomId === r.id || (r.id === 'primary' && (!activeRoomId || activeRoomId === 'primary')));
+                  return (
+                    <TouchableOpacity
+                      key={r.id}
+                      style={[styles.patientRoomSwitchPill, isActive && styles.patientRoomSwitchPillActive]}
+                      onPress={() => {
+                        setActiveRoomId(r.id);
+                        setStatus(`Đã chuyển sang ${r.title}`);
+                      }}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={[styles.patientRoomSwitchText, isActive && styles.patientRoomSwitchTextActive]}>
+                        {r.roomType === 'kitchen' ? '🍳' : r.roomType === 'garden' ? '🌿' : r.roomType === 'library' ? '📚' : '🏡'} {r.title}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            </View>
+          )}
+
+          {/* Thanh Tiến Trình Ký Ức Bản Thân (Sense of Self Quest Badge) */}
+          <TouchableOpacity
+            style={[styles.senseOfSelfBadge, isLandscape && styles.senseOfSelfBadgeLandscape]}
+            onPress={() => setSenseOfSelfModalVisible(true)}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.senseOfSelfBadgeText}>
+              🌟 Ký ức: {discoveredCount}/{totalFragmentsCount} mảnh ghép {discoveredCount === totalFragmentsCount && totalFragmentsCount > 0 ? '✓' : ''}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Gợi nhắc trực tiếp từ Người Chăm Sóc */}
+          {activeLiveNotification && (
+            <View style={styles.patientReminderCard}>
+              <View style={styles.patientReminderHeader}>
+                <Text style={styles.patientReminderIcon}>{activeLiveNotification.icon || '🔔'}</Text>
+                <View style={{ flex: 1, marginHorizontal: 8 }}>
+                  <Text style={styles.patientReminderTitle}>{activeLiveNotification.title || 'Lời nhắc nhở'}</Text>
+                  <Text style={styles.patientReminderText}>{activeLiveNotification.text}</Text>
+                </View>
+              </View>
+              <TouchableOpacity
+                style={styles.patientReminderDismissBtn}
+                onPress={handleAcknowledgeNotification}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.patientReminderDismissText}>✓ Dạ, tôi nhớ rồi</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* Khung hiển thị 3D tràn viền */}
+          <View style={styles.patientViewerWrap}>
+            {render3DViewer()}
+          </View>
+
+          {/* Thanh Điều Hướng Cố Định & Góc Nhìn Định Sẵn */}
+          {renderPersistentNavDock()}
 
           {/* Modal Hướng Dẫn Khám Phá Dành Cho Người Cao Tuổi (Mục 5.2) */}
           <Modal
@@ -2204,9 +3412,9 @@ export default function App() {
           >
             <View style={styles.modalOverlay}>
               <View style={[styles.modalContent, styles.patientGuideCard]}>
-                <Text style={styles.patientGuideHeader}>🌸 KHÔNG GIAN KÝ ỨC CỦA BÁC</Text>
+                <Text style={styles.patientGuideHeader}>🌸 Không gian ký ức</Text>
                 <Text style={styles.patientGuideSubheader}>
-                  Nơi Bác tự do dạo ngắm và tìm lại những mẩu chuyện thân thương nhất
+                  Dạo ngắm và tìm lại những kỷ niệm thân thương
                 </Text>
 
                 <View style={styles.patientGuideItemsList}>
@@ -2215,7 +3423,7 @@ export default function App() {
                     <View style={{ flex: 1 }}>
                       <Text style={styles.patientGuideRowTitle}>Chạm vào đồ vật</Text>
                       <Text style={styles.patientGuideRowDesc}>
-                        Các đồ vật có đốm sáng lấp lánh lưu giữ hình ảnh và kỷ niệm gia đình thân thuộc.
+                        Chạm vào đồ vật có đốm sáng để xem hình ảnh và kỷ niệm.
                       </Text>
                     </View>
                   </View>
@@ -2223,9 +3431,9 @@ export default function App() {
                   <View style={styles.patientGuideRow}>
                     <Text style={styles.patientGuideRowIcon}>🔊</Text>
                     <View style={{ flex: 1 }}>
-                      <Text style={styles.patientGuideRowTitle}>Nghe giọng kể ấm áp</Text>
+                      <Text style={styles.patientGuideRowTitle}>Nghe giọng kể</Text>
                       <Text style={styles.patientGuideRowDesc}>
-                        Nhấn nút 'Nghe kể lại' để lắng nghe lời kể thong thả, có thể tạm dừng hoặc nghe lại bất cứ lúc nào.
+                        Nhấn 'Nghe kể lại' để lắng nghe lời kể ấm áp, thong thả.
                       </Text>
                     </View>
                   </View>
@@ -2233,9 +3441,9 @@ export default function App() {
                   <View style={styles.patientGuideRow}>
                     <Text style={styles.patientGuideRowIcon}>🏠</Text>
                     <View style={{ flex: 1 }}>
-                      <Text style={styles.patientGuideRowTitle}>Góc nhìn định sẵn, không sợ lạc</Text>
+                      <Text style={styles.patientGuideRowTitle}>Góc nhìn vững vàng</Text>
                       <Text style={styles.patientGuideRowDesc}>
-                        Bác luôn có thể nhấn 'Toàn cảnh phòng' hoặc chọn các góc phòng bên dưới để quan sát căn phòng một cách vững vàng, không bị chóng mặt.
+                        Nhấn 'Toàn cảnh' hoặc chọn các góc phòng để quan sát dễ dàng.
                       </Text>
                     </View>
                   </View>
@@ -2243,9 +3451,9 @@ export default function App() {
                   <View style={styles.patientGuideRow}>
                     <Text style={styles.patientGuideRowIcon}>🌿</Text>
                     <View style={{ flex: 1 }}>
-                      <Text style={styles.patientGuideRowTitle}>Tự chủ và thư thái</Text>
+                      <Text style={styles.patientGuideRowTitle}>Thư thái tự nhiên</Text>
                       <Text style={styles.patientGuideRowDesc}>
-                        Không tính giờ, không tính điểm, không có câu hỏi kiểm tra. Bác cứ thong thả dạo ngắm theo nhịp sống của riêng mình.
+                        Không tính giờ, không kiểm tra, Bác cứ thong thả dạo ngắm.
                       </Text>
                     </View>
                   </View>
@@ -2256,7 +3464,7 @@ export default function App() {
                   onPress={() => setPatientGuideModalVisible(false)}
                   activeOpacity={0.8}
                 >
-                  <Text style={styles.patientGuideCloseBtnText}>🌸 Tôi đã hiểu, tiếp tục dạo phòng</Text>
+                  <Text style={styles.patientGuideCloseBtnText}>🌸 Bắt đầu dạo phòng</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -2271,21 +3479,21 @@ export default function App() {
           >
             <View style={styles.modalOverlay}>
               <View style={[styles.modalContent, styles.senseOfSelfModalCard]}>
-                <Text style={styles.senseOfSelfTitle}>🌟 SỔ TAY KÝ ỨC BẢN THÂN</Text>
+                <Text style={styles.senseOfSelfTitle}>🌟 Sổ tay ký ức</Text>
                 <Text style={styles.senseOfSelfSubtitle}>
-                  Hành trình kết nối các mảnh ghép để tìm lại sự trọn vẹn và niềm tự hào về chính mình
+                  Các mảnh ghép giúp nhớ lại những kỷ niệm về chính mình
                 </Text>
 
                 <View style={styles.senseOfSelfProgressBox}>
                   <Text style={styles.senseOfSelfProgressText}>
-                    Tiến trình: {discoveredCount} / {totalFragmentsCount} Mảnh ghép ký ức đã mở khóa
+                    Tiến trình: {discoveredCount} / {totalFragmentsCount} mảnh ghép đã mở
                   </Text>
                 </View>
 
                 {/* Celebration Banner when completed */}
                 {discoveredCount === totalFragmentsCount && totalFragmentsCount > 0 && (
                   <View style={styles.senseCelebrationBox}>
-                    <Text style={styles.senseCelebrationTitle}>🎉 BỨC TRANH KÝ ỨC TOÀN VẸN: TÌM LẠI CHÍNH MÌNH!</Text>
+                    <Text style={styles.senseCelebrationTitle}>🎉 Trọn vẹn bức tranh ký ức!</Text>
                     <Text style={styles.senseCelebrationText}>
                       Bạn là một người có tâm hồn nhân hậu, sâu sắc và tràn đầy tình yêu thương với gia đình. Mọi kỷ niệm đẹp đẽ, những cống hiến và tình cảm của mọi người đều đang ở đây bên bạn.
                     </Text>
@@ -2293,7 +3501,7 @@ export default function App() {
                 )}
 
                 <ScrollView style={{ maxHeight: 360, marginVertical: 10 }}>
-                  <Text style={styles.modalSubHeader}>✨ Những mảnh ký ức bạn đã nhớ lại:</Text>
+                  <Text style={styles.modalSubHeader}>✨ Ký ức đã mở khóa:</Text>
                   {Object.values(discoveredFragments).map((frag, idx) => (
                     <View key={'disc-' + idx} style={styles.fragmentCard}>
                       <Text style={styles.fragmentCardTitle}>🌟 {frag.title}</Text>
@@ -2305,7 +3513,7 @@ export default function App() {
                   {/* Gợi ý các mảnh chưa tìm thấy */}
                   {allFragments.filter(f => !discoveredFragments[f.id]).length > 0 && (
                     <View style={{ marginTop: 12 }}>
-                      <Text style={styles.modalSubHeader}>🔍 Gợi ý nơi tìm thêm ký ức:</Text>
+                      <Text style={styles.modalSubHeader}>🔍 Gợi ý tìm tiếp:</Text>
                       {allFragments.filter(f => !discoveredFragments[f.id]).map((frag, idx) => (
                         <View key={'clue-' + idx} style={styles.questClueCard}>
                           <Text style={styles.questClueText}>👉 {frag.questPrompt || `Tìm đến đồ vật ${frag.itemLabel}`}</Text>
@@ -2319,7 +3527,7 @@ export default function App() {
                   style={styles.closeBtn}
                   onPress={() => setSenseOfSelfModalVisible(false)}
                 >
-                  <Text style={styles.closeBtnText}>Đóng Sổ Tay</Text>
+                  <Text style={styles.closeBtnText}>✕ Đóng</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -2359,6 +3567,9 @@ export default function App() {
               </View>
             </View>
           </Modal>
+
+          {/* Cài đặt kết nối dành cho người chăm sóc thiết lập máy cho người bệnh */}
+          {renderSettingsModal()}
         </SafeAreaView>
       </SafeAreaProvider>
     );
@@ -2464,9 +3675,10 @@ export default function App() {
                   </View>
                 </View>
 
-                <View style={{ flex: 1 }}>
+                                <View style={{ flex: 1 }}>
                   {render3DViewer()}
                 </View>
+                {renderPersistentNavDock()}
               </View>
 
               {/* Cột Phải: Chat, Giọng nói và Bảng điều khiển (Tự động ẩn khi phóng to) */}
@@ -2494,9 +3706,9 @@ export default function App() {
               <View>
                 <View style={styles.brandRow}>
                   <Text style={styles.appTitle}>MEMORYWEAVER</Text>
-                  <Text style={styles.roleBadge}>🧑‍⚕️ Người Soạn Phòng</Text>
+                  <Text style={styles.roleBadge}>🧑‍⚕️ Soạn phòng</Text>
                 </View>
-                <Text style={styles.appSubtitle}>Biên soạn & chuẩn bị không gian gợi nhớ ký ức</Text>
+                <Text style={styles.appSubtitle}>Chuẩn bị không gian gợi nhớ ký ức</Text>
               </View>
               <View style={styles.headerActionRow}>
                 {currentRoom && (
@@ -2509,11 +3721,11 @@ export default function App() {
                     }}
                     activeOpacity={0.8}
                   >
-                    <Text style={styles.startTherapyBtnText}>🌟 Bắt đầu cho người bệnh</Text>
+                    <Text style={styles.startTherapyBtnText}>🌟 Bắt đầu</Text>
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity style={styles.settingsBtn} onPress={openSettings}>
-                  <Text style={styles.settingsBtnText}>Cài đặt</Text>
+                  <Text style={styles.settingsBtnText}>⚙️ Cài đặt</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -2524,14 +3736,14 @@ export default function App() {
                 style={styles.actionPillBtn}
                 onPress={() => setSavedRoomsModalVisible(true)}
               >
-                <Text style={styles.actionPillText}>📂 Thư viện phòng ({savedRooms.length})</Text>
+                <Text style={styles.actionPillText}>📂 Thư viện ({savedRooms.length})</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={[styles.actionPillBtn, styles.liveSyncPillBtn]}
                 onPress={() => setCaregiverModalVisible(true)}
               >
-                <Text style={[styles.actionPillText, styles.liveSyncPillText]}>📡 Đồng bộ Live ({syncReminders.length})</Text>
+                <Text style={[styles.actionPillText, styles.liveSyncPillText]}>📡 Live ({syncReminders.length})</Text>
               </TouchableOpacity>
 
               {currentRoom && (
@@ -2542,7 +3754,7 @@ export default function App() {
                     setSaveModalVisible(true);
                   }}
                 >
-                  <Text style={[styles.actionPillText, styles.saveRoomPillText]}>💾 Lưu phòng này</Text>
+                  <Text style={[styles.actionPillText, styles.saveRoomPillText]}>💾 Lưu</Text>
                 </TouchableOpacity>
               )}
 
@@ -2551,7 +3763,7 @@ export default function App() {
                   style={[styles.actionPillBtn, styles.launchPillBtn]}
                   onPress={() => selectSavedRoom(savedRooms[0])}
                 >
-                  <Text style={styles.launchPillText}>⚡ Nạp mẫu "{savedRooms[0].title.slice(0, 18)}…"</Text>
+                  <Text style={styles.launchPillText}>⚡ Mở mẫu "{savedRooms[0].title.slice(0, 16)}…"</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -2583,18 +3795,7 @@ export default function App() {
               </View>
             )}
 
-            {/* Huy hiệu AI Tự Kiểm Định & Tối Ưu Bố Cục */}
-            {currentRoom?.aiVerification && (
-              <TouchableOpacity
-                style={styles.aiVerificationBadge}
-                onPress={() => setAiAuditModalVisible(true)}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.aiVerificationText}>
-                  🛡️ AI Đã Kiểm Tra & Tối Ưu Logic Không Gian ({currentRoom.aiVerification.checks?.length || 7} Tiêu Chuẩn Đạt)
-                </Text>
-              </TouchableOpacity>
-            )}
+
 
             {/* === 3D Room Viewer (Tập trung không gian 3D trực quan) === */}
             {isKeyboardVisible ? (
@@ -2604,7 +3805,7 @@ export default function App() {
                 activeOpacity={0.8}
               >
                 <Text style={styles.keyboardCollapsedViewerText}>
-                  📐 3D tạm thu gọn khi soạn thảo • <Text style={{ fontWeight: '700', textDecorationLine: 'underline' }}>Chạm để thu bàn phím ⌄</Text>
+                  📐 Chạm để mở rộng 3D ⌄
                 </Text>
               </TouchableOpacity>
             ) : (
@@ -2640,6 +3841,7 @@ export default function App() {
                 </View>
 
                 {render3DViewer()}
+                {renderPersistentNavDock()}
               </View>
             )}
 
@@ -2661,8 +3863,8 @@ export default function App() {
               {!isKeyboardVisible && (
                 <Text style={styles.hintFooter}>
                   {currentRoom
-                    ? '🌟 Phòng đã sẵn sàng! Bấm "Bắt đầu cho người bệnh" ở trên để vào chế độ trị liệu.'
-                    : '💡 Gõ mô tả hoặc bấm "+ Ảnh" để gửi ảnh kỷ niệm, AI sẽ tự động dựng phòng 3D.'}
+                    ? '🌟 Bấm "Bắt đầu" ở trên để vào trải nghiệm.'
+                    : '💡 Nhập mô tả hoặc gửi ảnh để tạo phòng 3D.'}
                 </Text>
               )}
             </View>
@@ -2671,69 +3873,7 @@ export default function App() {
       </KeyboardAvoidingView>
 
       {/* Settings Modal */}
-      <Modal onRequestClose={() => setSettingsVisible(false)} visible={settingsVisible} animationType="slide" transparent>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Kết nối Server & Cài đặt AI</Text>
-
-            <Text style={styles.inputLabel}>Địa chỉ Server:</Text>
-            <TextInput
-              style={styles.modalInput}
-              value={inputEndpoint}
-              onChangeText={setInputEndpoint}
-              placeholder="http://192.168.1.207:8787 hoặc https://..."
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-
-            <Text style={styles.inputLabel}>Mã truy cập APP_ACCESS_TOKEN:</Text>
-            <TextInput
-              style={styles.modalInput}
-              value={inputToken}
-              onChangeText={setInputToken}
-              placeholder="Mã 48 ký tự trong file server/.env"
-              secureTextEntry
-              autoCapitalize="none"
-            />
-
-            <Text style={styles.inputLabel}>Khóa Gemini API (Tùy chọn cho Cloud Server):</Text>
-            <TextInput
-              style={styles.modalInput}
-              value={inputApiKey}
-              onChangeText={setInputApiKey}
-              placeholder="AIzaSy... (nếu dùng server Cloud hoặc key riêng)"
-              secureTextEntry
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-
-            <Text style={styles.modalHelp}>
-              • Mạng nội bộ: Nhập IP máy tính (http://192.168.1.207:8787).{'\n'}
-              • Cloudflare (Khuyên dùng): Dán link https://...trycloudflare.com từ CHAY_SERVER.bat.{'\n'}
-              • Khóa Gemini API: Tùy chọn khi cần server gọi AI qua quota tài khoản riêng.
-            </Text>
-
-            <TouchableOpacity
-              style={styles.diagModalBtn}
-              onPress={() => {
-                setSettingsVisible(false);
-                loadDiagnosis();
-              }}
-            >
-              <Text style={styles.diagModalBtnText}>Kiểm tra khả năng xử lý ảnh</Text>
-            </TouchableOpacity>
-
-            <View style={styles.modalBtnRow}>
-              <TouchableOpacity style={[styles.modalBtn, styles.saveBtn]} onPress={saveSettings}>
-                <Text style={styles.saveBtnText}>Lưu kết nối</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.modalBtn, styles.closeBtn]} onPress={() => setSettingsVisible(false)}>
-                <Text style={styles.closeBtnText}>Đóng</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      {renderSettingsModal()}
 
       {/* Modal Thư viện phòng ký ức đã lưu */}
       <Modal
@@ -2745,7 +3885,7 @@ export default function App() {
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { maxHeight: '82%' }]}>
             <Text style={styles.modalTitle}>Thư Viện Phòng Ký Ức</Text>
-            <Text style={styles.modalHelp}>Chọn phòng đã lưu để mở lại ngay hoặc đem cho người bệnh trải nghiệm:</Text>
+            <Text style={styles.modalHelp}>Chọn phòng đã lưu để mở hoặc trải nghiệm:</Text>
 
             <ScrollView style={{ maxHeight: 360 }}>
               {savedRooms.map(item => (
@@ -2823,7 +3963,7 @@ export default function App() {
           <View style={[styles.modalContent, { maxHeight: '88%' }]}>
             <Text style={styles.modalTitle}>📡 Đồng Bộ Live & Gợi Nhắc</Text>
             <Text style={styles.modalHelp}>
-              Điều khiển từ xa: Xuất bản căn phòng 3D và gửi thông báo nhắc nhở đến thiết bị Người Bệnh.
+              Xuất bản phòng 3D và gửi lời nhắc đến máy người bệnh.
             </Text>
 
             {syncStatusMsg ? (
@@ -2835,7 +3975,7 @@ export default function App() {
             <ScrollView style={{ maxHeight: 380 }} showsVerticalScrollIndicator={false}>
               {/* 1. Xuất bản phòng 3D */}
               <View style={styles.caregiverSectionBox}>
-                <Text style={styles.caregiverSectionTitle}>🏠 1. Xuất bản không gian 3D hiện tại</Text>
+                <Text style={styles.caregiverSectionTitle}>🏠 1. Xuất bản không gian 3D</Text>
                 <Text style={styles.caregiverSectionDesc}>
                   Phòng đang mở: <Text style={{ fontWeight: '700', color: '#165b40' }}>{roomTitle || currentRoom?.title || '(Chưa có phòng)'}</Text>
                 </Text>
@@ -2844,14 +3984,14 @@ export default function App() {
                   disabled={!currentRoom}
                   onPress={handlePublishToPatient}
                 >
-                  <Text style={styles.publishRoomBtnText}>🚀 Đồng bộ phòng này sang máy Người Bệnh</Text>
+                  <Text style={styles.publishRoomBtnText}>🚀 Đồng bộ sang máy Người Bệnh</Text>
                 </TouchableOpacity>
               </View>
 
               {/* 2. Gợi nhắc nhanh theo thời gian biểu */}
               <View style={styles.caregiverSectionBox}>
-                <Text style={styles.caregiverSectionTitle}>⏰ 2. Gợi nhắc theo lịch trình hàng ngày</Text>
-                <Text style={styles.caregiverSectionDesc}>Bấm "Gửi ngay" để hiện lời nhắc lớn trên máy người bệnh:</Text>
+                <Text style={styles.caregiverSectionTitle}>⏰ 2. Lời nhắc theo lịch trình</Text>
+                <Text style={styles.caregiverSectionDesc}>Bấm "Gửi ngay" để gửi lời nhắc đến máy người bệnh:</Text>
                 {syncReminders.map(rem => (
                   <View key={rem.id} style={styles.caregiverReminderItem}>
                     <View style={{ flex: 1, marginRight: 8 }}>
@@ -2870,7 +4010,7 @@ export default function App() {
 
               {/* 3. Gửi thông báo / tin nhắn tức thì */}
               <View style={styles.caregiverSectionBox}>
-                <Text style={styles.caregiverSectionTitle}>⚡ 3. Gửi thông báo tức thì tùy chỉnh</Text>
+                <Text style={styles.caregiverSectionTitle}>⚡ 3. Gửi thông báo nhanh</Text>
                 <View style={styles.caregiverQuickPingRow}>
                   <TouchableOpacity
                     style={styles.caregiverQuickPingChip}
@@ -2915,9 +4055,9 @@ export default function App() {
                 {/* 4. Mảnh ghép ký ức & Quest định hình bản thân */}
                 {allFragments.length > 0 && (
                   <View style={styles.caregiverSectionBox}>
-                    <Text style={styles.caregiverSectionTitle}>🌟 4. Ký ức bản thân (Quest cho người bệnh)</Text>
+                    <Text style={styles.caregiverSectionTitle}>🌟 4. Mảnh ghép ký ức ({allFragments.length})</Text>
                     <Text style={styles.caregiverSectionDesc}>
-                      Các kỷ vật chứa đựng câu chuyện cuộc đời giúp người bệnh tìm lại chính mình ({allFragments.length} mảnh ghép):
+                      Các câu chuyện định hình bản thân của người bệnh:
                     </Text>
                     {allFragments.map((frag, i) => (
                       <View key={i} style={[styles.caregiverReminderItem, { flexDirection: 'column', alignItems: 'flex-start', paddingVertical: 8 }]}>
@@ -2953,9 +4093,9 @@ export default function App() {
       >
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, styles.aiAuditModalContent]}>
-            <Text style={styles.modalTitle}>🛡️ Kiểm Định Logic Không Gian AI</Text>
+            <Text style={styles.modalTitle}>🛡️ Kiểm định logic không gian</Text>
             <Text style={styles.modalHelp}>
-              Hệ thống AI tự động quan sát và phản tư (Self-Reflection) để đảm bảo thế giới tạo lập logic, chuẩn xác và êm dịu cho người cao tuổi.
+              Hệ thống AI tự động kiểm tra đảm bảo không gian an toàn, logic và chuẩn xác.
             </Text>
             <ScrollView style={{ maxHeight: 380, marginVertical: 10 }}>
               {currentRoom?.aiVerification?.checks?.map((chk, i) => (
@@ -2981,16 +4121,81 @@ export default function App() {
               style={styles.closeBtn}
               onPress={() => setAiAuditModalVisible(false)}
             >
-              <Text style={styles.closeBtnText}>Đóng Báo Cáo</Text>
+              <Text style={styles.closeBtnText}>✕ Đóng</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
+          {/* Bảng Ký Ức Đồ Vật Tương Tác Cả Khi Soạn Phòng / Studio */}
+      {renderActiveMemoryModal()}
+      {renderSceneTransitionOverlay()}
+
     </SafeAreaView></SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
+  viewerWrapper: {
+    flex: 1,
+    position: 'relative',
+    overflow: 'hidden'
+  },
+  floatingTurnControlsOverlay: {
+    position: 'absolute',
+    top: '38%',
+    left: 10,
+    right: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    pointerEvents: 'box-none',
+    zIndex: 20
+  },
+  floatingTurnBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'transparent',
+    borderWidth: 1.2,
+    borderColor: 'rgba(255, 255, 255, 0.28)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 0.38,
+  },
+  floatingTurnBtnLeft: {
+    marginLeft: 4,
+  },
+  floatingTurnBtnRight: {
+    marginRight: 4,
+  },
+  floatingTurnIcon: {
+    color: '#ffffff',
+    fontSize: 20,
+    fontWeight: 'bold',
+    lineHeight: 22,
+  },
+  floatingTurnText: {
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 9,
+    fontWeight: '700',
+    marginTop: -2,
+  },
+  navDockRotateBtn: {
+    backgroundColor: 'rgba(52, 211, 153, 0.16)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(52, 211, 153, 0.65)',
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  navDockRotateText: {
+    color: '#34d399',
+    fontSize: 12.5,
+    fontWeight: '700'
+  },
+
   safeArea: {
     flex: 1,
     backgroundColor: '#f4efe8',
@@ -3040,6 +4245,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#f9ab00',
     letterSpacing: 0.3,
+  },
+  senseOfSelfBadgeLandscape: {
+    paddingVertical: 3,
   },
   seniorWaypointsContainer: {
     position: 'absolute',
@@ -3222,6 +4430,188 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#5c4524',
   },
+  bookPageHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  bookPageHint: {
+    fontSize: 12.5,
+    fontStyle: 'italic',
+    color: '#8c7a6b',
+  },
+  bookEditorActionRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 10,
+  },
+  bookEditActionBtn: {
+    flex: 1,
+    minHeight: 44,
+    backgroundColor: '#fff7e6',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#f3c479',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 6,
+  },
+  bookEditActionText: {
+    fontSize: 13.5,
+    fontWeight: '700',
+    color: '#87510e',
+  },
+  bookAddPageBtn: {
+    flex: 1,
+    minHeight: 44,
+    backgroundColor: '#f0f9f3',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#a3d9b4',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 6,
+  },
+  bookAddPageText: {
+    fontSize: 13.5,
+    fontWeight: '700',
+    color: '#1e6837',
+  },
+  bookEditorCard: {
+    backgroundColor: '#fffdf5',
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#e6c88f',
+    padding: 14,
+  },
+  bookEditorTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#7a4e2d',
+    marginBottom: 8,
+  },
+  bookEditorInput: {
+    minHeight: 120,
+    maxHeight: 180,
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#dcc6a0',
+    padding: 12,
+    fontSize: 16,
+    color: '#2a2218',
+    lineHeight: 24,
+    textAlignVertical: 'top',
+  },
+  bookEditorBtnRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 12,
+  },
+  bookEditorSaveBtn: {
+    flex: 1,
+    minHeight: 46,
+    backgroundColor: '#2e7d32',
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bookEditorSaveText: {
+    fontSize: 14.5,
+    fontWeight: '800',
+    color: '#ffffff',
+  },
+  bookEditorCancelBtn: {
+    paddingHorizontal: 16,
+    minHeight: 46,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#cccccc',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bookEditorCancelText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#555555',
+  },
+  tactileTriggerBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 46,
+    backgroundColor: '#eef6f1',
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#7cb594',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginBottom: 12,
+  },
+  tactileTriggerText: {
+    fontSize: 14.5,
+    fontWeight: '800',
+    color: '#1f663b',
+  },
+  postcardBackCard: {
+    backgroundColor: '#faf6ea',
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#c8b48c',
+    padding: 16,
+    marginVertical: 8,
+  },
+  postcardBackHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#dfd2ba',
+    paddingBottom: 8,
+    marginBottom: 12,
+  },
+  postcardBackStamp: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#a0422c',
+    letterSpacing: 0.5,
+  },
+  postcardBackDate: {
+    fontSize: 13,
+    fontStyle: 'italic',
+    color: '#6d5a42',
+  },
+  postcardBackNote: {
+    fontSize: 16.5,
+    fontStyle: 'italic',
+    color: '#3d2f21',
+    lineHeight: 26,
+    marginBottom: 12,
+  },
+  postcardBackSign: {
+    fontSize: 13.5,
+    fontWeight: '700',
+    color: '#7a5a3a',
+    textAlign: 'right',
+  },
+  shelfGuideBox: {
+    marginTop: 10,
+    backgroundColor: '#fff8e7',
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#e2cb9b',
+  },
+  shelfGuideText: {
+    fontSize: 14.5,
+    fontStyle: 'italic',
+    color: '#7a5a3a',
+    lineHeight: 22,
+  },
   bedRelaxBox: {
     alignItems: 'center',
     paddingVertical: 6,
@@ -3255,6 +4645,84 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '800',
     color: '#ffffff',
+  },
+  tactileCardBox: {
+    marginVertical: 6,
+  },
+  mementoAddBox: {
+    marginTop: 12,
+    padding: 12,
+    backgroundColor: '#fffdf8',
+    borderRadius: 10,
+    borderWidth: 1.2,
+    borderColor: '#c49a6c',
+  },
+  mementoAddPrompt: {
+    fontSize: 14.5,
+    fontWeight: '700',
+    color: '#5c3a21',
+    marginBottom: 8,
+  },
+  mementoAddInput: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#d6c4a5',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 15,
+    color: '#2d241e',
+    marginBottom: 10,
+  },
+  mementoAddBtnRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 8,
+  },
+  mementoSaveBtn: {
+    backgroundColor: '#2e7d32',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  mementoSaveText: {
+    color: '#ffffff',
+    fontWeight: '800',
+    fontSize: 14,
+  },
+  mementoCancelBtn: {
+    backgroundColor: '#ebe3d5',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  mementoCancelText: {
+    color: '#5c4a38',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  mementoAddTrigger: {
+    marginTop: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    backgroundColor: '#f5eee1',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: '#bda37e',
+    alignItems: 'center',
+  },
+  mementoAddTriggerText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#6e4f30',
+  },
+  emptyContainerHint: {
+    fontSize: 14.5,
+    fontStyle: 'italic',
+    color: '#7a6a57',
+    marginVertical: 6,
+    lineHeight: 21,
   },
   senseOfSelfModalCard: {
     maxHeight: '85%',
@@ -3935,6 +5403,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#2b3f36',
   },
+  patientTopBarLandscape: {
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+  },
   patientTitleBlock: {
     flex: 1,
     marginRight: 10,
@@ -4013,17 +5485,40 @@ const styles = StyleSheet.create({
     fontSize: 11.5,
     fontWeight: '600',
   },
-  patientExitBtn: {
-    backgroundColor: '#382b27',
+  patientSettingsBtn: {
+    backgroundColor: '#20342c',
     paddingHorizontal: 10,
     paddingVertical: 8,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: '#59443e',
+    borderColor: '#385548',
   },
-  patientExitText: {
-    color: '#f0c7bc',
+  patientSettingsBtnText: {
+    color: '#b6d7c8',
     fontSize: 11.5,
+    fontWeight: '600',
+  },
+  roleSwitchPill: {
+    flex: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ced4da',
+    alignItems: 'center',
+    backgroundColor: '#f8f9fa',
+  },
+  roleSwitchPillActive: {
+    backgroundColor: '#2e6151',
+    borderColor: '#2e6151',
+  },
+  roleSwitchPillText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#495057',
+  },
+  roleSwitchPillTextActive: {
+    color: '#ffffff',
     fontWeight: '700',
   },
   patientViewerWrap: {
@@ -4080,30 +5575,109 @@ const styles = StyleSheet.create({
   // Thẻ Ký Ức Nổi (Patient Memory Card)
   patientMemoryCardBackdrop: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.55)',
-    justifyContent: 'center',
+    left: 12,
+    right: 12,
+    bottom: 12,
+    justifyContent: 'flex-end',
     alignItems: 'center',
-    padding: 18,
+    pointerEvents: 'box-none',
     zIndex: 999,
   },
   patientMemoryCard: {
     width: '100%',
-    maxWidth: 480,
-    maxHeight: '84%',
-    backgroundColor: '#16241e',
+    maxWidth: 520,
+    maxHeight: 220,
+    backgroundColor: 'rgba(20, 32, 26, 0.94)',
     borderRadius: 20,
     borderWidth: 1.5,
-    borderColor: '#4d7563',
-    padding: 18,
+    borderColor: 'rgba(129, 199, 132, 0.45)',
+    padding: 14,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.6,
-    shadowRadius: 16,
-    elevation: 12,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 14,
+    elevation: 8,
+  },
+  patientMemoryCardLandscape: {
+    maxHeight: 140,
+    maxWidth: 640,
+    padding: 10,
+  },
+  patientBookInWorldBar: {
+    width: '100%',
+    maxWidth: 540,
+    backgroundColor: 'rgba(20, 32, 26, 0.95)',
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: 'rgba(217, 119, 6, 0.65)',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  patientBookInWorldHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  patientBookInWorldTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FDE68A',
+  },
+  patientBookInWorldSubtitle: {
+    fontSize: 12,
+    color: '#CBD5E1',
+  },
+  patientBookInWorldActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    justifyContent: 'space-between',
+  },
+  bookTurnBtn: {
+    backgroundColor: 'rgba(43, 64, 54, 0.85)',
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+  },
+  bookTurnBtnDisabled: {
+    opacity: 0.35,
+  },
+  bookTurnBtnText: {
+    color: '#E2E8F0',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  bookVoiceBtn: {
+    backgroundColor: '#D97706',
+    paddingVertical: 7,
+    paddingHorizontal: 12,
+    borderRadius: 14,
+  },
+  bookVoiceBtnText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  bookDoneBtn: {
+    backgroundColor: 'rgba(239, 68, 68, 0.25)',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.45)',
+  },
+  bookDoneBtnText: {
+    color: '#FCA5A5',
+    fontSize: 12,
+    fontWeight: '600',
   },
   patientCardHeader: {
     flexDirection: 'row',
@@ -4149,6 +5723,36 @@ const styles = StyleSheet.create({
     color: '#e4f5ed',
     fontSize: 14,
     fontWeight: '800',
+  },
+  compactSourcePill: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#193326',
+    borderColor: '#2e7d4d',
+    borderWidth: 1,
+    borderRadius: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginBottom: 8,
+  },
+  compactSourcePillText: {
+    color: '#6ee7b7',
+    fontSize: 12.5,
+    fontWeight: '700',
+  },
+  compactSourcePillInferred: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#332b17',
+    borderColor: '#b48328',
+    borderWidth: 1,
+    borderRadius: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginBottom: 8,
+  },
+  compactSourcePillTextInferred: {
+    color: '#fcd34d',
+    fontSize: 12.5,
+    fontWeight: '700',
   },
   verifiedMemoryBadge: {
     flexDirection: 'row',
@@ -4229,6 +5833,213 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     alignItems: 'center',
+  },
+  // ===== Thanh Điều Hướng Cố Định & Góc Nhìn Định Sẵn =====
+  navDockCollapsedWrapper: {
+    position: 'absolute',
+    bottom: 12,
+    left: 12,
+    zIndex: 30,
+  },
+  navDockCollapsedWrapperLandscape: {
+    bottom: 8,
+    left: 10,
+  },
+  navDockCollapsedPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(20, 32, 26, 0.88)',
+    borderWidth: 1,
+    borderColor: 'rgba(52, 211, 153, 0.5)',
+    borderRadius: 20,
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.35,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  navDockCollapsedPillText: {
+    color: '#a7f3d0',
+    fontSize: 12.5,
+    fontWeight: '700',
+  },
+  navDockHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  navDockHeaderTitle: {
+    color: '#a7f3d0',
+    fontSize: 12.5,
+    fontWeight: '700',
+  },
+  navDockCollapseBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+  },
+  navDockCollapseBtnText: {
+    color: '#94a3b8',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  persistentNavDock: {
+    backgroundColor: 'rgba(20, 32, 26, 0.94)',
+    borderTopWidth: 1.5,
+    borderTopColor: '#2e4539',
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    gap: 8,
+  },
+  persistentNavDockLandscape: {
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+  },
+  navDockPresetRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  navDockPresetBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 18,
+    backgroundColor: '#1b2922',
+    borderWidth: 1,
+    borderColor: '#2e4539',
+    minHeight: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  navDockPresetBtnActive: {
+    backgroundColor: '#2e7d54',
+    borderColor: '#4ade80',
+  },
+  navDockPresetText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#cbd5e1',
+  },
+  navDockPresetTextActive: {
+    color: '#ffffff',
+    fontWeight: '800',
+  },
+  navDockFixedActionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  navDockActionBtn: {
+    flex: 1,
+    minHeight: 46,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    borderWidth: 1.2,
+  },
+  navDockActionBtnDefault: {
+    backgroundColor: '#1f2e27',
+    borderColor: '#374d41',
+  },
+  navDockBackBtn: {
+    backgroundColor: '#263830',
+    borderColor: '#435e50',
+  },
+  navDockPrimaryRoomActiveBtn: {
+    backgroundColor: '#14532d',
+    borderColor: '#22c55e',
+  },
+  navDockPrimaryRoomActiveText: {
+    color: '#86efac',
+    fontWeight: '800',
+  },
+  navDockNextRoomBtn: {
+    backgroundColor: '#1e3a5f',
+    borderColor: '#3b82f6',
+  },
+  navDockActionBtnText: {
+    fontSize: 13.5,
+    fontWeight: '700',
+    color: '#f1f5f9',
+  },
+  navDockNextRoomText: {
+    fontSize: 13.5,
+    fontWeight: '800',
+    color: '#93c5fd',
+  },
+  sceneTransitionOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#121a16',
+    zIndex: 99999,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+    opacity: 1,
+  },
+  sceneTransitionOverlayFadeOut: {
+    opacity: 0.15,
+  },
+  sceneTransitionCard: {
+    alignItems: 'center',
+    padding: 24,
+    borderRadius: 20,
+    backgroundColor: 'rgba(24, 38, 30, 0.95)',
+    borderWidth: 1.5,
+    borderColor: '#34d399',
+    maxWidth: 380,
+    width: '90%',
+  },
+  sceneTransitionIcon: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+  sceneTransitionHeading: {
+    fontSize: 14.5,
+    color: '#a7f3d0',
+    fontWeight: '600',
+    marginBottom: 6,
+  },
+  sceneTransitionTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#fcd34d',
+    textAlign: 'center',
+    marginBottom: 14,
+  },
+  sceneTransitionQuote: {
+    fontSize: 13,
+    color: '#cbd5e1',
+    fontStyle: 'italic',
+    textAlign: 'center',
+  },
+
+  patientViewMemoryBtn: {
+    flex: 1.1,
+    backgroundColor: '#b87333',
+    minHeight: 48,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.2,
+    borderColor: '#e5a158',
+  },
+  patientViewMemoryBtnText: {
+    color: '#ffffff',
+    fontSize: 15,
+    fontWeight: '800',
   },
   patientSpeakBtn: {
     flex: 1.2,

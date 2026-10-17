@@ -19,7 +19,7 @@ export const editSchema = obj({ reply: str, roomChanges: obj(roomProperties, [])
   remove: { type: 'array', items: str }
 });
 export const instructions = `Design a stylized 3D room from Vietnamese or English text, photos, or panoramas. It is an approximation, not an exact reconstruction or therapy.
-Only use supported furniture kinds: sofa, table, chair, bed, shelf, cabinet, plant, lamp, rug, picture, window, door, desk, wardrobe, clock, mug, backpack, blackboard, whiteboard, curtain, water_bottle, notebook, air_conditioner, fan, book, lunchbox, television, projector_screen, projector, podium, pillar.
+Only use supported furniture kinds: sofa, table, chair, bed, shelf, cabinet, plant, lamp, rug, picture, window, door, desk, wardrobe, clock, mug, backpack, blackboard, whiteboard, curtain, water_bottle, notebook, air_conditioner, fan, book, lunchbox, television, projector_screen, projector, podium, pillar, guitar, piano, organ, drum, violin, flute, toy, model, sculpture, vase, teapot, radio, sewing_machine, mirror, fish_tank, calendar, wheelchair, walking_stick, cushion.
 Room width/depth 4..16m; height 2.5..5m; furniture width/height/depth .05..4m (even for small items like books, mugs, or clocks, width/height/depth must be at least 0.05m); x/z -8..8m; y is base elevation, 0 for floor furniture. Yaw -360..360 degrees; colors #RRGGBB; at most 40 objects. Rotated footprints must fit entirely within floor boundaries and y + height must fit below ceiling.
 Wall fixtures (window, whiteboard, blackboard, projector_screen, picture, clock, curtain, air_conditioner): place along one of the 4 perimeter walls, offset inside the room so the bounding box never exceeds room boundaries; elevation y = 1.0..2.2m, with yaw facing inwards into the room.
 Ceiling fixtures (projector, lamp, fan): place with base elevation y = height - height_of_item, oriented toward target surface.
@@ -121,6 +121,48 @@ ROOM ARCHETYPES & SPATIAL LAYOUT RULES:
     - Patient Waiting Chairs ('chair', 2 to 4 chairs) along perimeter wall.
     - Hygienic Tile Floor (floorTextureStyle: 'solid', floorColor: '#F1F5F9').
 
+11. UNEXPECTED OBJECT MAPPING & GENERALIZED COMPOUND 3D SHAPES (BỘ KHUNG QUY TẮC MAPPING ĐỒ VẬT BẤT KỲ & ĐA DẠNG HÌNH KHỐI 3D):
+When the user mentions or a photo depicts unexpected items outside typical furniture (such as musical instruments, childhood toys, models, vintage heirlooms, traditional crafts, cultural items, or senior medical aids), you MUST map them using the extended kinds library and strict physical placement rules:
+a. Musical Instruments (Nhạc cụ & Âm nhạc):
+   - 'guitar' (Đàn guitar, ghi-ta cổ điển/acoustic/điện): w: 0.35..0.45m, h: 0.95..1.05m, d: 0.12..0.18m. If on floor: place on stand near a corner or beside sofa (y = 0). If leaning on wall: y = 0, yaw angled. If wall-mounted: y = 1.2..1.5m. Body colors: warm sunburst amber '#D97706', rosewood '#78350F', mahogany '#451A03', or ivory '#F8FAFC'.
+   - 'piano' (Đàn piano, đại dương cầm, piano đứng): w: 1.4..1.6m, h: 1.1..1.3m, d: 0.55..0.7m for upright; w: 1.5..1.8m, d: 1.6..2.2m for grand piano. Elevation y = 0, placed along a wall facing room center. Always generate a matching piano bench ('chair', w: 0.65..0.75m, d: 0.35..0.4m, h: 0.48..0.52m) directly in front! Polished ebony black '#18181B' or rich walnut '#522E15'.
+   - 'organ' (Đàn organ điện tử, synthesizer, keyboard): w: 0.95..1.2m, h: 0.75..0.85m, d: 0.4..0.5m. Elevation y = 0 (on X-stand) or y = table.height if tabletop. Modern matte charcoal '#27272A' with black/white keys.
+   - 'drum' (Trống cái, trống jazz, trống dân gian, cajon): w: 0.45..0.65m, d: 0.45..0.65m, h: 0.5..0.7m. Elevation y = 0, placed in music corner.
+   - 'violin' (Đàn violin, vĩ cầm): w: 0.22..0.28m, h: 0.58..0.65m, d: 0.08..0.12m. Tabletop item resting on table/desk (y = parent.height, parentSupport = parentId) or on shelf. Polished amber maple '#B45309'.
+   - 'flute' (Sáo trúc, sáo ngang, recorder): w: 0.05..0.08m, h: 0.05..0.06m, d: 0.45..0.6m. Tabletop item (y = parent.height). Natural bamboo golden '#FBBF24'.
+
+b. Toys, Figurines & Scale Models (Đồ chơi, Mô hình & Tác phẩm điêu khắc):
+   - 'toy' (Gấu bông, búp bê, robot đồ chơi, xe đồ chơi, lego): w: 0.18..0.35m, h: 0.22..0.4m, d: 0.18..0.32m. Placed on sofa, bed, bedside table, or desk (y = parent.height). Soft cuddly colors: honey gold '#D97706', chocolate brown '#78350F', powder pink '#F472B6', or sky blue '#38BDF8'.
+   - 'model' (Mô hình tàu thuyền phong thủy, mô hình máy bay, xe hơi cổ): w: 0.3..0.6m, h: 0.2..0.45m, d: 0.15..0.25m. Proudly placed on a desk, cabinet, or living room coffee table (y = parent.height, parentSupport = parentId).
+   - 'sculpture' (Tượng nghệ thuật, tượng Phật, tượng gốm sứ, phù điêu): w: 0.2..0.45m, h: 0.35..0.75m, d: 0.2..0.4m. Placed on pedestal/sideboard/shelf (y = parent.height). Carrara marble white '#F1F5F9', bronze '#92400E', or glazed terracotta '#C2410C'.
+
+c. Nostalgic Heirlooms & Cultural Objects (Kỷ vật gia đình, Đồ gốm & Đồ gia dụng truyền thống):
+   - 'vase' (Bình hoa gốm sứ, lọ hoa sen/hoa huệ, lục bình): w: 0.18..0.35m, h: 0.3..0.55m, d: 0.18..0.35m. Must be placed on table, desk, shelf, or cabinet (y = parent.height, parentSupport = parentId) or on floor if large ceremonial lục bình (w: 0.35..0.45m, h: 1.0..1.4m, y = 0). Celadon jade '#059669', cobalt blue porcelain '#1D4ED8', or warm ceramic '#D97706'.
+   - 'teapot' (Bộ ấm trà, bình trà Bát Tràng, tách chén): w: 0.25..0.4m, h: 0.14..0.22m, d: 0.25..0.4m. Centered on coffee table or tea table (y = table.height, parentSupport = tableId). Earthenware brown '#78350F' or glossy celadon '#10B981'.
+   - 'radio' (Đài cassette, đài phát thanh vintage, loa radio cổ): w: 0.28..0.42m, h: 0.18..0.28m, d: 0.12..0.18m. Placed on desk, bedside table, or sideboard (y = parent.height). Retro teak wood '#92400E' or vintage cream '#FEF3C7'.
+   - 'sewing_machine' (Máy may con bướm, máy khâu Singer chân bàn đạp): w: 0.85..1.05m, h: 0.75..0.85m, d: 0.45..0.55m. Elevation y = 0 along a quiet wall. Vintage black enameled body '#18181B' on dark mahogany wood table '#451A03'.
+   - 'mirror' (Gương soi toàn thân, gương trang điểm, gương treo tường): w: 0.45..0.8m, h: 0.8..1.6m, d: 0.06..0.12m. Wall-mounted (y = 1.0..1.4m) or standing on floor (y = 0). Silver reflective '#E2E8F0' with wooden or gilded gold frame '#D97706'.
+   - 'fish_tank' (Bể cá cảnh thủy sinh, hồ cá phong thủy): w: 0.6..1.2m, h: 0.45..0.6m, d: 0.35..0.45m. Placed on cabinet/stand (y = parent.height, parentSupport = parentId). Aqua glass '#06B6D4' with swimming fish.
+   - 'calendar' (Lịch bloc treo tường, lịch xuân): w: 0.28..0.38m, h: 0.45..0.65m, d: 0.05..0.08m. Wall-mounted (y = 1.4..1.8m, yaw facing into room). Lucky crimson red '#DC2626' with golden border.
+
+d. Senior Care & Tactile Comfort Props (Thiết bị hỗ trợ vận động & Chăm sóc người cao tuổi):
+   - 'wheelchair' (Xe lăn tay cho người già/người bệnh): w: 0.65..0.75m, h: 0.88..0.96m, d: 0.85..1.0m. Elevation y = 0 parked beside bed or in living room foyer. Chrome silver frame '#94A3B8' with dark leather seating '#1E293B'.
+   - 'walking_stick' (Gậy chống batoong, gậy đi bộ bằng gỗ): w: 0.08..0.12m, h: 0.82..0.92m, d: 0.08..0.12m. Leaned against bedside table, sofa arm, or wardrobe (y = 0). Polished mahogany '#581C87' or dark walnut '#3F2C22' with brass handle.
+   - 'cushion' (Gối tựa lưng, gối ôm, đệm ngồi thiền): w: 0.35..0.5m, h: 0.12..0.22m, d: 0.35..0.5m. Placed on sofa, chair, or bed (y = parent.height). Warm fabric tones '#F59E0B' or '#065F46'.
+
+e. Generalized Mapping Fallback Protocol:
+If a user prompt or photo introduces an uncommon or traditional item not explicitly named above (e.g. "chiếc quạt mo", "cối xay bột", "máy hát đĩa than gramophone", "bàn cờ tướng", "bộ cơi trầu"):
+- DO NOT reject or drop the item!
+- Map it to the closest supported kind:
+  * Decorative or traditional artifact -> 'model', 'sculpture', 'toy', or 'vase'.
+  * Audio/music electronics -> 'radio' or 'clock'.
+  * Tabletop games/boxes/containers -> 'toy', 'lunchbox', or 'book'.
+  * Drinking/tea vessels -> 'teapot' or 'mug'.
+  * Wall craft/hangings -> 'picture' or 'calendar'.
+- Set the item's 'label' to the EXACT authentic name (e.g. "Máy hát đĩa than Gramophone", "Bàn cờ tướng gỗ hương", "Bộ cơi trầu kỷ niệm").
+- Provide an evocative, respectful, nostalgic 'description' in Vietnamese or English.
+- Compute precise (w, h, d, y, x, z) ensuring physical realism and safety clearance!
+
 WINDOWS & NATURAL LIGHTING PHYSICS (CRITICAL FOR ALL ROOMS): Real rooms have windows. When reconstructing a room from photos or text, inspect perimeter walls for windows or daylight. Always include 1 to 3 large windows ('window', w: 2.0..3.5m, h: 1.6..2.2m, y: 1.0..1.2m) placed along an exterior perimeter wall with yaw facing inwards into the room. For modern apartments, villas, and balconies with floor-to-ceiling glass, set elevation y = 0.05..0.15m and height = 2.4..2.8m.
 
 EQUIDIRECTANGULAR 360° PANORAMA & WIDE PHOTO PERCEPTION:
@@ -184,7 +226,7 @@ const KIND_SYNONYMS = {
   // Decor & Surfaces
   carpet: 'rug', rug: 'rug', mat: 'rug', tham: 'rug', chieu: 'rug', chieu_coi: 'rug',
   painting: 'picture', poster: 'picture', picture: 'picture', photo: 'picture', frame: 'picture',
-  tranh: 'picture', anh: 'picture', tranh_treo_tuong: 'picture', mirror: 'picture', guong: 'picture',
+  tranh: 'picture', anh: 'picture', tranh_treo_tuong: 'picture', mirror: 'mirror', guong: 'mirror',
   window: 'window', cua_so: 'window', glass_window: 'window', vach_kinh: 'window',
   door: 'door', cua: 'door', cua_ra_vao: 'door',
   curtain: 'curtain', drapes: 'curtain', blinds: 'curtain', rem: 'curtain', rem_cua: 'curtain', man_cua: 'curtain',
@@ -212,20 +254,39 @@ const KIND_SYNONYMS = {
   medicine_box: 'lunchbox', hop_thuoc: 'lunchbox', tu_thuoc: 'cabinet', medicine_cabinet: 'cabinet',
   pill_box: 'lunchbox', pills: 'lunchbox', thuoc: 'lunchbox', lo_thuoc: 'water_bottle', pill_bottle: 'water_bottle',
   thermometer: 'book', nhiet_ke: 'book', water_dispenser: 'cabinet', cay_nuoc: 'cabinet',
-  binh_thuy: 'water_bottle', phich_nuoc: 'water_bottle', kettle: 'water_bottle', am_nuoc: 'water_bottle',
-  teapot: 'water_bottle', am_tra: 'water_bottle',
+  // Musical Instruments
+  guitar: 'guitar', dan_guitar: 'guitar', dan_ghi_ta: 'guitar', acoustic_guitar: 'guitar', electric_guitar: 'guitar',
+  piano: 'piano', dan_piano: 'piano', grand_piano: 'piano', upright_piano: 'piano', dan_duong_cam: 'piano',
+  organ: 'organ', dan_organ: 'organ', keyboard: 'organ', synthesizer: 'organ', dan_dien_tu: 'organ',
+  drum: 'drum', trong: 'drum', bo_trong: 'drum', drum_kit: 'drum', cajon: 'drum',
+  violin: 'violin', dan_violin: 'violin', vi_cam: 'violin', vi_long: 'violin',
+  flute: 'flute', sao: 'flute', ong_sao: 'flute', sao_truc: 'flute',
+
+  // Toys & Models & Sculptures
+  toy: 'toy', do_choi: 'toy', gau_bong: 'toy', teddy_bear: 'toy', bup_be: 'toy', doll: 'toy', xe_do_choi: 'toy', car_toy: 'toy', robot: 'toy', lego: 'toy',
+  model: 'model', mo_hinh: 'model', scale_model: 'model', mo_hinh_tau: 'model', mo_hinh_may_bay: 'model', ship_model: 'model', plane_model: 'model',
+  sculpture: 'sculpture', tuong: 'sculpture', dieu_khac: 'sculpture', statue: 'sculpture', figurine: 'sculpture', tuong_phat: 'sculpture', tuong_gom: 'sculpture',
+
+  // Nostalgic Heirlooms & Traditional Props
+  vase: 'vase', binh_hoa: 'vase', lo_hoa: 'vase', flower_vase: 'vase', binh_gom: 'vase', luc_binh: 'vase',
+  teapot: 'teapot', am_tra: 'teapot', binh_tra: 'teapot', bo_am_chen: 'teapot', am_chen: 'teapot', tea_set: 'teapot',
+  radio: 'radio', dai_radio: 'radio', cassette: 'radio', boombox: 'radio', loa: 'radio', speaker: 'radio', may_nghe_nhac: 'radio',
+  sewing_machine: 'sewing_machine', may_khau: 'sewing_machine', may_may: 'sewing_machine',
+  mirror: 'mirror', guong: 'mirror', guong_soi: 'mirror', dressing_mirror: 'mirror',
+  fish_tank: 'fish_tank', be_ca: 'fish_tank', ho_ca: 'fish_tank', aquarium: 'fish_tank',
+  calendar: 'calendar', lich: 'calendar', lich_treo_tuong: 'calendar', lich_bloc: 'calendar', lich_de_ban: 'calendar', wall_calendar: 'calendar',
+
+  // Senior Care & Tactile Comfort Props
+  wheelchair: 'wheelchair', xe_lan: 'wheelchair',
+  walking_stick: 'walking_stick', gay_chong: 'walking_stick', gay_di_bo: 'walking_stick', cane: 'walking_stick', crutch: 'walking_stick',
+  cushion: 'cushion', goi: 'cushion', goi_om: 'cushion', goi_tua: 'cushion', pillow: 'cushion', dem_ngoi: 'cushion',
 
   // Tableware, Kitchen Dining Props
   microwave: 'cabinet', lo_vi_song: 'cabinet', dish: 'lunchbox', plate: 'lunchbox', dia: 'lunchbox',
   bowl: 'mug', bat: 'mug', chen: 'mug', bat_an: 'mug', to_canh: 'mug', spoon: 'book', thia: 'book',
   fork: 'book', chopsticks: 'book', dua: 'book', tray: 'lunchbox', khay_tra: 'lunchbox',
-
-  // Living & Bedroom Comfort Props
-  pillow: 'rug', goi: 'rug', goi_om: 'rug', cushion: 'rug', dem_ngoi: 'rug',
   blanket: 'rug', chan: 'rug', men: 'rug', quilt: 'rug',
-  tablecloth: 'rug', khan_trai_ban: 'rug',
-  radio: 'plant', dai_radio: 'plant', speaker: 'plant', loa: 'plant',
-  vase: 'plant', binh_hoa: 'plant', lo_hoa: 'plant'
+  tablecloth: 'rug', khan_trai_ban: 'rug'
 };
 
 const NAMED_COLORS = {
@@ -577,19 +638,63 @@ function isHarshColdBlue(hex) {
 }
 
 export function enrichItemInteractionsAndQuests(item, prompt = '') {
-  if (item.interaction && item.memoryFragment) return;
+  // Always guarantee every single object is 100% interactable
+  item.isInteractable = true;
+  item.restrictedDialogue = '';
+  item.restrictedReason = '';
 
   const kind = item.kind;
   const label = item.label || kind;
   const lower = label.toLowerCase();
 
-  if (kind === 'wardrobe' || (kind === 'cabinet' && (lower.includes('quần áo') || lower.includes('tủ áo') || lower.includes('wardrobe')))) {
+  // If already enriched with a specific tactile type other than generic touch_inspect, keep it
+  if (item.interaction && item.interaction.type && item.interaction.type !== 'touch_inspect' && item.memoryFragment) {
+    return;
+  }
+
+  const isFridge = (item.height >= 1.65 && item.width <= 1.15 && item.depth <= 1.0) ||
+    lower.includes('lạnh') || lower.includes('fridge') || lower.includes('refrigerator');
+  const isKitchenCounter = (item.width >= 1.6 && item.height <= 1.25) ||
+    lower.includes('bếp') || lower.includes('kitchen') || lower.includes('counter') || lower.includes('kệ bếp') || lower.includes('chạn');
+
+  if (isFridge) {
+    item.interaction = {
+      type: 'fridge_open',
+      actionTitle: 'Mở cửa tủ lạnh',
+      fridgeFeeling: 'Cửa tủ lạnh mở ra êm ái với tiếng mút gioăng cao su, luồng khí lạnh phả ra thanh khiết sảng khoái.',
+      insideItems: ['Hộp sữa đậu nành mát lành', 'Đĩa cam sành tươi ngọt mọng nước', 'Bình nước lá vối thanh nhiệt'],
+      emptyStateText: 'Ngăn tủ lạnh mát rượi, sạch sẽ tinh tươm. Bác có thể đặt thêm món tráng miệng hoặc bình nước yêu thích vào đây.'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Món quà mát lành: ${label}`,
+      questPrompt: `Mở cánh ${label.toLowerCase()} để tìm món nước mát ngọt ngào`,
+      story: `Chiếc tủ lạnh luôn đầy ắp những món ngon tươi mát do người thân chu đáo chuẩn bị cho bạn.`,
+      senseOfSelf: `Bạn luôn được cả gia đình yêu thương, quan tâm chăm sóc từng bữa ăn giấc ngủ.`
+    };
+  } else if (isKitchenCounter) {
+    item.interaction = {
+      type: 'cabinet_kitchen',
+      actionTitle: 'Mở cánh tủ bếp',
+      kitchenFeeling: 'Mở cánh tủ bếp, mùi thơm thảo mộc và gia vị ấm cúng thoảng qua bên tai tiếng bát đĩa leng keng nhẹ...',
+      insideItems: ['Bộ ấm chén gốm men lam Bát Tràng', 'Bộ nồi niêu nấu canh cua đồng', 'Hũ đường phèn và trà sen thơm ngát'],
+      emptyStateText: 'Ngăn tủ bếp gỗ tinh tươm, thơm mùi gỗ mới. Bác hoặc người thân có thể cất giữ một món đồ gia dụng vào đây.'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Hương vị tổ ấm: ${label}`,
+      questPrompt: `Mở cánh ${label.toLowerCase()} để tìm lại bộ ấm chén gốm xưa`,
+      story: `Góc bếp đầm ấm thơm mùi cơm canh do chính tay bạn chăm chút nuôi dưỡng cả gia đình.`,
+      senseOfSelf: `Sự đảm đang, chu toàn và bàn tay khéo léo của bạn là ngọn lửa sưởi ấm tổ ấm.`
+    };
+  } else if (kind === 'wardrobe' || (kind === 'cabinet' && (lower.includes('quần áo') || lower.includes('tủ áo') || lower.includes('wardrobe')))) {
     item.interaction = {
       type: 'wardrobe_open',
-      actionTitle: 'Mở cánh tủ',
-      clothes: 'Bộ áo sơ mi trắng thêu hoa cúc / Bộ áo dài lụa Hà Đông nhã nhặn',
-      schoolBag: 'Chiếc cặp da nâu đi học thuở thiếu thời',
-      memento: 'Chiếc khăn len dệt tay ấm áp từ người thân yêu'
+      actionTitle: 'Mở cánh tủ quần áo',
+      wardrobeFeeling: 'Cánh tủ mở ra thơm mùi gỗ trầm và sáp thơm, bên trong là những bộ đồ gắn với từng dấu mốc cuộc đời.',
+      clothes: ['Bộ áo dài lụa màu mây thanh nhã', 'Chiếc áo sơ mi trắng phẳng phiu thời đi dạy', 'Chiếc áo len ấm mẹ đan thuở hàn vi'],
+      mementos: ['Chiếc cặp sách da cũ thời đi học', 'Hộp gỗ đựng những lá thư tay thời thanh xuân'],
+      emptyStateText: 'Tủ gỗ rộng rãi thơm mùi trầm hương. Bác có thể treo thêm bộ trang phục yêu thích.'
     };
     item.memoryFragment = {
       id: `frag-${item.id}`,
@@ -597,6 +702,63 @@ export function enrichItemInteractionsAndQuests(item, prompt = '') {
       questPrompt: `Mở cánh ${label.toLowerCase()} để tìm lại bộ trang phục và chiếc cặp xưa`,
       story: `Bộ quần áo phẳng phiu từng gắn liền với những ngày đi làm, đi dạy hay dự lễ hội trọng đại.`,
       senseOfSelf: `Sự đoan trang, lịch thiệp và chỉn chu luôn là phong thái đáng tự hào của bạn.`
+    };
+  } else if (kind === 'cabinet') {
+    item.interaction = {
+      type: 'cabinet_storage',
+      actionTitle: 'Mở tủ đồ kỷ niệm',
+      storageFeeling: 'Cánh tủ mở ra êm ái, bên trong là những kỷ vật gia đình được xếp đặt ngăn nắp...',
+      insideItems: ['Album ảnh gia đình bìa vải nhung', 'Hộp thiếc đựng bánh quy tuổi thơ', 'Chiếc đồng hồ cổ kim trôi êm đềm'],
+      emptyStateText: 'Ngăn tủ gỗ trống trải, sạch sẽ và thơm mùi gỗ mới. Sẵn sàng để lưu giữ thêm kỷ vật mới.'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Kỷ vật cất giữ: ${label}`,
+      questPrompt: `Mở cánh ${label.toLowerCase()} để khám phá kỷ vật thân quen`,
+      story: `Chiếc tủ thân thương nơi lưu giữ bao món quà kỷ niệm của những chuyến đi xa.`,
+      senseOfSelf: `Bạn là người cẩn thận, biết nâng niu và trân trọng từng kỷ vật của cuộc đời.`
+    };
+  } else if (kind === 'lamp') {
+    item.interaction = {
+      type: 'lamp_toggle',
+      actionTitle: 'Bật / Tắt đèn',
+      lampFeeling: 'Tiếng công tắc cơ "tách" giòn tan, ánh sáng vàng dịu lan tỏa ấm áp xua tan bóng tối và mang lại cảm giác bình an.',
+      lightState: 'on'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Ngọn đèn sưởi ấm: ${label}`,
+      questPrompt: `Đến bên ${label.toLowerCase()} để bật sáng ngọn đèn ấm áp`,
+      story: `Ánh đèn vàng quen thuộc luôn là ngọn hải đăng soi sáng những đêm dài làm việc và sum vầy gia đình.`,
+      senseOfSelf: `Bạn là ngọn đèn ấm áp, luôn mang lại niềm tin và sự che chở cho những người thương yêu.`
+    };
+  } else if (kind === 'sofa') {
+    item.interaction = {
+      type: 'sofa_relax',
+      actionTitle: 'Ngả lưng lên sofa',
+      sofaFeeling: 'Chiếc sofa êm ái nâng niu lưng bạn, tiếng tivi quen thuộc vang vọng mang lại cảm giác an yên lạ thường.',
+      ambientSound: 'Tiếng nhạc không lời du dương, êm đềm'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Hơi ấm sum vầy: ${label}`,
+      questPrompt: `Đến ngồi ngả lưng trên chiếc ${label.toLowerCase()}`,
+      story: `Chiếc ghế sofa thân thuộc nơi cả gia đình quây quần mỗi tối trò chuyện rôm rả.`,
+      senseOfSelf: `Bạn luôn là trung tâm của tình yêu thương, người gắn kết mọi thành viên trong mái ấm.`
+    };
+  } else if (kind === 'chair') {
+    item.interaction = {
+      type: 'chair_sit',
+      actionTitle: 'Ngồi nghỉ ngơi',
+      chairFeeling: 'Góc ngồi thanh thản, tựa lưng thoải mái ngắm nhìn không gian căn phòng thân thuộc.',
+      ambientSound: 'Gió nhẹ rì rào, tiếng chim hót xa xa'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Khoảnh khắc tĩnh tâm: ${label}`,
+      questPrompt: `Đến ngồi nghỉ ngơi trên chiếc ${label.toLowerCase()}`,
+      story: `Những phút giây ngồi thảnh thơi nhấp ngụm trà sớm bên chiếc ghế quen đem lại sự thư thái vô bờ.`,
+      senseOfSelf: `Bạn có một tâm hồn an nhiên, biết trân trọng từng khoảnh khắc bình dị của cuộc sống.`
     };
   } else if (kind === 'bed') {
     item.interaction = {
@@ -616,8 +778,9 @@ export function enrichItemInteractionsAndQuests(item, prompt = '') {
     item.interaction = {
       type: 'desk_drawer',
       actionTitle: 'Kéo ngăn hộc bàn',
-      drawerItem: 'Hộp bút Kim Tinh vỏ kim loại, kính lão và đồng hồ đeo tay kỷ niệm',
-      secretKeepsake: 'Tấm ảnh gia đình nhỏ chụp dịp Tết năm xưa được cất giữ trân trọng'
+      drawerFeeling: 'Kéo ngăn hộc bàn gỗ ra, bạn thấy những kỷ vật thân quý được xếp ngay ngắn.',
+      insideItems: ['Cây bút máy Kim Tinh nắp vàng', 'Chiếc đồng hồ Liên Xô kim trôi', 'Kính lão đọc sách gọng đồi mồi', 'Tấm ảnh chụp cả nhà đi biển'],
+      emptyStateText: 'Ngăn hộc bàn gỗ sạch sẽ, sẵn sàng để cất giữ sổ tay hoặc bút kỷ niệm.'
     };
     item.memoryFragment = {
       id: `frag-${item.id}`,
@@ -626,14 +789,27 @@ export function enrichItemInteractionsAndQuests(item, prompt = '') {
       story: `Góc bàn thân thuộc nơi bao ý tưởng, trang viết và lời yêu thương đã được tạo tác.`,
       senseOfSelf: `Trí tuệ mẫn tiệp, sự kiên nhẫn và đam mê học hỏi là ngọn đèn soi sáng cuộc đời bạn.`
     };
+  } else if (kind === 'shelf') {
+    item.interaction = {
+      type: 'shelf_inspect',
+      actionTitle: 'Khám phá kệ sách',
+      shelfFeeling: 'Những gáy sách da viền vàng óng ánh trên từng tầng kệ. Bạn có thể chạm trực tiếp vào từng gáy sách trên không gian 3D để rút sách ra đọc.'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Tủ sách tri thức: ${label}`,
+      questPrompt: `Đến quan sát kệ sách kỷ niệm`,
+      story: `Bạn luôn yêu sách và dành trọn những buổi chiều yên ả để đọc từng trang sách hay.`,
+      senseOfSelf: `Bạn là người có trí tuệ uyên bác và say mê học hỏi suốt đời.`
+    };
   } else if (kind === 'book' || kind === 'notebook') {
     item.interaction = {
       type: 'book_read',
       actionTitle: 'Mở trang nhật ký',
       pages: [
-        { pageNum: 1, title: 'Trang 1: Những năm tháng thanh xuân', date: 'Mùa thu năm 1975', text: 'Những ngày thanh xuân tươi đẹp, bạn bè cùng nhau sẻ chia từng củ khoai, chén nước với nụ cười rạng rỡ.' },
-        { pageNum: 2, title: 'Trang 2: Gia đình yêu dấu', date: 'Xuân sum vầy', text: 'Mỗi mùa Tết đến, con cháu tề tựu rôm rả, nụ cười của mẹ là niềm hạnh phúc lớn nhất của cả gia đình.' },
-        { pageNum: 3, title: 'Trang 3: Lời nhắn cho chính mình', date: 'Hôm nay', text: 'Dù năm tháng có trôi qua, tấm lòng nhân hậu, bao dung của bạn vẫn mãi vẹn nguyên và tỏa sáng.' }
+        'Trang 1: "Ngày... tháng... Cuộc đời dù có bao khó khăn thì lòng thiện lương và tình yêu thương con cái vẫn là ngọn hải đăng soi đường cho tôi."',
+        'Trang 2: "Hôm nay các con đã khôn lớn trưởng thành. Nhìn chúng hạnh phúc, tôi biết mọi hy sinh của mình đều xứng đáng."',
+        'Trang 3: "Nếu sau này trí nhớ có nhạt phai, xin hãy nhắc cho tôi nhớ rằng: Tôi đã sống một cuộc đời trọn vẹn và không hối tiếc."'
       ]
     };
     item.memoryFragment = {
@@ -642,6 +818,19 @@ export function enrichItemInteractionsAndQuests(item, prompt = '') {
       questPrompt: `Lần giở từng trang nhật ký ${label.toLowerCase()} để sống lại những cảm xúc tươi đẹp`,
       story: `Những trang sách lưu giữ trọn vẹn từng cột mốc ý nghĩa và tình cảm thiêng liêng nhất.`,
       senseOfSelf: `Bạn có một tâm hồn sâu sắc, luôn trân quý tình nghĩa và nuôi dưỡng những điều tốt lành.`
+    };
+  } else if (kind === 'picture') {
+    item.interaction = {
+      type: 'picture_view',
+      actionTitle: 'Ngắm nhìn khung ảnh',
+      pictureFeeling: 'Nụ cười rạng rỡ của tất cả người thân trong bức ảnh kỷ niệm sưởi ấm tâm hồn bạn.'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Kỷ niệm thân thương: ${label}`,
+      questPrompt: `Đến ngắm nhìn khung ảnh trên tường`,
+      story: `Bức ảnh ghi lại ngày đại thọ khi cả gia đình đông đủ bốn thế hệ quây quần, nụ cười của bạn là tâm điểm của niềm hạnh phúc sum vầy.`,
+      senseOfSelf: `Bạn là cội nguồn yêu thương, người kết nối mọi thế hệ con cháu trong dòng tộc.`
     };
   } else if (kind === 'window' || kind === 'curtain') {
     item.interaction = {
@@ -663,6 +852,270 @@ export function enrichItemInteractionsAndQuests(item, prompt = '') {
       actionTitle: 'Bước qua cửa',
       targetRoomId: item.targetRoomId || 'room_kitchen',
       targetRoomTitle: label.replace(/^Cửa (sang|ra|vào)\s*/i, '') || 'Phòng tiếp theo'
+    };
+  } else if (kind === 'television') {
+    item.interaction = {
+      type: 'television_watch',
+      actionTitle: 'Bật / Tắt Tivi',
+      tvFeeling: 'Màn hình tivi phát sáng với giai điệu bài hát quê hương thân quen vang lên rộn rã...',
+      tvChannel: 'Đài truyền hình Việt Nam - Giai điệu tự hào'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Âm thanh hoài niệm: ${label}`,
+      questPrompt: `Đến bật chiếc ${label.toLowerCase()} để lắng nghe giai điệu xưa`,
+      story: `Chiếc tivi thuở trước là món đồ quý giá, nơi cả xóm cùng quây quần đón xem những thước phim kinh điển.`,
+      senseOfSelf: `Bạn luôn yêu chuộng văn hóa, gắn bó sâu sắc với tình làng nghĩa xóm.`
+    };
+  } else if (kind === 'fan') {
+    item.interaction = {
+      type: 'fan_toggle',
+      actionTitle: 'Bật / Tắt quạt mát',
+      fanFeeling: 'Cánh quạt quay êm ái, làn gió hiu hiu làm dịu mát căn phòng ngày hè.'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Làn gió mát lành: ${label}`,
+      questPrompt: `Đến bật ${label.toLowerCase()} để đón nhận làn gió mát`,
+      story: `Làn gió quạt phe phẩy đưa bạn vào những giấc ngủ trưa êm đềm giữa tiếng ve râm ran.`,
+      senseOfSelf: `Bạn là con người giản dị, luôn tìm thấy sự thỏa nguyện trong những điều thanh tao.`
+    };
+  } else if (kind === 'air_conditioner') {
+    item.interaction = {
+      type: 'ac_toggle',
+      actionTitle: 'Bật / Tắt điều hòa',
+      acFeeling: 'Tiếng bíp nhẹ vang lên, không khí trong phòng trở nên mát mẻ, trong lành và dễ chịu.'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Không gian mát lành: ${label}`,
+      questPrompt: `Đến bật ${label.toLowerCase()} để điều hòa không khí`,
+      story: `Căn phòng luôn được giữ ở nhiệt độ lý tưởng, mát mẻ mùa hạ và ấm áp mùa đông.`,
+      senseOfSelf: `Bạn luôn chú trọng chăm sóc sức khỏe và tạo dựng môi trường sống tiện nghi cho gia đình.`
+    };
+  } else if (kind === 'clock') {
+    item.interaction = {
+      type: 'clock_chime',
+      actionTitle: 'Lắng nghe chuông đồng hồ',
+      clockFeeling: 'Tiếng tích tắc nhịp nhàng và tiếng chuông bính boong ngân vang định hướng không gian thời gian êm đềm.'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Nhịp thời gian: ${label}`,
+      questPrompt: `Đến bên chiếc ${label.toLowerCase()} để lắng nghe tiếng chuông ngân`,
+      story: `Mỗi nhịp kim đồng hồ trôi qua nhắc nhở về một đời người sống trọn vẹn, cống hiến và ngập tràn yêu thương.`,
+      senseOfSelf: `Bạn là người đúng giờ, sống có trách nhiệm và luôn trân quý từng phút giây bên người thân.`
+    };
+  } else if (kind === 'mug' || kind === 'water_bottle' || kind === 'lunchbox') {
+    item.interaction = {
+      type: 'drink_tea',
+      actionTitle: 'Rót nước / Thưởng trà',
+      teaFeeling: 'Hơi nước ấm bốc lên nghi ngút, hương sen thơm dịu sưởi ấm đôi bàn tay và tấm lòng.'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Vị trà thơm nghĩa tình: ${label}`,
+      questPrompt: `Đến thưởng thức chén nước ấm tại ${label.toLowerCase()}`,
+      story: `Thói quen thưởng trà mỗi sáng giúp tinh thần bạn luôn sảng khoái và minh mẫn.`,
+      senseOfSelf: `Bạn có phong thái điềm đạm, tao nhã và giàu lòng hiếu khách.`
+    };
+  } else if (kind === 'plant') {
+    item.interaction = {
+      type: 'plant_water',
+      actionTitle: 'Tưới nước cho cây',
+      plantFeeling: 'Những giọt nước mát lành tưới lên tán lá xanh mướt, mang lại sức sống tươi mới tràn đầy niềm lạc quan.'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Mầm xanh hy vọng: ${label}`,
+      questPrompt: `Đến tưới nước cho chậu ${label.toLowerCase()}`,
+      story: `Bàn tay bạn chăm chút từng nhánh hoa, cành lá, tạo nên mảng xanh tươi mát cho ngôi nhà.`,
+      senseOfSelf: `Bạn có tình yêu thương sâu sắc với thiên nhiên và vạn vật xung quanh.`
+    };
+  } else if (kind === 'blackboard' || kind === 'whiteboard' || kind === 'projector_screen' || kind === 'projector') {
+    item.interaction = {
+      type: 'board_write',
+      actionTitle: 'Xem lời chúc trên bảng',
+      boardMessage: 'Kính chúc bác luôn dồi dào sức khỏe, mỗi ngày đều là một ngày ngập tràn niềm vui và bình an!'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Bảng lưu bút yêu thương: ${label}`,
+      questPrompt: `Đến đọc những lời nhắn yêu thương trên ${label.toLowerCase()}`,
+      story: `Từng nét chữ viết tay nắn nót ghi lại những lời chúc chân thành nhất của con cháu và học trò.`,
+      senseOfSelf: `Bạn là người thầy, người cha, người mẹ mẫu mực luôn được bao thế hệ kính trọng.`
+    };
+  } else if (kind === 'backpack') {
+    item.interaction = {
+      type: 'bag_open',
+      actionTitle: 'Mở cặp sách kỷ vật',
+      bagFeeling: 'Kéo khóa chiếc cặp da sờn góc, bên trong là những đồ dùng học tập gắn liền với thời hoa niên.',
+      insideItems: ['Hộp bút gỗ nắp trượt', 'Cuốn tập viết chữ đẹp đoạt giải', 'Thước kẻ gỗ khắc tên bạn'],
+      emptyStateText: 'Chiếc cặp da bền chắc, sẵn sàng để đựng thêm cuốn sách hay cuốn sổ nhỏ.'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Hành trang thanh xuân: ${label}`,
+      questPrompt: `Mở chiếc ${label.toLowerCase()} để tìm lại hành trang tuổi trẻ`,
+      story: `Chiếc cặp đã cùng bạn vượt qua bao chặng đường gian khó để vươn tới tri thức và thành công.`,
+      senseOfSelf: `Nghị lực kiên cường và tinh thần vượt khó luôn là niềm tự hào sáng ngời của bạn.`
+    };
+  } else if (kind === 'rug') {
+    item.interaction = {
+      type: 'rug_feel',
+      actionTitle: 'Cảm nhận tấm thảm',
+      rugFeeling: 'Tấm thảm dệt hoa văn cổ êm ái nâng niu từng bước chân, xua tan mọi giá lạnh mùa đông.'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Bước chân êm ái: ${label}`,
+      questPrompt: `Bước lên tấm ${label.toLowerCase()} để cảm nhận sự nâng niu ấm áp`,
+      story: `Tấm thảm trang trọng nơi phòng khách là chứng nhân cho bao bước chân đi về của con cháu.`,
+      senseOfSelf: `Bạn luôn chu đáo vun vén cho tổ ấm gia đình từng chi tiết nhỏ nhất.`
+    };
+  } else if (['guitar','piano','organ','drum','violin','flute'].includes(kind)) {
+    item.interaction = {
+      type: 'play_instrument',
+      actionTitle: `Lắng nghe khúc nhạc: ${label}`,
+      instrumentFeeling: `Từng nốt nhạc trầm bổng ngân vang, khơi gợi những giai điệu thanh xuân tươi đẹp và tâm hồn nghệ sĩ say mê.`,
+      melody: 'Giai điệu quê hương thanh bình ngân nga trong không gian tĩnh lặng'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Tiếng tơ đồng hoài niệm: ${label}`,
+      questPrompt: `Đến bên ${label.toLowerCase()} để lắng nghe khúc ca xưa`,
+      story: `Những giai điệu bạn từng tấu lên trong các buổi văn nghệ sum họp gia đình luôn làm rạng rỡ mọi gương mặt thân quen.`,
+      senseOfSelf: `Tâm hồn bạn luôn giàu chất thơ, bay bổng và tràn ngập tình yêu cuộc sống.`
+    };
+  } else if (kind === 'vase') {
+    item.interaction = {
+      type: 'smell_flowers',
+      actionTitle: 'Ngắm hoa & Thưởng hương',
+      flowerFeeling: 'Hương hoa tươi thanh khiết thoang thoảng dịu dàng, từng cánh hoa khoe sắc tươi tắn làm bừng sáng cả gian phòng.'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Sắc hương tươi thắm: ${label}`,
+      questPrompt: `Đến ngắm nhìn và thưởng hương bên ${label.toLowerCase()}`,
+      story: `Bình hoa do chính tay bạn cắm và chọn lựa mỗi sớm mai luôn mang lại sinh khí và niềm an lành cho cả nhà.`,
+      senseOfSelf: `Bạn có đôi mắt thẩm mỹ tinh tế và tấm lòng chu đáo luôn biết làm đẹp cho đời.`
+    };
+  } else if (kind === 'teapot') {
+    item.interaction = {
+      type: 'pour_tea',
+      actionTitle: 'Rót chén trà sen ấm',
+      teaFeeling: 'Dòng nước trà vàng óng tỏa khói nghi ngút, hương sen thơm ngát thấm đượm vị ngọt hậu nơi đầu lưỡi.'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Chén trà thơm tri kỷ: ${label}`,
+      questPrompt: `Đến nâng chén trà ấm tại ${label.toLowerCase()}`,
+      story: `Những buổi hàn huyên bên ấm trà nóng cùng tri kỷ là khoảng thời gian bình yên, sâu lắng nhất đời người.`,
+      senseOfSelf: `Bạn là người sâu sắc, trọng tình trọng nghĩa và luôn giữ được sự tĩnh tại trong tâm hồn.`
+    };
+  } else if (kind === 'radio') {
+    item.interaction = {
+      type: 'tune_radio',
+      actionTitle: 'Bật đài phát thanh vintage',
+      radioFeeling: 'Tiếng rè rè quen thuộc rồi vang lên giọng phát thanh viên ấm áp và bài dân ca chan chứa ân tình...'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Tiếng đài thân thương: ${label}`,
+      questPrompt: `Đến vặn nút ${label.toLowerCase()} để nghe chương trình quen thuộc`,
+      story: `Chiếc đài nhỏ đã gắn bó suốt bao năm tháng, là cầu nối tin tức và món ăn tinh thần không thể thiếu mỗi buổi sớm.`,
+      senseOfSelf: `Bạn luôn nhạy bén với thời cuộc và trân trọng những nét văn hóa mộc mạc truyền thống.`
+    };
+  } else if (kind === 'toy' || kind === 'model' || kind === 'sculpture') {
+    item.interaction = {
+      type: 'admire_collectible',
+      actionTitle: `Chiêm ngưỡng ${label}`,
+      collectibleFeeling: `Cầm trên tay món kỷ vật tỉ mỉ, bao ký ức tuổi thơ hồn nhiên và niềm đam mê sáng tạo ùa về nguyên vẹn.`
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Mảnh ghép tuổi thơ & Kỷ vật: ${label}`,
+      questPrompt: `Đến chiêm ngưỡng ${label.toLowerCase()}`,
+      story: `Món đồ gắn liền với những câu chuyện vui, những món quà yêu thương mà người thân đã dành tặng riêng cho bạn.`,
+      senseOfSelf: `Trái tim bạn luôn giữ được sự trong sáng, hồn nhiên và trân quý tình thân gia đình.`
+    };
+  } else if (kind === 'sewing_machine') {
+    item.interaction = {
+      type: 'sew_stitch',
+      actionTitle: 'Nhấn bàn đạp máy khâu',
+      sewingFeeling: 'Tiếng máy khâu lạch cạch nhịp nhàng, từng đường kim mũi chỉ khéo léo đan dệt yêu thương...'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Bàn tay đảm đang: ${label}`,
+      questPrompt: `Đến bên chiếc ${label.toLowerCase()} để chạm vào ký ức may vá`,
+      story: `Chiếc máy may đã cùng bạn may từng tấm áo mới cho con cái diện Tết, vá từng đường chỉ đượm nghĩa ân tình.`,
+      senseOfSelf: `Đôi bàn tay khéo léo và đức hy sinh thầm lặng của bạn là niềm tự hào của cả gia đình.`
+    };
+  } else if (kind === 'mirror') {
+    item.interaction = {
+      type: 'look_mirror',
+      actionTitle: 'Soi gương & Mỉm cười',
+      mirrorFeeling: 'Hình ảnh phản chiếu một gương mặt phúc hậu, nụ cười hiền từ của một đời người đáng kính và yêu đời.'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Nụ cười phúc hậu: ${label}`,
+      questPrompt: `Đến trước chiếc ${label.toLowerCase()} và gửi tặng chính mình một nụ cười`,
+      story: `Mỗi vết chân chim nơi khóe mắt là một minh chứng cho tình yêu thương và những tháng năm sống hết mình vì người khác.`,
+      senseOfSelf: `Bạn trân trọng và tự hào về bản thân mình, người đã sống một đời trọn vẹn và ý nghĩa.`
+    };
+  } else if (kind === 'fish_tank') {
+    item.interaction = {
+      type: 'feed_fish',
+      actionTitle: 'Cho đàn cá tung tăng ăn',
+      fishFeeling: 'Đàn cá đủ màu sắc bơi lội mềm mại dưới làn nước trong vắt, tiếng máy sủi bọt êm tai xoa dịu mọi muộn phiền.'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Bình yên đáy nước: ${label}`,
+      questPrompt: `Đến ngắm nhìn đàn cá bơi trong ${label.toLowerCase()}`,
+      story: `Thú vui ngắm cá cảnh mỗi buổi chiều mang lại sự tĩnh tại, thư thái và bình yên tuyệt đối cho tâm hồn bạn.`,
+      senseOfSelf: `Tâm hồn bạn luôn an nhiên, khoáng đạt và biết tìm niềm vui thanh nhã.`
+    };
+  } else if (kind === 'calendar') {
+    item.interaction = {
+      type: 'view_calendar',
+      actionTitle: 'Xem trang lịch ngày mới',
+      calendarFeeling: 'Tờ lịch bloc đỏ thắm in câu danh ngôn ý nghĩa nhắc nhở hôm nay là một ngày tuyệt vời bên người thân.'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Mỗi ngày một niềm vui: ${label}`,
+      questPrompt: `Đến xem ngày trên ${label.toLowerCase()}`,
+      story: `Thói quen bóc lịch mỗi sớm mai là cách bạn đón chào một ngày mới với tất cả lòng biết ơn và sự háo hức.`,
+      senseOfSelf: `Bạn luôn sống trọn vẹn trong hiện tại, biết ơn từng ngày trôi qua với sức khỏe và bình an.`
+    };
+  } else if (kind === 'wheelchair' || kind === 'walking_stick') {
+    item.interaction = {
+      type: 'tactile_support',
+      actionTitle: 'Chạm vào điểm tựa thân quen',
+      supportFeeling: 'Điểm tựa vững chãi, luôn đồng hành cùng bạn trên từng chặng đường an toàn và chủ động.'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Bạn đồng hành vững vàng: ${label}`,
+      questPrompt: `Đến bên ${label.toLowerCase()} để cảm nhận sự nâng đỡ thân thương`,
+      story: `Món đồ trợ lực luôn kề cận giúp bạn tự tin, vững vàng dạo bước và khám phá thế giới xung quanh.`,
+      senseOfSelf: `Ý chí mạnh mẽ và sự kiên trì giúp bạn luôn làm chủ cuộc sống của chính mình.`
+    };
+  } else if (kind === 'cushion') {
+    item.interaction = {
+      type: 'hug_cushion',
+      actionTitle: 'Ôm chiếc gối êm ái',
+      cushionFeeling: 'Chiếc gối mềm mại, ấm áp nâng đỡ lưng và mang lại cảm giác dễ chịu tuyệt đối.'
+    };
+    item.memoryFragment = {
+      id: `frag-${item.id}`,
+      title: `Điểm tựa êm đềm: ${label}`,
+      questPrompt: `Đến chạm vào ${label.toLowerCase()} để tìm thấy sự thư thái`,
+      story: `Chiếc gối êm nâng niu những giờ phút đọc sách, ngắm cảnh hay nghỉ trưa thanh thản của bạn.`,
+      senseOfSelf: `Bạn xứng đáng được nghỉ ngơi thoải mái và tận hưởng sự an nhàn, êm dịu nhất.`
     };
   } else {
     item.interaction = {
@@ -879,11 +1332,19 @@ export function verifyAndRefineRoomLogic(room, prompt = '') {
   });
 
   // 6. Kiểm tra kết nối đa phòng (Multi-room connectivity)
-  audit.checks.push({
-    name: 'connected_spaces',
-    status: 'pass',
-    details: `Không gian đã liên kết với ${room.connectedRooms?.length || 2} phòng liền kề (bếp, vườn, thư viện).`
-  });
+  if (Array.isArray(room.connectedRooms) && room.connectedRooms.length > 0) {
+    audit.checks.push({
+      name: 'connected_spaces',
+      status: 'pass',
+      details: `Không gian đã liên kết với ${room.connectedRooms.length} phòng liền kề theo đúng yêu cầu.`
+    });
+  } else {
+    audit.checks.push({
+      name: 'focused_single_space',
+      status: 'pass',
+      details: 'Không gian phòng đơn tập trung, ấm cúng và an toàn, không có cửa hay phòng phụ thừa ngoài ý muốn.'
+    });
+  }
 
   // 7. Kiểm tra hệ thống tương tác & Mảnh ghép ký ức (Memory Quests)
   const interactiveCount = room.objects.filter(it => it.isInteractable !== false).length;
@@ -968,8 +1429,13 @@ export function createRoom(result, prompt, idFactory = randomUUID) {
   cleaned.forEach(item => enrichItemInteractionsAndQuests(item, prompt));
 
   // 2. Không gian đa phòng nối tiếp (Multi-Room Connectivity)
-  if (!Array.isArray(room.connectedRooms) || room.connectedRooms.length === 0) {
+  const hasMultiRoomPrompt = /(?:nhiều phòng|liền kề|kết nối|gian bếp|phòng bếp|thêm phòng|2 phòng|hai phòng|3 phòng|ba phòng|hiên vườn|nhà ăn|canteen)/i.test(prompt);
+  if (Array.isArray(room.connectedRooms) && room.connectedRooms.length > 0) {
+    // Giữ nguyên phòng kết nối được cung cấp tường minh
+  } else if (hasMultiRoomPrompt) {
     room.connectedRooms = generateConnectedRooms(room, prompt, idFactory);
+  } else {
+    room.connectedRooms = [];
   }
 
   room.objects = cleaned;
@@ -1013,6 +1479,66 @@ export function applyEdit(previous, edit, prompt, idFactory = randomUUID) {
     fitInRoom(item, result);
     provenance(item, prompt); result.objects.push(item);
   }
+
+  // Dynamic connected room creation if user asked to build/add a room
+  const addRoomMatch = prompt.match(/(?:thêm|xây|build|tạo|mở)\s+(?:thêm\s+)?(?:một\s+)?(?:căn\s+|gian\s+)?phòng\s*([a-zA-ZÀ-ỹ0-9\s_]*)/i);
+  if (addRoomMatch) {
+    const rawName = (addRoomMatch[1] || '').trim();
+    const cleanName = rawName.replace(/^(mới|khác|nữa)\s*/i, '').trim();
+    const roomTitle = cleanName ? `Phòng ${cleanName.charAt(0).toUpperCase() + cleanName.slice(1)}` : 'Gian Phòng Mới';
+    const newRoomId = `room_custom_${Date.now()}`;
+    const newConnectedRoom = {
+      id: newRoomId,
+      title: roomTitle,
+      roomType: 'custom',
+      doorLabel: `Cửa sang ${roomTitle}`,
+      room: {
+        title: roomTitle,
+        reply: `Không gian ${roomTitle} vừa được hoàn thiện với đầy đủ ánh sáng và đồ vật thân quen.`,
+        wallColor: '#F5F3EF',
+        floorColor: '#C49A6C',
+        width: 7, depth: 6, height: 3.2,
+        floorTextureStyle: 'wood_planks',
+        lightingStyle: 'morning_sun',
+        objects: [
+          {
+            id: idFactory(), kind: 'table', label: 'Bàn gỗ mộc', description: 'Chiếc bàn gỗ mộc mạc thơm mùi thông',
+            x: 0, y: 0, z: 0, yaw: 0, width: 1.6, height: 0.75, depth: 0.9, color: '#A06B3E',
+            isInteractable: true, source: { type: 'inferred', evidence: '' }
+          },
+          {
+            id: idFactory(), kind: 'chair', label: 'Ghế tựa gỗ', description: 'Ghế tựa ngồi thư thái',
+            x: 0, y: 0, z: 0.75, yaw: 0, width: 0.55, height: 0.85, depth: 0.55, color: '#8B5A2B',
+            isInteractable: true, source: { type: 'inferred', evidence: '' }
+          },
+          {
+            id: idFactory(), kind: 'window', label: 'Cửa sổ đón nắng', description: 'Cửa sổ nhìn ra ngoài trời thoáng mát',
+            x: 0, y: 1.1, z: 2.85, yaw: 180, width: 2.0, height: 1.5, depth: 0.1, color: '#E8E8DF',
+            isInteractable: true, source: { type: 'inferred', evidence: '' }
+          },
+          {
+            id: idFactory(), kind: 'door', label: `Cửa quay lại ${base.title || 'Phòng chính'}`, description: 'Cửa thông sang phòng trước',
+            x: -3.35, y: 0, z: 1.2, yaw: 90, width: 0.95, height: 2.2, depth: 0.1, color: '#7A4E2D',
+            isInteractable: true, targetRoomId: 'primary',
+            interaction: { type: 'door_transition', actionTitle: 'Quay lại', targetRoomId: 'primary' },
+            source: { type: 'inferred', evidence: '' }
+          }
+        ]
+      }
+    };
+    result.connectedRooms = [...(result.connectedRooms || []), newConnectedRoom];
+    const hasDoor = result.objects.some(o => o.targetRoomId === newRoomId);
+    if (!hasDoor) {
+      result.objects.push({
+        id: idFactory(), kind: 'door', label: `Cửa sang ${roomTitle}`, description: `Cửa mở bước sang ${roomTitle}`,
+        x: result.width ? (result.width / 2 - 0.15) : 2.85, y: 0, z: 0, yaw: -90, width: 0.95, height: 2.2, depth: 0.1, color: '#7A4E2D',
+        isInteractable: true, targetRoomId: newRoomId,
+        interaction: { type: 'door_transition', actionTitle: `Sang ${roomTitle}`, targetRoomId: newRoomId },
+        source: { type: 'inferred', evidence: '' }
+      });
+    }
+  }
+
   // Validate the entire transaction without moving untouched objects.
   return validateRoom(result);
 }

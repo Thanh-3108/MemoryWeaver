@@ -15,12 +15,32 @@ export default function RoomViewer3D({
   onNavModeChange,
   onNavWarning,
   cameraView,
+  rotateAction,
   focusLabel,
   glideLabel,
   strollAction,
   speakText,
   lockCamera = true,
-  resetOverviewToken = 0
+  resetOverviewToken = 0,
+  activeBookPage,
+  flipPictureToken = 0,
+  toggleDrawerToken = 0,
+  toggleWardrobeToken = 0,
+  toggleLampToken = 0,
+  toggleFridgeToken = 0,
+  toggleCabinetToken = 0,
+  toggleTvToken = 0,
+  toggleFanToken = 0,
+  toggleAcToken = 0,
+  sitSofaToken = 0,
+  sitChairToken = 0,
+  pourDrinkToken = 0,
+  waterPlantToken = 0,
+  chimeClockToken = 0,
+  toggleCurtainsToken = 0,
+  hotspotId,
+  onHotspotSelected,
+  isAudioMuted = false
 }) {
   const webViewRef = useRef(null);
   const [ready, setReady] = useState(false);
@@ -41,6 +61,16 @@ export default function RoomViewer3D({
       webViewRef.current?.injectJavaScript('window.applyExtractedTextures?.(' + JSON.stringify(textures || {}) + '); true;');
     }
   }, [textures, room, ready]);
+  useEffect(() => {
+    if (ready) {
+      webViewRef.current?.injectJavaScript('window.setRoomAudioMuted?.(' + Boolean(isAudioMuted) + '); true;');
+    }
+  }, [isAudioMuted, ready]);
+  useEffect(() => {
+    if (ready && rotateAction && rotateAction.token) {
+      webViewRef.current?.injectJavaScript('window.rotateView?.("' + rotateAction.direction + '"); true;');
+    }
+  }, [rotateAction, ready]);
   useEffect(() => {
     if (ready && cameraView) {
       webViewRef.current?.injectJavaScript('window.setCameraView?.("' + cameraView + '"); true;');
@@ -85,6 +115,91 @@ export default function RoomViewer3D({
       webViewRef.current?.injectJavaScript('window.resetCameraOverview?.(); true;');
     }
   }, [resetOverviewToken, ready]);
+  useEffect(() => {
+    if (ready && typeof activeBookPage === 'number') {
+      webViewRef.current?.injectJavaScript('window.set3DBookPage?.(' + activeBookPage + '); true;');
+    }
+  }, [activeBookPage, ready]);
+  useEffect(() => {
+    if (ready && flipPictureToken) {
+      webViewRef.current?.injectJavaScript('window.flipActivePicture?.(); true;');
+    }
+  }, [flipPictureToken, ready]);
+  useEffect(() => {
+    if (ready && toggleDrawerToken) {
+      webViewRef.current?.injectJavaScript('window.toggleActiveDeskDrawer?.(); true;');
+    }
+  }, [toggleDrawerToken, ready]);
+  useEffect(() => {
+    if (ready && toggleWardrobeToken) {
+      webViewRef.current?.injectJavaScript('window.toggleActiveWardrobeDoors?.(); true;');
+    }
+  }, [toggleWardrobeToken, ready]);
+  useEffect(() => {
+    if (ready && toggleLampToken) {
+      webViewRef.current?.injectJavaScript('window.toggleActiveLamp?.(); true;');
+    }
+  }, [toggleLampToken, ready]);
+  useEffect(() => {
+    if (ready && toggleFridgeToken) {
+      webViewRef.current?.injectJavaScript('window.toggleActiveFridge?.(); true;');
+    }
+  }, [toggleFridgeToken, ready]);
+  useEffect(() => {
+    if (ready && toggleCabinetToken) {
+      webViewRef.current?.injectJavaScript('window.toggleActiveCabinet?.(); true;');
+    }
+  }, [toggleCabinetToken, ready]);
+  useEffect(() => {
+    if (ready && toggleTvToken) {
+      webViewRef.current?.injectJavaScript('window.toggleActiveTv?.(); true;');
+    }
+  }, [toggleTvToken, ready]);
+  useEffect(() => {
+    if (ready && toggleFanToken) {
+      webViewRef.current?.injectJavaScript('window.toggleActiveFan?.(); true;');
+    }
+  }, [toggleFanToken, ready]);
+  useEffect(() => {
+    if (ready && toggleAcToken) {
+      webViewRef.current?.injectJavaScript('window.toggleActiveAirConditioner?.(); true;');
+    }
+  }, [toggleAcToken, ready]);
+  useEffect(() => {
+    if (ready && sitSofaToken) {
+      webViewRef.current?.injectJavaScript('window.sitActiveSofa?.(); true;');
+    }
+  }, [sitSofaToken, ready]);
+  useEffect(() => {
+    if (ready && sitChairToken) {
+      webViewRef.current?.injectJavaScript('window.sitActiveChair?.(); true;');
+    }
+  }, [sitChairToken, ready]);
+  useEffect(() => {
+    if (ready && pourDrinkToken) {
+      webViewRef.current?.injectJavaScript('window.pourActiveDrink?.(); true;');
+    }
+  }, [pourDrinkToken, ready]);
+  useEffect(() => {
+    if (ready && waterPlantToken) {
+      webViewRef.current?.injectJavaScript('window.waterActivePlant?.(); true;');
+    }
+  }, [waterPlantToken, ready]);
+  useEffect(() => {
+    if (ready && chimeClockToken) {
+      webViewRef.current?.injectJavaScript('window.chimeActiveClock?.(); true;');
+    }
+  }, [chimeClockToken, ready]);
+  useEffect(() => {
+    if (ready && toggleCurtainsToken) {
+      webViewRef.current?.injectJavaScript('window.toggleActiveCurtains?.(); true;');
+    }
+  }, [toggleCurtainsToken, ready]);
+  useEffect(() => {
+    if (ready && hotspotId) {
+      webViewRef.current?.injectJavaScript('window.moveToHotspot?.(' + JSON.stringify(hotspotId) + '); true;');
+    }
+  }, [hotspotId, ready]);
   const handleMessage = event => {
     try {
       const data = JSON.parse(event.nativeEvent.data);
@@ -96,6 +211,7 @@ export default function RoomViewer3D({
       if (data.type === 'POV_STATE') onPovChange?.(data.mode, data.label);
       if (data.type === 'NAV_WARNING') onNavWarning?.(data.message);
       if (data.type === 'NAV_MODE_CHANGED') onNavModeChange?.(data.mode);
+      if (data.type === 'HOTSPOT_SELECTED') onHotspotSelected?.(data.id, data.label);
     } catch {}
   };
   return <View style={styles.container}>

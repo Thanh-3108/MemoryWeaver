@@ -69,6 +69,22 @@ export function createServer({ apiKey = process.env.GEMINI_API_KEY, token = proc
     const effectiveApiKey = clientApiKey || apiKey;
 
     if (req.method === 'GET' && pathname === '/health') return send(res, 200, { ok: true, configured: Boolean(effectiveApiKey), provider: 'gemini', model, contractVersion: 2, segmentation: pipelineStatus() }, req);
+    if (req.method === 'GET' && (pathname === '/' || pathname === '/caregiver' || pathname === '/caregiver.html')) {
+      const caregiverPath = path.join(__dirname, 'public', 'caregiver.html');
+      if (fs.existsSync(caregiverPath)) {
+        const html = fs.readFileSync(caregiverPath, 'utf8');
+        res.writeHead(200, {
+          'Content-Type': 'text/html; charset=utf-8',
+          'Cache-Control': 'no-cache',
+          ...corsHeaders
+        });
+        return res.end(html);
+      }
+    }
+    if (req.method === 'GET' && pathname === '/favicon.ico') {
+      res.writeHead(204, corsHeaders);
+      return res.end();
+    }
     if (req.method === 'GET' && pathname === '/api/diagnosis') {
       const pipeline = pipelineStatus();
       return send(res, 200, { status: 'limited', roomGeneration: { provider: 'gemini', configured: Boolean(effectiveApiKey), verified: false },

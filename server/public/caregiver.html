@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MemoryWeaver ✦ Cổng Quản Lý Người Chăm Sóc</title>
+  <style>
+    :root {
+      --primary: #1b4d3e;
+      --primary-light: #2d6a4f;
+      --primary-dark: #081c15;
+      --accent: #d4a373;
+      --accent-light: #faedcd;
+      --bg: #f8f9fa;
+      --surface: #ffffff;
+      --text: #212529;
+      --text-muted: #6c757d;
+      --border: #e9ecef;
+      --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      --success: #2b9348;
+      --warning: #e85d04;
+      --info: #0077b6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: white;
+      padding: 1.25rem 2rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand-group h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .brand-group p {
+      font-size: 0.85rem;
+      opacity: 0.85;
+      margin-top: 0.2rem;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      backdrop-filter: blur(8px);
+      font-size: 0.85rem;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #55efc4;
+      box-shadow: 0 0 8px #55efc4;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.15); }
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1280px;
+      width: 100%;
+      margin: 1.5rem auto;
+      padding: 0 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Navigation Tabs */
+    .tabs-nav {
+      display: flex;
+      gap: 0.5rem;
+      background: var(--surface);
+      padding: 0.5rem;
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--border);
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-width: 180px;
+      padding: 0.75rem 1.25rem;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.95rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      background: rgba(45, 106, 79, 0.08);
+      color: var(--primary);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 2px 8px rgba(27, 77, 62, 0.25);
+    }
+
+    /* Tab Content Panes */
+    .tab-pane {
+      display: none;
+      gap: 1.5rem;
+    }
+
+    .tab-pane.active {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 992px) {
+      .tab-pane.two-col {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border-radius: 14px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.85rem;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Forms & Inputs */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    textarea, input[type="text"], select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus, input[type="text"]:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.15);
+    }
+
+    /* Prompt Templates */
+    .chips-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.3rem;
+    }
+
+    .chip {
+      background: var(--accent-light);
+      color: #634832;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      cursor: pointer;
+      border: 1px solid #e6ccb2;
+      transition: all 0.15s ease;
+    }
+
+    .chip:hover {
+      background: #eddcd2;
+      transform: translateY(-1px);
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 0.75rem 1.25rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-light);
+      box-shadow: 0 4px 12px rgba(27, 77, 62, 0.25);
+    }
+
+    .btn-secondary {
+      background: #e9ecef;
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: #dee2e6;
+    }
+
+    .btn-accent {
+      background: var(--warning);
+      color: white;
+    }
+
+    .btn-accent:hover {
+      background: #dc2f02;
+    }
+
+    .btn-publish {
+      background: linear-gradient(135deg, #2b9348 0%, #1b4d3e 100%);
+      color: white;
+      font-size: 1.05rem;
+      padding: 0.9rem 1.5rem;
+      box-shadow: 0 4px 15px rgba(43, 147, 72, 0.3);
+    }
+
+    .btn-publish:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(43, 147, 72, 0.4);
+    }
+
+    .btn-delete {
+      background: transparent;
+      color: #e63946;
+      border: 1px solid #ffccd5;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.85rem;
+    }
+
+    .btn-delete:hover {
+      background: #ffe3e3;
+    }
+
+    /* Object & Reminder Lists */
+    .item-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 0.4rem;
+    }
+
+    .item-card {
+      background: #fdfbf7;
+      border: 1px solid #ebd9c8;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .item-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex: 1;
+    }
+
+    .item-icon {
+      font-size: 1.4rem;
+    }
+
+    .item-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #3d2616;
+    }
+
+    .item-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    .item-meta {
+      font-size: 0.75rem;
+      color: #8c7851;
+      background: #f4ece1;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    /* Notification Box */
+    .banner {
+      padding: 0.85rem 1.25rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .banner-success {
+      background: #d8f3dc;
+      color: #1b4332;
+      border: 1px solid #b7e4c7;
+    }
+
+    .banner-info {
+      background: #caf0f8;
+      color: #03045e;
+      border: 1px solid #90e0ef;
+    }
+
+    .banner-warning {
+      background: #ffe5d9;
+      color: #9d0208;
+      border: 1px solid #fec89a;
+    }
+
+    /* Live Messenger Feed */
+    .chat-bubble {
+      padding: 0.85rem 1rem;
+      border-radius: 12px;
+      max-width: 80%;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .chat-bubble-sent {
+      background: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      margin-left: auto;
+      color: #1b5e20;
+    }
+
+    .ack-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #c8e6c9;
+      color: #1b5e20;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      margin-top: 0.4rem;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 1.2rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand-group">
+      <h1>🌿 MemoryWeaver ✦ Cổng Quản Lý Người Chăm Sóc</h1>
+      <p>Điều hành không gian ký ức 3D, gợi nhắc sinh hoạt & gửi yêu thương tới Người Bệnh từ máy tính</p>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-dot" id="serverStatusDot"></div>
+      <span id="serverStatusText">Server sẵn sàng</span>
+      <span style="opacity: 0.5;">|</span>
+      <span>Phiên bản: <strong id="syncVersion">v1</strong></span>
+      <span style="opacity: 0.5;">|</span>
+      <span>📱 Thiết bị người bệnh: <strong id="patientDeviceStatus">Đang lắng nghe...</strong></span>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Navigation Tabs -->
+    <nav class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('tab-room')">
+        🏠 1. Soạn & Xuất Bản Phòng 3D
+      </button>
+      <button class="tab-btn" onclick="switchTab('tab-schedule')">
+        📅 2. Lịch Sinh Hoạt & Uống Thuốc
+      </button>
+      <button class="tab-btn" onclick="switchTab('tab-messages')">
+        💌 3. Gửi Lời Nhắn Tức Thì
+      </button>
+      <button class="tab-btn" onclick="switchTab('tab-connect')">
+        📱 4. Hướng Dẫn Kết Nối APK
+      </button>
+    </nav>
+
+    <!-- TAB 1: Room Studio & Publishing -->
+    <section id="tab-room" class="tab-pane two-col active">
+      <!-- Left Card: AI Prompt & Image Generator -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">✨ Sáng Tạo Phòng Ký Ức (Gemini AI)</h2>
+            <p class="card-subtitle">Mô tả căn phòng xưa hoặc tải lên ảnh chụp để AI dựng không gian 3D</p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="promptInput">Mô tả không gian mong muốn:</label>
+          <textarea id="promptInput" rows="4" placeholder="Ví dụ: Phòng khách mộc mạc thời bao cấp ở Hà Nội, có bộ bàn ghế trường kỷ gỗ gụ, tủ buýt-phê, phích nước Rạng Đông, chiếc quạt tai voi và lịch lốc trên tường..."></textarea>
+          
+          <div class="chips-container">
+            <span class="chip" onclick="applyPrompt('Phòng khách thời bao cấp với bộ bàn ghế gỗ mộc, chiếc radio con sò, ấm trà sen và quạt tai voi')">🌸 Phòng khách bao cấp</span>
+            <span class="chip" onclick="applyPrompt('Gian bếp quê hương ấm cúng với mâm cơm gia đình, ấm nước sôi và chạn bát gỗ')">🍳 Gian bếp ấm cúng</span>
+            <span class="chip" onclick="applyPrompt('Lớp học xưa phấn trắng bảng đen với bàn học học sinh cạnh cửa sổ ngập nắng')">📚 Lớp học xưa</span>
+            <span class="chip" onclick="applyPrompt('Hiên nhà vườn hoa thanh bình với chiếc ghế bập bênh ngắm hoa giấy rực rỡ')">🌿 Hiên vườn hoa</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="imageUpload">Ảnh chụp thực tế / Panorama 360° (Tùy chọn):</label>
+          <input type="file" id="imageUpload" accept="image/png,image/jpeg" onchange="handleImageSelected(event)">
+          <div id="imagePreviewContainer" style="display:none; margin-top:0.5rem;">
+            <img id="imagePreview" style="max-height: 120px; border-radius: 6px; border: 1px solid #ddd;" src="" alt="Xem trước ảnh">
+            <button class="btn btn-delete" style="margin-left:0.5rem;" onclick="clearSelectedImage()">Hủy ảnh</button>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+          <button class="btn btn-primary" id="btnGenerateRoom" onclick="handleGenerateRoom()">
+            <span>✨ Tạo phòng bằng AI</span>
+          </button>
+          <button class="btn btn-secondary" id="btnEditRoom" onclick="handleEditRoom()">
+            <span>✏️ Chỉnh sửa chi tiết</span>
+          </button>
+        </div>
+
+        <div id="generateAlert" style="display:none;" class="banner banner-info">
+          <span>⏳ Đang phân tích và dựng bố cục 3D... Quá trình có thể mất 3-6 giây.</span>
+        </div>
+      </div>
+
+      <!-- Right Card: Active Room Objects & Publishing Action -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">🛋️ Không Gian Đang Chuẩn Bị</h2>
+            <p class="card-subtitle" id="activeRoomSummary">Đang tải bố cục hiện tại...</p>
+          </div>
+          <button class="btn btn-publish" onclick="handlePublishRoomToPatient()">
+            <span>🚀 ĐỒNG BỘ SANG MÁY NGƯỜI BỆNH</span>
+          </button>
+        </div>
+
+        <div id="publishSuccessBanner" style="display:none;" class="banner banner-success">
+          <span>✅ Đã đồng bộ thành công sang máy Người Bệnh! Ứng dụng điện thoại sẽ tự động hiển thị phòng mới ngay lập tức.</span>
+        </div>
+
+        <div class="form-group">
+          <label>Danh sách đồ vật & mảnh ghép ký ức tương tác:</label>
+          <div class="item-list" id="roomObjectsList">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: Schedule & Reminders -->
+    <section id="tab-schedule" class="tab-pane two-col">
+      <!-- Left Card: Add Reminder -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">⏰ Thêm Mốc Nhắc Nhở Sinh Hoạt</h2>
+            <p class="card-subtitle">Đặt lịch uống thuốc, ăn cơm, uống nước ấm gửi đến thiết bị người bệnh</p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="remTime">Giờ nhắc nhở:</label>
+          <input type="text" id="remTime" value="08:00" placeholder="HH:mm (VD: 08:30 hoặc 15:00)">
+        </div>
+
+        <div class="form-group">
+          <label for="remType">Loại sinh hoạt:</label>
+          <select id="remType" onchange="handleReminderTypeChange()">
+            <option value="medicine">💊 Uống thuốc men</option>
+            <option value="water">💧 Uống nước ấm</option>
+            <option value="meal">🍚 Bữa ăn cơm</option>
+            <option value="exercise">🏃 Vận động nhẹ</option>
+            <option value="tea">🫖 Uống trà & ngắm hoa</option>
+            <option value="rest">🛌 Nghỉ ngơi / Đi ngủ</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="remLabel">Tiêu đề mốc nhắc:</label>
+          <input type="text" id="remLabel" value="Uống thuốc sáng" placeholder="VD: Uống thuốc huyết áp">
+        </div>
+
+        <div class="form-group">
+          <label for="remMessage">Lời dặn ấm áp gửi người bệnh:</label>
+          <textarea id="remMessage" rows="2" placeholder="Bác ơi, đến giờ uống thuốc huyết áp buổi sáng rồi ạ."></textarea>
+        </div>
+
+        <button class="btn btn-primary" onclick="handleAddReminder()">
+          <span>➕ Thêm vào danh sách</span>
+        </button>
+      </div>
+
+      <!-- Right Card: Scheduled List & Push Action -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">📋 Lịch Trình Đang Thiết Lập</h2>
+            <p class="card-subtitle">Các mốc nhắc nhở sẽ xuất hiện trên đồng hồ và bàn phòng 3D</p>
+          </div>
+          <button class="btn btn-publish" onclick="handleSaveAndPublishReminders()">
+            <span>💾 ĐẨY LỊCH SANG MÁY NGƯỜI BỆNH</span>
+          </button>
+        </div>
+
+        <div id="scheduleSuccessBanner" style="display:none;" class="banner banner-success">
+          <span>✅ Lịch sinh hoạt đã được đẩy thành công sang ứng dụng người bệnh!</span>
+        </div>
+
+        <div class="item-list" id="remindersList">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: Live Instant Messages -->
+    <section id="tab-messages" class="tab-pane two-col">
+      <!-- Left Card: Message Composer -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">💌 Gửi Tin Nhắn Tức Thì Tới Người Bệnh</h2>
+            <p class="card-subtitle">Tin nhắn sẽ hiện to, rõ và phát âm thanh êm dịu trên màn hình điện thoại</p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Mẫu tin nhắn nhanh:</label>
+          <div class="chips-container">
+            <span class="chip" onclick="setLiveMessage('Bác ơi, con đang pha ấm trà hoa cúc thơm lắm! Bác cứ thong thả dạo ngắm phòng nhé ❤️')">🫖 Pha trà thơm</span>
+            <span class="chip" onclick="setLiveMessage('Đến giờ uống thuốc rồi bác nhé, con để sẵn cốc nước ấm trên bàn rồi ạ 💊')">💊 Uống thuốc</span>
+            <span class="chip" onclick="setLiveMessage('Hôm nay trời nắng đẹp lắm, lát con dắt bác ra vườn ngắm hoa nở nhé 🌸')">🌸 Dạo vườn ngắm hoa</span>
+            <span class="chip" onclick="setLiveMessage('Bác nhớ uống một ngụm nước ấm cho dễ chịu cổ họng nhé 💧')">💧 Uống nước ấm</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="liveMsgInput">Nội dung tin nhắn yêu thương:</label>
+          <textarea id="liveMsgInput" rows="3" placeholder="Nhập lời dặn dò hoặc chọn từ các mẫu nhanh bên trên..."></textarea>
+        </div>
+
+        <button class="btn btn-publish" onclick="handleSendLiveMessage()">
+          <span>📨 GỬI TIN NHẮN NGAY LÊN MÀN HÌNH NGƯỜI BỆNH</span>
+        </button>
+      </div>
+
+      <!-- Right Card: Live Feedback Monitor -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">📡 Trạng Thái Phản Hồi Từ Người Bệnh</h2>
+            <p class="card-subtitle">Theo dõi người bệnh đã đọc và bấm xác nhận hay chưa</p>
+          </div>
+        </div>
+
+        <div id="liveMessageFeed" style="display:flex; flex-direction:column; gap:0.75rem;">
+          <div class="banner banner-info" id="messageStatusBox">
+            <span>Chưa có tin nhắn nào đang gửi. Hãy chọn một tin nhắn bên trái để gửi tới người bệnh.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: Connection Guide -->
+    <section id="tab-connect" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">📱 Hướng Dẫn Kết Nối Ứng Dụng Điện Thoại Người Bệnh (APK)</h2>
+            <p class="card-subtitle">Chỉ cần 1 lần cài đặt duy nhất để người bệnh hoàn toàn thư thái trải nghiệm</p>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1.25rem; margin-top:0.5rem;">
+          <div style="background:#f8f9fa; border:1px solid #e9ecef; border-radius:10px; padding:1.25rem;">
+            <div style="font-size:1.6rem; margin-bottom:0.5rem;">1️⃣</div>
+            <h3 style="font-size:1.05rem; margin-bottom:0.4rem; color:var(--primary);">Cài đặt ứng dụng APK</h3>
+            <p style="font-size:0.9rem; color:var(--text-muted);">
+              Cài file <strong>MemoryWeaver.apk</strong> vào điện thoại hoặc máy tính bảng của người bệnh. Mở ứng dụng lên.
+            </p>
+          </div>
+
+          <div style="background:#f8f9fa; border:1px solid #e9ecef; border-radius:10px; padding:1.25rem;">
+            <div style="font-size:1.6rem; margin-bottom:0.5rem;">2️⃣</div>
+            <h3 style="font-size:1.05rem; margin-bottom:0.4rem; color:var(--primary);">Nhập địa chỉ máy tính</h3>
+            <p style="font-size:0.9rem; color:var(--text-muted);">
+              Bấm vào biểu tượng <strong>⚙️ Cài đặt</strong> ở góc trên màn hình điện thoại. Nhập địa chỉ sau:
+            </p>
+            <div style="margin-top:0.5rem; background:#fff; padding:0.5rem 0.75rem; border-radius:6px; font-weight:700; color:var(--primary-dark); font-family:monospace; border:1px dashed #ced4da;" id="hostIpDisplay">
+              http://localhost:8787
+            </div>
+          </div>
+
+          <div style="background:#f8f9fa; border:1px solid #e9ecef; border-radius:10px; padding:1.25rem;">
+            <div style="font-size:1.6rem; margin-bottom:0.5rem;">3️⃣</div>
+            <h3 style="font-size:1.05rem; margin-bottom:0.4rem; color:var(--primary);">Bấm Lưu & Khám phá</h3>
+            <p style="font-size:0.9rem; color:var(--text-muted);">
+              Ứng dụng trên điện thoại sẽ tự động chuyển sang chế độ thuần Người Bệnh (toàn màn hình 3D, đọc sách, nghe giọng kể, nhận lời nhắc từ bạn).
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>MemoryWeaver ✦ Ứng dụng công nghệ AI & Trị liệu hồi ức (Reminiscence Therapy) bảo vệ sức khỏe tinh thần người cao tuổi.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    let currentRoom = null;
+    let currentReminders = [];
+    let selectedImageBase64 = '';
+    let lastSentMessageText = '';
+    let serverToken = localStorage.getItem('mw_token') || '';
+
+    // Switch tabs
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+      
+      const targetPane = document.getElementById(tabId);
+      if (targetPane) targetPane.classList.add('active');
+
+      const index = ['tab-room', 'tab-schedule', 'tab-messages', 'tab-connect'].indexOf(tabId);
+      if (index >= 0) {
+        document.querySelectorAll('.tab-btn')[index].classList.add('active');
+      }
+    }
+
+    // Apply quick prompt
+    function applyPrompt(text) {
+      document.getElementById('promptInput').value = text;
+    }
+
+    // Handle image upload
+    function handleImageSelected(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const result = e.target.result;
+        selectedImageBase64 = result.split(',')[1];
+        document.getElementById('imagePreview').src = result;
+        document.getElementById('imagePreviewContainer').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearSelectedImage() {
+      selectedImageBase64 = '';
+      document.getElementById('imageUpload').value = '';
+      document.getElementById('imagePreviewContainer').style.display = 'none';
+    }
+
+    // Reminder type helper
+    function handleReminderTypeChange() {
+      const type = document.getElementById('remType').value;
+      const labelInput = document.getElementById('remLabel');
+      const msgInput = document.getElementById('remMessage');
+      if (type === 'medicine') {
+        labelInput.value = 'Uống thuốc';
+        msgInput.value = 'Bác ơi, đến giờ uống thuốc rồi ạ.';
+      } else if (type === 'water') {
+        labelInput.value = 'Uống nước ấm';
+        msgInput.value = 'Bác nhớ uống một cốc nước ấm cho khỏe nhé.';
+      } else if (type === 'meal') {
+        labelInput.value = 'Ăn cơm';
+        msgInput.value = 'Đến giờ ăn trưa rồi bác ơi, chúc bác ngon miệng!';
+      } else if (type === 'exercise') {
+        labelInput.value = 'Vận động nhẹ';
+        msgInput.value = 'Bác vươn vai và dạo bước nhẹ nhàng cho dẻo dai nhé.';
+      } else if (type === 'tea') {
+        labelInput.value = 'Uống trà ấm';
+        msgInput.value = 'Pha một ấm trà hoa thơm ngát ngắm cảnh chiều.';
+      } else if (type === 'rest') {
+        labelInput.value = 'Nghỉ ngơi';
+        msgInput.value = 'Đến giờ nghỉ ngơi rồi bác ạ, chúc bác giấc ngủ thật an lành.';
+      }
+    }
+
+    function setLiveMessage(text) {
+      document.getElementById('liveMsgInput').value = text;
+    }
+
+    // Fetch API with token
+    async function apiFetch(endpoint, options = {}) {
+      const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+      if (serverToken) {
+        headers['Authorization'] = `Bearer ${serverToken}`;
+      }
+      return fetch(endpoint, { ...options, headers });
+    }
+
+    // Initial load & Polling
+    async function fetchLatestState() {
+      try {
+        const res = await apiFetch('/api/sync/latest');
+        if (!res.ok) return;
+        const data = await res.json();
+        
+        document.getElementById('syncVersion').textContent = `v${data.version || 1}`;
+        document.getElementById('serverStatusText').textContent = 'Server sẵn sàng';
+        document.getElementById('serverStatusDot').style.backgroundColor = '#55efc4';
+
+        if (data.room && (!currentRoom || JSON.stringify(data.room) !== JSON.stringify(currentRoom))) {
+          currentRoom = data.room;
+          renderRoomObjects(currentRoom);
+        }
+
+        if (Array.isArray(data.reminders)) {
+          currentReminders = data.reminders;
+          renderRemindersList(currentReminders);
+        }
+
+        // Live notification status
+        const statusBox = document.getElementById('messageStatusBox');
+        if (data.activeNotification) {
+          document.getElementById('patientDeviceStatus').textContent = 'Đang nhận thông báo...';
+          statusBox.className = 'banner banner-warning';
+          statusBox.innerHTML = `
+            <div>
+              <strong>⏳ Đang hiển thị trên màn hình người bệnh:</strong><br>
+              "${data.activeNotification.text}"<br>
+              <small style="opacity:0.8;">Gửi lúc: ${new Date(data.activeNotification.createdAt).toLocaleTimeString()}</small>
+            </div>
+          `;
+        } else if (lastSentMessageText) {
+          document.getElementById('patientDeviceStatus').textContent = 'Hoạt động bình thường';
+          statusBox.className = 'banner banner-success';
+          statusBox.innerHTML = `
+            <div>
+              <strong>🟢 Người bệnh đã xác nhận!</strong><br>
+              Người bệnh đã đọc và bấm: <em>"✓ Dạ, tôi nhớ rồi"</em> cho tin nhắn: "${lastSentMessageText}"
+            </div>
+          `;
+        }
+      } catch (err) {
+        document.getElementById('serverStatusText').textContent = 'Mất kết nối';
+        document.getElementById('serverStatusDot').style.backgroundColor = '#e63946';
+      }
+    }
+
+    function renderRoomObjects(room) {
+      const summaryEl = document.getElementById('activeRoomSummary');
+      const listEl = document.getElementById('roomObjectsList');
+      if (!room || !Array.isArray(room.objects)) {
+        summaryEl.textContent = 'Chưa có phòng nào được chọn.';
+        listEl.innerHTML = '<p style="color:#888; font-size:0.9rem;">Hãy nhập mô tả và bấm "Tạo phòng bằng AI" để bắt đầu.</p>';
+        return;
+      }
+
+      summaryEl.textContent = `${room.title || 'Phòng Ký Ức'} • ${room.width}m x ${room.depth}m • ${room.objects.length} đồ vật`;
+      listEl.innerHTML = '';
+
+      room.objects.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'item-card';
+
+        const iconMap = {
+          sofa: '🛋️', table: '🪵', chair: '🪑', bed: '🛏️', shelf: '📚',
+          cabinet: '🗄️', plant: '🌿', lamp: '💡', rug: '🧶', picture: '🖼️',
+          window: '🪟', door: '🚪', desk: '💻', wardrobe: '🚪', clock: '⏰',
+          mug: '☕', book: '📖', notebook: '📓', television: '📺'
+        };
+        const icon = iconMap[item.kind] || '📦';
+
+        div.innerHTML = `
+          <div class="item-info">
+            <span class="item-icon">${icon}</span>
+            <div>
+              <div class="item-title">${item.label || item.kind}</div>
+              <div class="item-desc">${item.description || ''}</div>
+              ${item.memoryFragment ? `<div style="color:var(--primary); font-size:0.75rem; margin-top:0.2rem;">🌟 Mảnh ký ức: ${item.memoryFragment.title}</div>` : ''}
+            </div>
+          </div>
+          <span class="item-meta">${item.kind}</span>
+        `;
+        listEl.appendChild(div);
+      });
+    }
+
+    function renderRemindersList(reminders) {
+      const listEl = document.getElementById('remindersList');
+      if (!Array.isArray(reminders) || reminders.length === 0) {
+        listEl.innerHTML = '<p style="color:#888; font-size:0.9rem;">Chưa có mốc nhắc nhở nào.</p>';
+        return;
+      }
+
+      listEl.innerHTML = '';
+      reminders.forEach((rem, idx) => {
+        const div = document.createElement('div');
+        div.className = 'item-card';
+        div.innerHTML = `
+          <div class="item-info">
+            <span class="item-icon">${rem.icon || '⏰'}</span>
+            <div>
+              <div class="item-title"><strong>${rem.time}</strong> - ${rem.label}</div>
+              <div class="item-desc">${rem.message || ''}</div>
+            </div>
+          </div>
+          <button class="btn btn-delete" onclick="handleDeleteReminder(${idx})">Xóa</button>
+        `;
+        listEl.appendChild(div);
+      });
+    }
+
+    // Generate room with AI
+    async function handleGenerateRoom() {
+      const prompt = document.getElementById('promptInput').value.trim();
+      if (!prompt && !selectedImageBase64) {
+        alert('Vui lòng nhập mô tả hoặc chọn ảnh trước khi tạo phòng.');
+        return;
+      }
+
+      const alertEl = document.getElementById('generateAlert');
+      const btn = document.getElementById('btnGenerateRoom');
+      alertEl.style.display = 'flex';
+      btn.disabled = true;
+
+      try {
+        const body = { prompt };
+        if (selectedImageBase64) body.imageBase64 = selectedImageBase64;
+        
+        const res = await apiFetch('/api/room', {
+          method: 'POST',
+          body: JSON.stringify(body)
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          alert(`Lỗi tạo phòng: ${data.error || 'Không xác định'}`);
+          return;
+        }
+
+        currentRoom = data;
+        renderRoomObjects(currentRoom);
+        alert('✨ Đã dựng thành công không gian 3D mới! Hãy bấm "ĐỒNG BỘ SANG MÁY NGƯỜI BỆNH" để chuyển phòng sang điện thoại.');
+      } catch (err) {
+        alert(`Lỗi kết nối tới server AI: ${err.message}`);
+      } finally {
+        alertEl.style.display = 'none';
+        btn.disabled = false;
+      }
+    }
+
+    // Edit room
+    async function handleEditRoom() {
+      const prompt = document.getElementById('promptInput').value.trim();
+      if (!prompt) {
+        alert('Vui lòng nhập chi tiết muốn chỉnh sửa (VD: Thêm chậu hoa lên bàn).');
+        return;
+      }
+      if (!currentRoom) {
+        alert('Chưa có phòng hiện tại để sửa. Hãy tạo phòng mới trước.');
+        return;
+      }
+
+      const alertEl = document.getElementById('generateAlert');
+      alertEl.style.display = 'flex';
+
+      try {
+        const res = await apiFetch('/api/room', {
+          method: 'POST',
+          body: JSON.stringify({ prompt, previousRoom: currentRoom })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          alert(`Lỗi chỉnh sửa: ${data.error || 'Không xác định'}`);
+          return;
+        }
+        currentRoom = data;
+        renderRoomObjects(currentRoom);
+        alert('✏️ Đã chỉnh sửa phòng thành công! Bấm "ĐỒNG BỘ SANG MÁY NGƯỜI BỆNH" để gửi cập nhật.');
+      } catch (err) {
+        alert(`Lỗi chỉnh sửa: ${err.message}`);
+      } finally {
+        alertEl.style.display = 'none';
+      }
+    }
+
+    // Publish room to patient
+    async function handlePublishRoomToPatient() {
+      if (!currentRoom) {
+        alert('Chưa có căn phòng nào để xuất bản.');
+        return;
+      }
+
+      try {
+        const res = await apiFetch('/api/sync/publish', {
+          method: 'POST',
+          body: JSON.stringify({ room: currentRoom, reminders: currentReminders })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          alert(`Lỗi đồng bộ: ${data.error || 'Không xác định'}`);
+          return;
+        }
+
+        const banner = document.getElementById('publishSuccessBanner');
+        banner.style.display = 'flex';
+        setTimeout(() => { banner.style.display = 'none'; }, 6000);
+        fetchLatestState();
+      } catch (err) {
+        alert(`Lỗi gửi dữ liệu: ${err.message}`);
+      }
+    }
+
+    // Add reminder
+    function handleAddReminder() {
+      const time = document.getElementById('remTime').value.trim();
+      const type = document.getElementById('remType').value;
+      const label = document.getElementById('remLabel').value.trim();
+      const message = document.getElementById('remMessage').value.trim();
+
+      if (!time || !label) {
+        alert('Vui lòng nhập giờ và tiêu đề nhắc nhở.');
+        return;
+      }
+
+      const iconMap = { medicine: '💊', water: '💧', meal: '🍚', exercise: '🏃', tea: '🫖', rest: '🛌' };
+      const icon = iconMap[type] || '⏰';
+
+      currentReminders.push({
+        id: `rem-${Date.now()}`,
+        time,
+        type,
+        icon,
+        label,
+        message
+      });
+
+      renderRemindersList(currentReminders);
+    }
+
+    function handleDeleteReminder(idx) {
+      currentReminders.splice(idx, 1);
+      renderRemindersList(currentReminders);
+    }
+
+    async function handleSaveAndPublishReminders() {
+      try {
+        const res = await apiFetch('/api/sync/publish', {
+          method: 'POST',
+          body: JSON.stringify({ room: currentRoom, reminders: currentReminders })
+        });
+        if (res.ok) {
+          const banner = document.getElementById('scheduleSuccessBanner');
+          banner.style.display = 'flex';
+          setTimeout(() => { banner.style.display = 'none'; }, 5000);
+          fetchLatestState();
+        }
+      } catch (err) {
+        alert(`Lỗi đẩy lịch: ${err.message}`);
+      }
+    }
+
+    // Send Live Message
+    async function handleSendLiveMessage() {
+      const text = document.getElementById('liveMsgInput').value.trim();
+      if (!text) {
+        alert('Vui lòng nhập nội dung tin nhắn gửi người bệnh.');
+        return;
+      }
+
+      try {
+        const res = await apiFetch('/api/sync/message', {
+          method: 'POST',
+          body: JSON.stringify({
+            text,
+            type: 'reminder',
+            title: 'Lời nhắn từ người chăm sóc',
+            icon: '💌'
+          })
+        });
+
+        if (res.ok) {
+          lastSentMessageText = text;
+          document.getElementById('liveMsgInput').value = '';
+          fetchLatestState();
+        } else {
+          const d = await res.json();
+          alert(`Không gửi được: ${d.error || 'Lỗi server'}`);
+        }
+      } catch (err) {
+        alert(`Lỗi gửi: ${err.message}`);
+      }
+    }
+
+    // Initialize host display
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('hostIpDisplay').textContent = `${window.location.origin}`;
+      fetchLatestState();
+      setInterval(fetchLatestState, 2500);
+    });
+  </script>
+</body>
+</html>
