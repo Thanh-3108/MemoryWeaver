@@ -13,17 +13,18 @@
       pointer-events: none; z-index: 100;
     }
     #btn-back-overview {
-      background: rgba(24, 34, 30, 0.92); border: 1px solid rgba(255, 255, 255, 0.28);
-      color: #e4efe9; padding: 10px 16px; border-radius: 22px; font-size: 13px; font-weight: 600;
-      cursor: pointer; backdrop-filter: blur(10px); box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      background: rgba(16, 32, 24, 0.96); border: 2px solid #81c784;
+      color: #ffffff; padding: 12px 22px; border-radius: 26px; font-size: 14px; font-weight: 700;
+      cursor: pointer; backdrop-filter: blur(12px); box-shadow: 0 6px 22px rgba(0,0,0,0.6);
       display: none; pointer-events: auto; transition: all 0.2s ease;
     }
     #btn-back-overview:active { transform: scale(0.96); background: #2f453c; }
 
     #pov-hint-badge {
-      background: rgba(24, 34, 30, 0.88); border: 1px solid rgba(129, 199, 132, 0.35);
-      color: #a5d6a7; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
-      backdrop-filter: blur(8px); display: none; pointer-events: none;
+      background: rgba(16, 28, 22, 0.92); border: 1.5px solid rgba(129, 199, 132, 0.45);
+      color: #c8e6c9; padding: 8px 16px; border-radius: 20px; font-size: 12.5px; font-weight: 600;
+      backdrop-filter: blur(8px); display: block; pointer-events: none;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
     }
 
     #bubble-overlay {
@@ -176,7 +177,7 @@
     <button id="btn-back-overview" onclick="window.resetCameraOverview()">⬅️ Toàn cảnh phòng</button>
     <button id="btn-exit-fpv" onclick="window.setNavMode('overview')">🏰 Thoát góc nhìn thứ nhất</button>
     <button id="btn-sound-toggle" onclick="window.toggleRoomAudio()">🔊 Âm thanh</button>
-    <div id="pov-hint-badge">👀 Xoay quanh nhìn phòng</div>
+    <div id="pov-hint-badge">🔒 3D Point-and-Explore: Đã khóa góc nhìn • Chạm đồ vật để khám phá</div>
     <div id="fpv-hint-badge">🕹️ Cần gạt: Bước đi • Vuốt phải: Nhìn quanh</div>
   </div>
 
@@ -227,6 +228,10 @@
     let desiredOrbitDistance = 7.5;
     let isAdjustingPopper = false;
     let isFocusedPov = false;
+
+    // --- 3D POINT-AND-EXPLORE & LOCKED CAMERA SYSTEM ---
+    let isCameraLocked = true; // Khóa xoay tự do để chống mất phương hướng, chóng mặt và khó thao tác
+    let pointAndExploreMode = true;
 
     // --- FIRST-PERSON VIEW (FPV) NAVIGATION SYSTEM ---
     let navMode = 'overview'; // 'overview' | 'fpv'
@@ -1145,6 +1150,49 @@
       return sprite;
     }
 
+    function createExplorePin(label, kind) {
+      if (!hasCanvasSupport) return null;
+      let icon = '✨';
+      if (/giường|bed/i.test(kind || label)) icon = '🛏️';
+      else if (/tủ|wardrobe|cabinet|closet/i.test(kind || label)) icon = '🗄️';
+      else if (/bàn|desk|table/i.test(kind || label)) icon = '🪵';
+      else if (/sách|nhật ký|book|diary/i.test(kind || label)) icon = '📖';
+      else if (/cửa sổ|window/i.test(kind || label)) icon = '🪟';
+      else if (/cửa|door/i.test(kind || label)) icon = '🚪';
+      else if (/ghế|chair|armchair|sofa/i.test(kind || label)) icon = '🪑';
+      else if (/đèn|lamp/i.test(kind || label)) icon = '💡';
+      else if (/cây|plant/i.test(kind || label)) icon = '🌿';
+
+      const shortLabel = (label || '').slice(0, 16);
+      const canvas = document.createElement('canvas');
+      canvas.width = 240;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+
+      // Nền viên thuốc màu trầm dịu, viền xanh lục bảo vệ mắt
+      ctx.fillStyle = 'rgba(16, 28, 22, 0.94)';
+      if (ctx.roundRect) ctx.roundRect(4, 4, 232, 56, 28); else ctx.fillRect(4, 4, 232, 56);
+      ctx.fill();
+      ctx.strokeStyle = '#81c784';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 22px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`${icon} ${shortLabel}`, 120, 32);
+
+      const tex = new THREE.CanvasTexture(canvas);
+      const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+      const sprite = new THREE.Sprite(mat);
+      sprite.name = 'explorePin';
+      sprite.scale.set(0.68, 0.20, 1);
+      sprite.renderOrder = 999;
+      return sprite;
+    }
+
     function generateOutdoorSkyCanvas() {
       if (!hasCanvasSupport) return null;
       const canvas = document.createElement('canvas');
@@ -1314,8 +1362,8 @@
       controls.enableDamping = true;
       controls.dampingFactor = 0.08;
       controls.enablePan = false;
-      controls.enableRotate = true;
-      controls.enableZoom = true;
+      controls.enableRotate = !isCameraLocked;
+      controls.enableZoom = !isCameraLocked;
       controls.minDistance = 0.6;
       controls.maxDistance = 25.0;
       controls.minPolarAngle = Math.PI * 0.05;
@@ -1383,13 +1431,13 @@
       }
     }
     function onMouseDown(e) {
-      if (navMode === 'fpv' && e.button === 0) {
+      if (navMode === 'fpv' && !isCameraLocked && e.button === 0) {
         isMouseDown = true;
         prevMousePos = { x: e.clientX, y: e.clientY };
       }
     }
     function onMouseMove(e) {
-      if (navMode === 'fpv' && isMouseDown) {
+      if (navMode === 'fpv' && !isCameraLocked && isMouseDown) {
         const dx = e.clientX - prevMousePos.x;
         const dy = e.clientY - prevMousePos.y;
         fpvYaw -= dx * 0.0035;
@@ -1466,7 +1514,7 @@
       if (typeof window.addEventListener !== 'function') return;
       const zone = document.getElementById('joystick-zone');
       window.addEventListener('touchstart', e => {
-        if (navMode !== 'fpv' || !e.changedTouches) return;
+        if (navMode !== 'fpv' || isCameraLocked || !e.changedTouches) return;
         for (let i = 0; i < e.changedTouches.length; i++) {
           const t = e.changedTouches[i];
           if (zone && typeof zone.contains === 'function' && zone.contains(t.target)) continue;
@@ -1479,7 +1527,7 @@
       });
 
       window.addEventListener('touchmove', e => {
-        if (navMode !== 'fpv' || fpvTouchId === null || !e.changedTouches) return;
+        if (navMode !== 'fpv' || isCameraLocked || fpvTouchId === null || !e.changedTouches) return;
         for (let i = 0; i < e.changedTouches.length; i++) {
           const t = e.changedTouches[i];
           if (t.identifier === fpvTouchId) {
@@ -1665,6 +1713,7 @@
 
             highlightFurniture(cur);
             playInteractChime();
+            focusOnFurniture(cur);
             if (info.kind === 'door' || info.targetRoomId || info.interaction?.type === 'door_transition') {
               window.ReactNativeWebView?.postMessage(JSON.stringify({
                 type: 'DOOR_TRANSITION',
@@ -1680,6 +1729,30 @@
               isInteractable: true,
               item: info
             }));
+            return;
+          }
+        }
+
+        // Tap-to-explore on floor in Point-and-Explore
+        if (floorMesh) {
+          const floorHits = raycaster.intersectObject(floorMesh, false);
+          if (floorHits.length > 0) {
+            const hit = floorHits[0].point;
+            const targetLook = new THREE.Vector3(0, 1.2, 0);
+            const camPos = new THREE.Vector3(hit.x, PLAYER_HEIGHT, hit.z);
+            const rw = ((roomGroup?.userData?.width || 6) / 2) - 0.45;
+            const rd = ((roomGroup?.userData?.depth || 6) / 2) - 0.45;
+            camPos.x = Math.max(-rw, Math.min(rw, camPos.x));
+            camPos.z = Math.max(-rd, Math.min(rd, camPos.z));
+
+            animateCameraTo(camPos, targetLook, 2.0, () => {
+              if (controls) {
+                controls.enableRotate = !isCameraLocked;
+                controls.enableZoom = !isCameraLocked;
+                controls.enablePan = false;
+              }
+            });
+            playFootstepAudio();
           }
         }
       }
@@ -1756,8 +1829,7 @@
     function focusOnFurniture(group) {
       if (!roomGroup || !group) return;
 
-      if (navMode === 'fpv') {
-        // Trong FPV, chỉ xoay hướng nhìn về phía đồ vật mà không cướp vị trí hay khóa di chuyển của người dùng
+      if (navMode === 'fpv' && !isCameraLocked) {
         const dx = group.position.x - camera.position.x;
         const dz = group.position.z - camera.position.z;
         fpvYaw = Math.atan2(-dx, -dz);
@@ -1772,12 +1844,14 @@
       if (btn && btn.style) btn.style.display = 'block';
       if (hint && hint.style) {
         hint.style.display = 'block';
-        hint.textContent = '👁️ Đang ngắm: ' + (group.userData?.furnitureInfo?.label || 'đồ vật') + ' • Kéo để xoay quanh vật thể';
+        hint.textContent = isCameraLocked
+          ? '🔒 Đang khám phá: ' + (group.userData?.furnitureInfo?.label || 'đồ vật') + ' • Góc nhìn an toàn'
+          : '👁️ Đang ngắm: ' + (group.userData?.furnitureInfo?.label || 'đồ vật') + ' • Kéo để xoay quanh vật thể';
       }
 
-      // Hide floating badges in POV mode so camera view is clean and unobstructed
+      // Hide floating badges in focused POV mode so view is clean
       roomGroup.traverse(child => {
-        if (child.name === 'routineBadge') child.visible = false;
+        if (child.name === 'routineBadge' || child.name === 'explorePin') child.visible = false;
       });
 
       const gx = group.position.x;
@@ -1785,28 +1859,30 @@
       const gh = group.userData?.furnitureInfo?.height || 1.0;
       const gy = (group.position.y || 0) + gh * 0.45;
 
-      // Tâm quay là chính vật thể để người dùng có thể xoay 360 độ ngắm đồ vật
       const targetLook = new THREE.Vector3(gx, gy, gz);
 
-      // Camera đặt ở khoảng cách thoải mái hướng vào vật thể từ góc nhìn hiện tại
-      let dir = new THREE.Vector3().subVectors(camera.position, targetLook);
-      dir.y = 0;
-      if (dir.length() < 0.1) dir.set(1, 0, 1);
-      dir.normalize();
+      // Camera đặt ở khoảng cách thoải mái hướng vào vật thể từ phía trong phòng
+      const rw = ((roomGroup.userData?.width || 6) / 2) - 0.55;
+      const rd = ((roomGroup.userData?.depth || 6) / 2) - 0.55;
 
       const objSpan = Math.max(0.8, Math.max(group.userData?.furnitureInfo?.width || 1, group.userData?.furnitureInfo?.depth || 1));
-      const dist = Math.max(1.8, Math.min(3.6, objSpan * 1.6));
-      const camPos = new THREE.Vector3(
-        gx + dir.x * dist,
-        gy + Math.max(0.65, gh * 0.55),
-        gz + dir.z * dist
-      );
+      const dist = Math.max(1.7, Math.min(3.0, objSpan * 1.5));
+
+      let dir = new THREE.Vector3(camera.position.x - gx, 0, camera.position.z - gz);
+      if (dir.length() < 0.2) dir.set(-gx, 0, -gz);
+      if (dir.length() < 0.2) dir.set(0, 0, 1);
+      dir.normalize();
+
+      let camPosX = Math.max(-rw, Math.min(rw, gx + dir.x * dist));
+      let camPosZ = Math.max(-rd, Math.min(rd, gz + dir.z * dist));
+      let camPosY = Math.max(1.15, Math.min(2.1, gy + Math.max(0.45, Math.min(gh * 0.45, 0.75))));
+      const camPos = new THREE.Vector3(camPosX, camPosY, camPosZ);
 
       animateCameraTo(camPos, targetLook, dist, () => {
         if (controls) {
-          controls.enableRotate = true;
-          controls.enableZoom = true;
-          controls.enablePan = true;
+          controls.enableRotate = !isCameraLocked;
+          controls.enableZoom = !isCameraLocked;
+          controls.enablePan = false;
           controls.minPolarAngle = Math.PI * 0.05;
           controls.maxPolarAngle = Math.PI * 0.48;
         }
@@ -1828,20 +1904,27 @@
       const btn = document.getElementById('btn-back-overview');
       const hint = document.getElementById('pov-hint-badge');
       if (btn && btn.style) btn.style.display = 'none';
-      if (hint && hint.style) hint.style.display = 'none';
+      if (hint && hint.style) {
+        if (isCameraLocked) {
+          hint.style.display = 'block';
+          hint.textContent = '🔒 3D Point-and-Explore: Đã khóa góc nhìn • Chạm đồ vật để khám phá';
+        } else {
+          hint.style.display = 'none';
+        }
+      }
 
       // Restore floating badges in overview mode
       roomGroup.traverse(child => {
-        if (child.name === 'routineBadge') child.visible = true;
+        if (child.name === 'routineBadge' || child.name === 'explorePin') child.visible = true;
       });
 
       const { overviewPos, overviewLook } = fitCameraToRoom();
 
       animateCameraTo(overviewPos, overviewLook, desiredOrbitDistance, () => {
         if (controls) {
-          controls.enableRotate = true;
-          controls.enableZoom = true;
-          controls.enablePan = true;
+          controls.enableRotate = !isCameraLocked;
+          controls.enableZoom = !isCameraLocked;
+          controls.enablePan = false;
           controls.minPolarAngle = Math.PI * 0.05;
           controls.maxPolarAngle = Math.PI * 0.48;
         }
@@ -1913,7 +1996,7 @@
       const info = match.userData?.furnitureInfo;
       highlightFurniture(match);
 
-      if (navMode === 'fpv') {
+      if (navMode === 'fpv' && !isCameraLocked) {
         const fx = match.position.x;
         const fz = match.position.z;
         const fw = info?.width || 1.0;
@@ -3578,6 +3661,16 @@
           }
         }
 
+        // 3D Point-and-Explore Pin ("Điểm Chạm Ký Ức" ✨)
+        if (item.isInteractable !== false && item.label) {
+          const explorePin = createExplorePin(item.label, item.kind);
+          if (explorePin) {
+            explorePin.userData = { baseY: fh + 0.32 };
+            explorePin.position.set(0, fh + 0.32, 0);
+            fGroup.add(explorePin);
+          }
+        }
+
         roomGroup.add(fGroup);
         furnitureMeshes.push(fGroup);
       });
@@ -3666,7 +3759,14 @@
       if (!roomGroup) return;
       if (camAnimId !== null && typeof cancelAnimationFrame === 'function') cancelAnimationFrame(camAnimId);
       camAnimId = null;
-      navMode = (mode === 'fpv') ? 'fpv' : 'overview';
+      if (mode === 'point_and_explore') {
+        navMode = 'point_and_explore';
+        isCameraLocked = true;
+      } else if (mode === 'fpv') {
+        navMode = 'fpv';
+      } else {
+        navMode = 'overview';
+      }
       moveInput.forward = moveInput.right = 0;
       fpvTouchId = null; isMouseDown = false;
       Object.keys(keysPressed).forEach(k => delete keysPressed[k]);
@@ -3692,7 +3792,7 @@
         if (fpvHint && fpvHint.style) fpvHint.style.display = 'block';
 
         roomGroup.traverse(child => {
-          if (child.name === 'routineBadge') child.visible = false;
+          if (child.name === 'routineBadge' || child.name === 'explorePin') child.visible = false;
         });
 
         const startX = 0;
@@ -3712,7 +3812,12 @@
         window.ReactNativeWebView?.postMessage(JSON.stringify({ type: 'NAV_MODE_CHANGED', mode: 'fpv' }));
       } else {
         raycaster.near = 0; raycaster.far = Infinity;
-        if (controls) controls.enabled = true;
+        if (controls) {
+          controls.enabled = true;
+          controls.enableRotate = !isCameraLocked;
+          controls.enableZoom = !isCameraLocked;
+          controls.enablePan = false;
+        }
 
         if (crosshair && crosshair.style) crosshair.style.display = 'none';
         if (crosshairLabel && crosshairLabel.style) crosshairLabel.style.display = 'none';
@@ -3720,12 +3825,38 @@
         if (btnExitFpv && btnExitFpv.style) btnExitFpv.style.display = 'none';
         if (fpvHint && fpvHint.style) fpvHint.style.display = 'none';
 
+        if (povHintBadge && povHintBadge.style) {
+          povHintBadge.style.display = 'block';
+          povHintBadge.textContent = isCameraLocked
+            ? '🔒 3D Point-and-Explore: Đã khóa góc nhìn • Chạm đồ vật để khám phá'
+            : '👀 Xoay tự do quanh phòng';
+        }
+
         roomGroup.traverse(child => {
-          if (child.name === 'routineBadge') child.visible = true;
+          if (child.name === 'routineBadge' || child.name === 'explorePin') child.visible = true;
         });
 
         window.resetCameraOverview();
-        window.ReactNativeWebView?.postMessage(JSON.stringify({ type: 'NAV_MODE_CHANGED', mode: 'overview' }));
+        window.ReactNativeWebView?.postMessage(JSON.stringify({ type: 'NAV_MODE_CHANGED', mode: navMode }));
+      }
+      render();
+    };
+
+    window.setCameraLock = function(locked) {
+      isCameraLocked = !!locked;
+      if (controls) {
+        controls.enableRotate = !isCameraLocked;
+        controls.enableZoom = !isCameraLocked;
+        controls.enablePan = false;
+      }
+      const hint = document.getElementById('pov-hint-badge');
+      if (hint) {
+        if (isCameraLocked) {
+          hint.textContent = '🔒 3D Point-and-Explore: Đã khóa góc nhìn • Chạm đồ vật để khám phá';
+          hint.style.display = 'block';
+        } else {
+          hint.textContent = '👀 Xoay tự do quanh phòng';
+        }
       }
       render();
     };
@@ -3919,7 +4050,7 @@
       }
       const startPos = camera.position.clone();
       const startLook = controls.target.clone();
-      const duration = 480;
+      const duration = 650;
       const getNow = () => (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now());
       const startTime = getNow();
       function step() {

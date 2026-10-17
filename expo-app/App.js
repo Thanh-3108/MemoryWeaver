@@ -473,7 +473,9 @@ export default function App() {
   const [selectedImage, setSelectedImage] = useState(null); // base64 string
   const [imageUri, setImageUri] = useState(null);
   const [currentRoom, setCurrentRoom] = useState(null);
-  const [navMode, setNavMode] = useState('overview'); // 'overview' | 'fpv'
+  const [navMode, setNavMode] = useState('point_and_explore'); // 'point_and_explore' | 'overview' | 'fpv'
+  const [lockCamera, setLockCamera] = useState(true);
+  const [resetOverviewToken, setResetOverviewToken] = useState(0);
   const [textures, setTextures] = useState(null);
   const [usePhotoTexture, setUsePhotoTexture] = useState(true);
   const [lastImagePayload, setLastImagePayload] = useState(null);
@@ -1347,11 +1349,20 @@ export default function App() {
     }
   };
 
+  const handleResetOverview = () => {
+    setResetOverviewToken(t => t + 1);
+    setFocusedLabel('');
+    setPovMode('overview');
+    setFocusLabel(null);
+    setGlideLabel(null);
+    setStatus('Đã trở về góc nhìn toàn cảnh phòng');
+  };
+
   const handlePovChange = (mode, label) => {
     setPovMode(mode);
     setFocusedLabel(label || '');
     if (mode === 'focused') {
-      setStatus(`Đang đứng tại: ${label || 'đồ vật'} • Vuốt để ngắm nhìn quanh phòng`);
+      setStatus(`Đang khám phá: ${label || 'đồ vật'} • Góc nhìn cố định an toàn`);
     } else {
       setStatus('Đã trở về góc nhìn tổng quan phòng');
     }
@@ -1651,7 +1662,9 @@ export default function App() {
     <RoomViewer3D
       room={getActiveRoom()}
       textures={usePhotoTexture ? textures : null}
-      navMode={navMode}
+      navMode={role === 'patient' ? 'point_and_explore' : navMode}
+      lockCamera={role === 'patient' ? true : lockCamera}
+      resetOverviewToken={resetOverviewToken}
       onNavModeChange={setNavMode}
       onNavWarning={message => setStatus(message)}
       cameraView={cameraView}
@@ -1707,15 +1720,19 @@ export default function App() {
             </View>
 
             <View style={styles.patientControls}>
-              <TouchableOpacity
-                style={styles.patientNavToggleBtn}
-                onPress={() => setNavMode(mode => mode === 'fpv' ? 'overview' : 'fpv')}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.patientNavToggleText}>
-                  {navMode === 'fpv' ? '🏰 Toàn cảnh phòng' : '🕹️ Bước vào trải nghiệm'}
-                </Text>
-              </TouchableOpacity>
+              {povMode === 'focused' ? (
+                <TouchableOpacity
+                  style={styles.patientOverviewBtn}
+                  onPress={handleResetOverview}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.patientOverviewBtnText}>🏠 Toàn cảnh phòng</Text>
+                </TouchableOpacity>
+              ) : (
+                <View style={styles.patientPointExploreBadge}>
+                  <Text style={styles.patientPointExploreBadgeText}>🔒 3D Point-and-Explore</Text>
+                </View>
+              )}
 
               <TouchableOpacity
                 style={styles.patientChangeRoomBtn}
@@ -1847,15 +1864,30 @@ export default function App() {
               </TouchableOpacity>
             </View>
 
-            {/* Điểm Đến Nhanh Trong Phòng */}
+            {/* Điểm Chạm Ký Ức & Khám Phá (3D Point-and-Explore) */}
             {interactiveObjects.length > 0 && (
               <View style={{ marginTop: 6 }}>
-                <Text style={styles.seniorWaypointsTitle}>✨ Điểm đến nhanh (chạm để tới):</Text>
+                <Text style={styles.seniorWaypointsTitle}>✨ Điểm Chạm Ký Ức (Point & Explore):</Text>
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={{ paddingHorizontal: 10, gap: 8 }}
                 >
+                  <TouchableOpacity
+                    style={[
+                      styles.seniorWaypointPill,
+                      povMode === 'overview' && !activeMemoryModal && styles.seniorWaypointPillActive
+                    ]}
+                    onPress={handleResetOverview}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={[
+                      styles.seniorWaypointPillText,
+                      povMode === 'overview' && !activeMemoryModal && styles.seniorWaypointPillTextActive
+                    ]}>
+                      🏠 Toàn cảnh
+                    </Text>
+                  </TouchableOpacity>
                   {interactiveObjects.map((obj, idx) => (
                     <TouchableOpacity
                       key={'wp-' + idx}
@@ -2306,13 +2338,9 @@ export default function App() {
                     <TouchableOpacity
                       style={[styles.resetBtn, !currentRoom && styles.disabledControlBtn]}
                       disabled={!currentRoom}
-                      onPress={() => setNavMode(mode => {
-                        const next = mode === 'fpv' ? 'overview' : 'fpv';
-                        if (next === 'fpv') setIsExpanded(true);
-                        return next;
-                      })}
+                      onPress={() => setLockCamera(v => !v)}
                     >
-                      <Text style={styles.resetBtnText}>{navMode === 'fpv' ? 'Toàn cảnh' : '🕹️ Vào'}</Text>
+                      <Text style={styles.resetBtnText}>{lockCamera ? '🔒 Khóa góc' : '🔄 Tự do'}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.resetBtn} onPress={resetRoom}>
                       <Text style={styles.resetBtnText}>↺ Mới</Text>
@@ -2485,13 +2513,9 @@ export default function App() {
                     <TouchableOpacity
                       style={[styles.resetBtn, !currentRoom && styles.disabledControlBtn]}
                       disabled={!currentRoom}
-                      onPress={() => setNavMode(mode => {
-                        const next = mode === 'fpv' ? 'overview' : 'fpv';
-                        if (next === 'fpv') setIsExpanded(true);
-                        return next;
-                      })}
+                      onPress={() => setLockCamera(v => !v)}
                     >
-                      <Text style={styles.resetBtnText}>{navMode === 'fpv' ? 'Toàn cảnh' : '🕹️ Vào'}</Text>
+                      <Text style={styles.resetBtnText}>{lockCamera ? '🔒 Khóa góc' : '🔄 Tự do'}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.resetBtn} onPress={resetRoom}>
                       <Text style={styles.resetBtnText}>↺ Mới</Text>
@@ -3795,6 +3819,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  patientPointExploreBadge: {
+    backgroundColor: '#1b3328',
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: '#3e6a54',
+  },
+  patientPointExploreBadgeText: {
+    color: '#a8dfc1',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  patientOverviewBtn: {
+    backgroundColor: '#10b981',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 18,
+    borderWidth: 1.5,
+    borderColor: '#34d399',
+    shadowColor: '#10b981',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.45,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  patientOverviewBtnText: {
+    color: '#ffffff',
+    fontSize: 12.5,
+    fontWeight: '800',
   },
   patientNavToggleBtn: {
     backgroundColor: '#2d4b3f',

@@ -18,7 +18,9 @@ export default function RoomViewer3D({
   focusLabel,
   glideLabel,
   strollAction,
-  speakText
+  speakText,
+  lockCamera = true,
+  resetOverviewToken = 0
 }) {
   const webViewRef = useRef(null);
   const [ready, setReady] = useState(false);
@@ -73,6 +75,16 @@ export default function RoomViewer3D({
       }
     }
   }, [speakText, ready]);
+  useEffect(() => {
+    if (ready) {
+      webViewRef.current?.injectJavaScript('window.setCameraLock?.(' + (lockCamera ? 'true' : 'false') + '); true;');
+    }
+  }, [lockCamera, ready]);
+  useEffect(() => {
+    if (ready && resetOverviewToken) {
+      webViewRef.current?.injectJavaScript('window.resetCameraOverview?.(); true;');
+    }
+  }, [resetOverviewToken, ready]);
   const handleMessage = event => {
     try {
       const data = JSON.parse(event.nativeEvent.data);
