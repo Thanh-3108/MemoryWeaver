@@ -420,7 +420,13 @@ export default function App() {
   const [rotateAction, setRotateAction] = useState(null);
   const handleRotateView = (direction) => {
     setRotateAction({ direction, token: Date.now() });
-    setStatus(direction === 'left' ? 'Xoay góc nhìn sang trái ⟲' : 'Xoay góc nhìn sang phải ⟳');
+    const labelMap = {
+      left: 'Xoay góc nhìn sang trái ⟲',
+      right: 'Xoay góc nhìn sang phải ⟳',
+      up: 'Ngửa góc nhìn lên trên ⮝',
+      down: 'Hạ góc nhìn xuống dưới ⮟'
+    };
+    setStatus(labelMap[direction] || 'Điều chỉnh góc nhìn');
   };
   const [povMode, setPovMode] = useState('overview'); // 'overview' | 'focused'
   const [focusedLabel, setFocusedLabel] = useState('');
@@ -1481,13 +1487,21 @@ export default function App() {
     setStatus('Đã trở về góc nhìn toàn cảnh phòng');
   };
 
-  const handlePovChange = (mode, label) => {
+  const handlePovChange = (mode, label, direction) => {
     setPovMode(mode);
     setFocusedLabel(label || '');
     if (mode === 'focused') {
       setStatus(`Đang khám phá: ${label || 'đồ vật'} • Góc nhìn cố định an toàn`);
+    } else if (mode === 'rotated') {
+      setStatus(direction === 'left' ? 'Xoay góc nhìn sang trái ⟲' : 'Xoay góc nhìn sang phải ⟳');
+    } else if (mode === 'tilted') {
+      setStatus(direction === 'up' ? 'Ngửa góc nhìn lên trên ⮝' : 'Hạ góc nhìn xuống dưới ⮟');
+    } else if (mode === 'wall_view') {
+      setStatus('Quan sát từ vách tường');
+    } else if (mode === 'floor_view') {
+      setStatus('Đứng ngắm không gian phòng');
     } else {
-      setStatus('Đã trở về góc nhìn tổng quan phòng');
+      setStatus('Góc nhìn tổng quan phòng');
     }
   };
 
@@ -1819,31 +1833,6 @@ export default function App() {
         toggleCurtainsToken={toggleCurtainsToken}
         isAudioMuted={isAudioMuted}
       />
-
-      {/* Nút xoay góc nhìn Trái / Phải trực quan nổi ngay trên màn hình */}
-      <View style={styles.floatingTurnControlsOverlay} pointerEvents="box-none">
-        <TouchableOpacity
-          style={[styles.floatingTurnBtn, styles.floatingTurnBtnLeft]}
-          onPress={() => handleRotateView('left')}
-          activeOpacity={0.8}
-          accessibilityRole="button"
-          accessibilityLabel="Xoay góc nhìn sang trái"
-        >
-          <Text style={styles.floatingTurnIcon}>⟲</Text>
-          <Text style={styles.floatingTurnText}>Trái</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.floatingTurnBtn, styles.floatingTurnBtnRight]}
-          onPress={() => handleRotateView('right')}
-          activeOpacity={0.8}
-          accessibilityRole="button"
-          accessibilityLabel="Xoay góc nhìn sang phải"
-        >
-          <Text style={styles.floatingTurnIcon}>⟳</Text>
-          <Text style={styles.floatingTurnText}>Phải</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 
@@ -2105,6 +2094,26 @@ export default function App() {
               accessibilityLabel="Xoay phải"
             >
               <Text style={styles.navDockRotateText}>⟳ Phải</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.navDockRotateBtn}
+              onPress={() => handleRotateView('up')}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel="Ngửa lên"
+            >
+              <Text style={styles.navDockRotateText}>⮝ Lên</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.navDockRotateBtn}
+              onPress={() => handleRotateView('down')}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel="Hạ xuống"
+            >
+              <Text style={styles.navDockRotateText}>⮟ Xuống</Text>
             </TouchableOpacity>
           </ScrollView>
         </View>

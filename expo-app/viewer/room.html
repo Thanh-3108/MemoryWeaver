@@ -163,6 +163,85 @@
       color: #a5d6a7; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
       backdrop-filter: blur(8px); display: none; pointer-events: none;
     }
+
+    /* --- Subtle Ambient Edge Glow (Tap Edge to Turn / Tilt) --- */
+    .edge-glow-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 12;
+      overflow: hidden;
+    }
+    .edge-glow-zone {
+      position: absolute;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+      opacity: 0.16;
+    }
+    .edge-glow-left {
+      top: 18%; bottom: 18%; left: 0;
+      width: 44px;
+      background: linear-gradient(to right, rgba(45, 106, 79, 0.3) 0%, rgba(45, 106, 79, 0.05) 70%, transparent 100%);
+      box-shadow: inset 3px 0 10px rgba(82, 183, 136, 0.22);
+      border-top-right-radius: 22px;
+      border-bottom-right-radius: 22px;
+    }
+    .edge-glow-right {
+      top: 18%; bottom: 18%; right: 0;
+      width: 44px;
+      background: linear-gradient(to left, rgba(45, 106, 79, 0.3) 0%, rgba(45, 106, 79, 0.05) 70%, transparent 100%);
+      box-shadow: inset -3px 0 10px rgba(82, 183, 136, 0.22);
+      border-top-left-radius: 22px;
+      border-bottom-left-radius: 22px;
+    }
+    .edge-glow-top {
+      left: 22%; right: 22%; top: 0;
+      height: 38px;
+      background: linear-gradient(to bottom, rgba(45, 106, 79, 0.26) 0%, rgba(45, 106, 79, 0.05) 70%, transparent 100%);
+      box-shadow: inset 0 3px 10px rgba(82, 183, 136, 0.2);
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+    }
+    .edge-glow-bottom {
+      left: 22%; right: 22%; bottom: 0;
+      height: 38px;
+      background: linear-gradient(to top, rgba(45, 106, 79, 0.26) 0%, rgba(45, 106, 79, 0.05) 70%, transparent 100%);
+      box-shadow: inset 0 -3px 10px rgba(82, 183, 136, 0.2);
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+    }
+    .edge-indicator-icon {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1b4332;
+      opacity: 0.35;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.85);
+      user-select: none;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    .edge-glow-zone.pulse {
+      opacity: 0.65;
+      box-shadow: 0 0 18px rgba(82, 183, 136, 0.65), inset 0 0 14px rgba(82, 183, 136, 0.55);
+    }
+    .edge-glow-left.pulse {
+      background: linear-gradient(to right, rgba(82, 183, 136, 0.45) 0%, rgba(82, 183, 136, 0.15) 75%, transparent 100%);
+    }
+    .edge-glow-right.pulse {
+      background: linear-gradient(to left, rgba(82, 183, 136, 0.45) 0%, rgba(82, 183, 136, 0.15) 75%, transparent 100%);
+    }
+    .edge-glow-top.pulse {
+      background: linear-gradient(to bottom, rgba(82, 183, 136, 0.45) 0%, rgba(82, 183, 136, 0.15) 75%, transparent 100%);
+    }
+    .edge-glow-bottom.pulse {
+      background: linear-gradient(to top, rgba(82, 183, 136, 0.45) 0%, rgba(82, 183, 136, 0.15) 75%, transparent 100%);
+    }
+    .edge-glow-zone.pulse .edge-indicator-icon {
+      opacity: 0.95;
+      transform: scale(1.35);
+    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -170,6 +249,22 @@
 <body>
   <div id="canvas-container"></div>
   
+  <!-- Subtle Ambient Edge Glow & Turn Guides (Tap edges to rotate/tilt) -->
+  <div id="edge-glow-overlay" class="edge-glow-overlay">
+    <div id="edge-glow-left" class="edge-glow-zone edge-glow-left" title="Chạm mép trái để xoay sang trái">
+      <span class="edge-indicator-icon">‹</span>
+    </div>
+    <div id="edge-glow-right" class="edge-glow-zone edge-glow-right" title="Chạm mép phải để xoay sang phải">
+      <span class="edge-indicator-icon">›</span>
+    </div>
+    <div id="edge-glow-top" class="edge-glow-zone edge-glow-top" title="Chạm mép trên để ngửa nhìn lên">
+      <span class="edge-indicator-icon">ˆ</span>
+    </div>
+    <div id="edge-glow-bottom" class="edge-glow-zone edge-glow-bottom" title="Chạm mép dưới để hạ nhìn xuống">
+      <span class="edge-indicator-icon">ˇ</span>
+    </div>
+  </div>
+
   <div id="top-nav-bar">
     <button id="btn-back-overview" onclick="window.resetCameraOverview()">⬅️ Toàn cảnh</button>
     <button id="btn-exit-fpv" onclick="window.setNavMode('overview')">🏰 Toàn cảnh</button>
@@ -2559,6 +2654,43 @@
               isInteractable: true,
               item: info
             }));
+            return;
+          }
+        }
+
+        // 0. Kiểm tra chạm vào 4 mép màn hình để xoay / ngửa góc nhìn (Edge Tap Turn & Tilt)
+        // Ưu tiên chọn đồ vật trước: chỉ khi không chạm trúng đồ vật mới kích hoạt xoay ở mép viền
+        const edgeThreshX = Math.max(48, Math.min(rect.width * 0.16, 75));
+        const edgeThreshY = Math.max(42, Math.min(rect.height * 0.14, 65));
+        const dLeft = clientX - rect.left;
+        const dRight = rect.right - clientX;
+        const dTop = clientY - rect.top;
+        const dBottom = rect.bottom - clientY;
+
+        const isLeftEdge = dLeft >= 0 && dLeft <= edgeThreshX;
+        const isRightEdge = dRight >= 0 && dRight <= edgeThreshX;
+        const isTopEdge = dTop >= 0 && dTop <= edgeThreshY;
+        const isBottomEdge = dBottom >= 0 && dBottom <= edgeThreshY;
+
+        if (isLeftEdge || isRightEdge || isTopEdge || isBottomEdge) {
+          const minDist = Math.min(
+            isLeftEdge ? dLeft : Infinity,
+            isRightEdge ? dRight : Infinity,
+            isTopEdge ? dTop : Infinity,
+            isBottomEdge ? dBottom : Infinity
+          );
+
+          if (minDist === dLeft) {
+            window.rotateView('left');
+            return;
+          } else if (minDist === dRight) {
+            window.rotateView('right');
+            return;
+          } else if (minDist === dTop) {
+            window.rotateView('up');
+            return;
+          } else if (minDist === dBottom) {
+            window.rotateView('down');
             return;
           }
         }
@@ -6774,14 +6906,66 @@
       };
     }
     
+    function triggerEdgeGlow(direction) {
+      const el = document.getElementById('edge-glow-' + direction);
+      if (!el) return;
+      el.classList.remove('pulse');
+      void el.offsetWidth; // Force CSS reflow
+      el.classList.add('pulse');
+      setTimeout(() => {
+        el.classList.remove('pulse');
+      }, 550);
+    }
+
     window.rotateView = function(direction) {
       if (!roomGroup || !camera || !controls) return;
-      // direction: 'left' | 'right'
-      // Xoay góc nhìn 30 độ (Math.PI / 6) quanh vị trí đang đứng (sửa hướng: xoay phải quay phải, xoay trái quay trái)
-      const angleDelta = (direction === 'left') ? (Math.PI / 6) : (-Math.PI / 6);
+      // direction: 'left' | 'right' | 'up' | 'down'
+      triggerEdgeGlow(direction);
+
+      if (navMode === 'fpv') {
+        if (direction === 'left') fpvYaw += (Math.PI / 6);
+        else if (direction === 'right') fpvYaw -= (Math.PI / 6);
+        else if (direction === 'up') fpvPitch = Math.min(Math.PI * 0.25, fpvPitch + 0.2);
+        else if (direction === 'down') fpvPitch = Math.max(-Math.PI * 0.25, fpvPitch - 0.2);
+        camera.rotation.set(fpvPitch, fpvYaw, 0, 'YXZ');
+        playInteractChime();
+        window.ReactNativeWebView?.postMessage(JSON.stringify({
+          type: 'POV_STATE',
+          mode: (direction === 'up' || direction === 'down') ? 'tilted' : 'rotated',
+          direction: direction
+        }));
+        return;
+      }
 
       const curLook = controls.target.clone();
       const camPos = camera.position.clone();
+
+      if (direction === 'up' || direction === 'down') {
+        const deltaY = (direction === 'up') ? 0.45 : -0.45;
+        const maxH = (roomGroup.userData?.height || 3.0);
+        const newY = Math.max(0.25, Math.min(maxH + 0.35, curLook.y + deltaY));
+        const newLook = new THREE.Vector3(curLook.x, newY, curLook.z);
+
+        playInteractChime();
+        animateCameraTo(camPos, newLook, () => {
+          if (controls) {
+            controls.target.copy(newLook);
+            controls.update();
+          }
+          if (lastStableVantage) {
+            lastStableVantage.look = newLook.clone();
+          }
+          window.ReactNativeWebView?.postMessage(JSON.stringify({
+            type: 'POV_STATE',
+            mode: 'tilted',
+            direction: direction
+          }));
+        });
+        return;
+      }
+
+      // Xoay góc nhìn 30 độ (Math.PI / 6) quanh vị trí đang đứng (xoay phải quay phải, xoay trái quay trái)
+      const angleDelta = (direction === 'left') ? (Math.PI / 6) : (-Math.PI / 6);
       const dirX = curLook.x - camPos.x;
       const dirZ = curLook.z - camPos.z;
       const currentDist = Math.hypot(dirX, dirZ) || 2.5;

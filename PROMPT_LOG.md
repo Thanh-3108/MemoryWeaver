@@ -1342,4 +1342,15 @@ sao chỉ có cái send message hoạt động còn mấy cái build các thứ 
 
 ---
 
+### 💬 Yêu Cầu #115 — 2026-10-17T18:39:16+07:00 (Step 10850)
+
+```markdown
+thay hai cái nút xoay trái bằng chạm vào nửa bên trái màn hình xoay trái nửa phải màn hình xoay phải (nhớ mép mép thôi chứ phải đủ thông minh để biết khi nào xoay khi nào chọn vật thể nha)
+vvới lại là làm thêm cho quay vertically mép trên dưới nữa nha
+làm phần viền glow glow một tí nhưng không quá visible để đảm bảo trải nghiệm nhìn không bị disrupted và distracted
+```
+
+---
+
+
 

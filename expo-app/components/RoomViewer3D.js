@@ -208,7 +208,7 @@ export default function RoomViewer3D({
       if (data.type === 'SELECT_FURNITURE') onSelectFurniture?.(data.label, data.description, data.item);
       if (data.type === 'DOOR_TRANSITION') onDoorTransition?.(data.targetRoomId, data.label);
       if (data.type === 'RESTRICTED_TOUCH') onRestrictedTouch?.(data.label, data.dialogue);
-      if (data.type === 'POV_STATE') onPovChange?.(data.mode, data.label);
+      if (data.type === 'POV_STATE') onPovChange?.(data.mode, data.label, data.direction);
       if (data.type === 'NAV_WARNING') onNavWarning?.(data.message);
       if (data.type === 'NAV_MODE_CHANGED') onNavModeChange?.(data.mode);
       if (data.type === 'HOTSPOT_SELECTED') onHotspotSelected?.(data.id, data.label);
