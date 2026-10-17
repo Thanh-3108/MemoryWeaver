@@ -455,6 +455,12 @@
       <span>Phiên bản: <strong id="syncVersion">v1</strong></span>
       <span style="opacity: 0.5;">|</span>
       <span>📱 Thiết bị người bệnh: <strong id="patientDeviceStatus">Đang lắng nghe...</strong></span>
+      <span style="opacity: 0.5;">|</span>
+      <div onclick="handleChangeToken()" style="cursor:pointer; background:rgba(255,255,255,0.18); padding:0.25rem 0.65rem; border-radius:999px; display:inline-flex; align-items:center; gap:0.4rem;" title="Bấm để kiểm tra hoặc nhập lại mã APP_ACCESS_TOKEN">
+        <span>🔑 Token:</span>
+        <strong id="tokenPreview" style="color:#a7f3d0; font-family:monospace;">...</strong>
+        <span style="font-size:0.75rem; opacity:0.8;">✏️</span>
+      </div>
     </div>
   </header>
 
@@ -713,7 +719,32 @@
     let currentReminders = [];
     let selectedImageBase64 = '';
     let lastSentMessageText = '';
-    let serverToken = localStorage.getItem('mw_token') || '';
+    const INJECTED_SERVER_TOKEN = '__SERVER_INJECTED_TOKEN__';
+    let serverToken = localStorage.getItem('mw_token');
+    if (!serverToken || serverToken === '__SERVER_INJECTED_TOKEN__' || serverToken === 'undefined' || serverToken.length < 10) {
+      serverToken = (INJECTED_SERVER_TOKEN && INJECTED_SERVER_TOKEN !== '__SERVER_INJECTED_TOKEN__')
+        ? INJECTED_SERVER_TOKEN
+        : 'f5634d78c2437a8171514944e2ca5c657917267aea61fe77';
+      localStorage.setItem('mw_token', serverToken);
+    }
+
+    function updateTokenUI() {
+      const el = document.getElementById('tokenPreview');
+      if (el) {
+        el.textContent = serverToken ? (serverToken.slice(0, 6) + '...' + serverToken.slice(-4)) : 'Chưa có';
+      }
+    }
+
+    function handleChangeToken() {
+      const current = localStorage.getItem('mw_token') || serverToken || '';
+      const input = prompt('Mã APP_ACCESS_TOKEN hiện tại đang dùng (tìm thấy trong file server/.env):', current);
+      if (input !== null && input.trim()) {
+        serverToken = input.trim();
+        localStorage.setItem('mw_token', serverToken);
+        updateTokenUI();
+        fetchLatestState();
+      }
+    }
 
     // Switch tabs
     function switchTab(tabId) {
@@ -790,7 +821,18 @@
       if (serverToken) {
         headers['Authorization'] = `Bearer ${serverToken}`;
       }
-      return fetch(endpoint, { ...options, headers });
+      let res = await fetch(endpoint, { ...options, headers });
+      if (res.status === 401) {
+        const input = prompt('Mã truy cập server (APP_ACCESS_TOKEN) chưa khớp. Hãy kiểm tra hoặc dán mã trong file server/.env vào đây:', serverToken || 'f5634d78c2437a8171514944e2ca5c657917267aea61fe77');
+        if (input && input.trim()) {
+          serverToken = input.trim();
+          localStorage.setItem('mw_token', serverToken);
+          updateTokenUI();
+          headers['Authorization'] = `Bearer ${serverToken}`;
+          res = await fetch(endpoint, { ...options, headers });
+        }
+      }
+      return res;
     }
 
     // Initial load & Polling
@@ -1091,6 +1133,7 @@
     // Initialize host display
     window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('hostIpDisplay').textContent = `${window.location.origin}`;
+      updateTokenUI();
       fetchLatestState();
       setInterval(fetchLatestState, 2500);
     });

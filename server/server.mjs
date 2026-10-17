@@ -72,7 +72,8 @@ export function createServer({ apiKey = process.env.GEMINI_API_KEY, token = proc
     if (req.method === 'GET' && (pathname === '/' || pathname === '/caregiver' || pathname === '/caregiver.html')) {
       const caregiverPath = path.join(__dirname, 'public', 'caregiver.html');
       if (fs.existsSync(caregiverPath)) {
-        const html = fs.readFileSync(caregiverPath, 'utf8');
+        let html = fs.readFileSync(caregiverPath, 'utf8');
+        html = html.replace(/__SERVER_INJECTED_TOKEN__/g, token || '');
         res.writeHead(200, {
           'Content-Type': 'text/html; charset=utf-8',
           'Cache-Control': 'no-cache',
