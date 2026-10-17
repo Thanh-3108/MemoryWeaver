@@ -80,8 +80,9 @@ So với phiên bản ban đầu ngày hôm qua (16/10), phiên bản mới nh�
 ### Bước 3: Soạn phòng và đồng hành cùng Người Bệnh
 1. Trên máy tính, người chăm sóc mở trình duyệt truy cập: `http://localhost:8787`
 2. Gõ mô tả căn phòng cũ hoặc tải ảnh lên để AI tạo không gian 3D.
-3. Bấm **"🚀 Phát hành phòng lên điện thoại người bệnh"** -> Căn phòng trên điện thoại sẽ tự động chuyển đổi sang không gian mới ngay lập tức!
-4. Gửi lời nhắc trực tiếp (uống thuốc, uống nước, hỏi thăm) để chăm sóc người thân từ xa.
+3. Khi bấm **"✨ Tạo phòng bằng AI"** hoặc **"✏️ Chỉnh sửa chi tiết"**, không gian 3D sẽ **tự động đồng bộ ngay lập tức** sang điện thoại của người bệnh (đồng thời nút *"🚀 ĐỒNG BỘ SANG MÁY NGƯỜI BỆNH"* vẫn luôn sẵn sàng để xuất bản chủ động bất cứ lúc nào).
+4. Thêm/xóa lịch sinh hoạt & uống thuốc tự động đẩy sang thiết bị, và gửi lời nhắn tức thì với phản hồi 2 chiều.
+
 
 ---
 

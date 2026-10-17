@@ -978,7 +978,7 @@
 
         currentRoom = data;
         renderRoomObjects(currentRoom);
-        alert('✨ Đã dựng thành công không gian 3D mới! Hãy bấm "ĐỒNG BỘ SANG MÁY NGƯỜI BỆNH" để chuyển phòng sang điện thoại.');
+        await handlePublishRoomToPatient({ silent: true, message: `✨ Đã tạo phòng "${currentRoom.title || 'Mới'}" và tự động đồng bộ sang máy người bệnh!` });
       } catch (err) {
         alert(`Lỗi kết nối tới server AI: ${err.message}`);
       } finally {
@@ -1014,7 +1014,7 @@
         }
         currentRoom = data;
         renderRoomObjects(currentRoom);
-        alert('✏️ Đã chỉnh sửa phòng thành công! Bấm "ĐỒNG BỘ SANG MÁY NGƯỜI BỆNH" để gửi cập nhật.');
+        await handlePublishRoomToPatient({ silent: true, message: `✏️ Đã chỉnh sửa phòng "${currentRoom.title || ''}" và tự động đồng bộ sang máy người bệnh!` });
       } catch (err) {
         alert(`Lỗi chỉnh sửa: ${err.message}`);
       } finally {
@@ -1023,9 +1023,9 @@
     }
 
     // Publish room to patient
-    async function handlePublishRoomToPatient() {
+    async function handlePublishRoomToPatient(options = {}) {
       if (!currentRoom) {
-        alert('Chưa có căn phòng nào để xuất bản.');
+        if (!options.silent) alert('Chưa có căn phòng nào để xuất bản.');
         return;
       }
 
@@ -1036,16 +1036,20 @@
         });
         const data = await res.json();
         if (!res.ok) {
-          alert(`Lỗi đồng bộ: ${data.error || 'Không xác định'}`);
+          if (!options.silent) alert(`Lỗi đồng bộ: ${data.error || 'Không xác định'}`);
           return;
         }
 
         const banner = document.getElementById('publishSuccessBanner');
-        banner.style.display = 'flex';
-        setTimeout(() => { banner.style.display = 'none'; }, 6000);
+        if (banner) {
+          const txt = banner.querySelector('span:last-child');
+          if (txt) txt.textContent = options.message || '🚀 Đã xuất bản và đồng bộ không gian sang máy người bệnh thành công!';
+          banner.style.display = 'flex';
+          setTimeout(() => { banner.style.display = 'none'; }, 6000);
+        }
         fetchLatestState();
       } catch (err) {
-        alert(`Lỗi gửi dữ liệu: ${err.message}`);
+        if (!options.silent) alert(`Lỗi gửi dữ liệu: ${err.message}`);
       }
     }
 
@@ -1074,11 +1078,13 @@
       });
 
       renderRemindersList(currentReminders);
+      handleSaveAndPublishReminders();
     }
 
     function handleDeleteReminder(idx) {
       currentReminders.splice(idx, 1);
       renderRemindersList(currentReminders);
+      handleSaveAndPublishReminders();
     }
 
     async function handleSaveAndPublishReminders() {

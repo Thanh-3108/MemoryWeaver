@@ -256,3 +256,28 @@ test('createRoom generates connected rooms, enriched interactions, and self-refl
   assert.ok(room.aiVerification && room.aiVerification.status === 'verified_and_optimized');
   assert.ok(room.aiVerification.checks.length >= 5);
 });
+
+test('generating room via /api/room automatically synchronizes to live session state', async () => {
+  await withServer({ fetchImpl: async () => response(fixture) }, async url => {
+    // 1. Initial sync state has no room
+    const initRes = await fetch(url + '/api/sync/latest', { headers: { Authorization: 'Bearer secret' } });
+    const initData = await initRes.json();
+    assert.equal(initData.room, null);
+    assert.equal(initData.version, 1);
+
+    // 2. Build room via /api/room
+    const buildRes = await post(url, { prompt: 'Phòng ngủ xưa' }, '/api/room');
+    assert.equal(buildRes.status, 200);
+    const room = await buildRes.json();
+    assert.ok(room.objects.length > 0);
+
+    // 3. /api/sync/latest must now have the generated room immediately
+    const syncRes = await fetch(url + '/api/sync/latest', { headers: { Authorization: 'Bearer secret' } });
+    const syncData = await syncRes.json();
+    assert.equal(syncData.version, 2);
+    assert.ok(syncData.room);
+    assert.equal(syncData.room.title, room.title);
+    assert.equal(syncData.room.objects.length, room.objects.length);
+  });
+});
+

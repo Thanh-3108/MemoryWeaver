@@ -275,6 +275,9 @@ export function createServer({ apiKey = process.env.GEMINI_API_KEY, token = proc
         }
         return send(res, 422, { error: 'AI chưa tạo được bố cục hợp lệ sau hai lần thử. Hãy mô tả phòng đơn giản hơn.' }, req);
       }
+      liveSessionState.room = room;
+      liveSessionState.version++;
+      liveSessionState.updatedAt = new Date().toISOString();
       return send(res, 200, room, req);
       }
     } catch (err) {

@@ -519,18 +519,36 @@ export default function App() {
     };
   }, []);
 
-  // Live Sync Poller for Patient Mode
+  // Live Sync Poller for Connected Caregiver State
+  const lastSyncVersionRef = useRef(0);
   useEffect(() => {
-    if (role !== 'patient' || !serverEndpoint || typeof fetchLatestSync !== 'function') return;
+    if (!serverEndpoint || typeof fetchLatestSync !== 'function') return;
     let isMounted = true;
     const pollSync = async () => {
       try {
         const data = await fetchLatestSync({ endpoint: serverEndpoint, token: appToken });
         if (!isMounted || !data?.ok) return;
-        if (data.room && (!currentRoomRef.current || JSON.stringify(data.room) !== JSON.stringify(currentRoomRef.current))) {
+
+        const isNewVersion = typeof data.version === 'number' && data.version !== lastSyncVersionRef.current;
+        const isRoomChanged = Boolean(data.room && (!currentRoomRef.current || JSON.stringify(data.room) !== JSON.stringify(currentRoomRef.current)));
+
+        if (isRoomChanged || (isNewVersion && data.room)) {
+          if (typeof data.version === 'number') lastSyncVersionRef.current = data.version;
           setCurrentRoom(data.room);
           setRoomTitle(data.room.title || 'Không gian ký ức');
+          setActiveRoomId('primary');
+          setResetOverviewToken(t => t + 1);
+          setPovMode('overview');
+          setFocusedLabel('');
+          setStatus(`Đã đồng bộ: ${data.room.title || 'Không gian ký ức'}`);
+        } else if (isNewVersion) {
+          lastSyncVersionRef.current = data.version;
         }
+
+        if (Array.isArray(data.reminders) && data.reminders.length > 0) {
+          setSyncReminders(data.reminders);
+        }
+
         if (data.activeNotification) {
           setActiveLiveNotification(data.activeNotification);
         } else {
@@ -539,7 +557,7 @@ export default function App() {
       } catch (_) {}
     };
     pollSync();
-    const interval = setInterval(pollSync, 4000);
+    const interval = setInterval(pollSync, 2500);
     return () => {
       isMounted = false;
       clearInterval(interval);

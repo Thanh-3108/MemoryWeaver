@@ -1334,3 +1334,12 @@ push lên git
 
 ---
 
+### 💬 Yêu Cầu #114 — 2026-10-17T18:14:48+07:00 (Step 10540)
+
+```markdown
+sao chỉ có cái send message hoạt động còn mấy cái build các thứ ko hoạt động v, phải sync hoạt động đảm bảo hết chứ
+```
+
+---
+
+
