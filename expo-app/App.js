@@ -516,6 +516,7 @@ export default function App() {
   const [senseOfSelfModalVisible, setSenseOfSelfModalVisible] = useState(false);
   const [bookPageIndex, setBookPageIndex] = useState(0);
   const [aiAuditModalVisible, setAiAuditModalVisible] = useState(false);
+  const [patientGuideModalVisible, setPatientGuideModalVisible] = useState(false);
 
   // Saved Rooms Library
   const [savedRooms, setSavedRooms] = useState(DEFAULT_SAVED_PRESETS);
@@ -1735,6 +1736,14 @@ export default function App() {
               )}
 
               <TouchableOpacity
+                style={styles.patientGuideBtn}
+                onPress={() => setPatientGuideModalVisible(true)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.patientGuideBtnText}>💡 Hướng dẫn</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
                 style={styles.patientChangeRoomBtn}
                 onPress={() => setSavedRoomsModalVisible(true)}
                 activeOpacity={0.8}
@@ -1766,6 +1775,13 @@ export default function App() {
                 <Text style={styles.patientExitText}>🔒 Thoát</Text>
               </TouchableOpacity>
             </View>
+          </View>
+
+          {/* Lời Chỉ Dẫn Khám Phá Êm Dịu (Mục 5.1 & 5.2) */}
+          <View style={styles.patientGentleGuidanceBanner}>
+            <Text style={styles.patientGentleGuidanceText}>
+              🌸 Chạm vào các đốm sáng ✨ hoặc chọn góc phòng bên dưới để nhớ lại kỷ niệm xưa
+            </Text>
           </View>
 
           {/* Thanh Chuyển Gian Phòng Nối Tiếp (Connected Multi-Room Switcher) */}
@@ -1830,88 +1846,64 @@ export default function App() {
             {render3DViewer()}
           </View>
 
-          {/* Bảng Điều Khiển Dạo Bước & Điểm Đến Nhanh Dành Riêng Cho Người Cao Tuổi */}
+          {/* Bảng Điều Khiển Điểm Chạm & Góc Nhìn Định Sẵn (3D Point-and-Explore) */}
           <View style={[styles.seniorWaypointsContainer, isLandscape && { paddingBottom: 6 }]}>
-            {/* Phím Dạo Bước Êm Ái (Thay thế joystick phức tạp) */}
-            <View style={styles.seniorStrollRow}>
-              <TouchableOpacity
-                style={styles.seniorStrollBtn}
-                onPress={() => triggerStroll('turn_left')}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.seniorStrollBtnText}>↶ Quay trái</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.seniorStrollBtn, styles.seniorStrollBtnPrimary]}
-                onPress={() => triggerStroll('forward')}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.seniorStrollBtnTextPrimary}>🚶 Bước tới</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.seniorStrollBtn}
-                onPress={() => triggerStroll('backward')}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.seniorStrollBtnText}>🔙 Lùi</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.seniorStrollBtn}
-                onPress={() => triggerStroll('turn_right')}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.seniorStrollBtnText}>↷ Quay phải</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Điểm Chạm Ký Ức & Khám Phá (3D Point-and-Explore) */}
-            {interactiveObjects.length > 0 && (
-              <View style={{ marginTop: 6 }}>
-                <Text style={styles.seniorWaypointsTitle}>✨ Điểm Chạm Ký Ức (Point & Explore):</Text>
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ paddingHorizontal: 10, gap: 8 }}
-                >
+            <View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <Text style={styles.seniorWaypointsTitle}>✨ Điểm Chạm Ký Ức & Góc Nhìn Định Sẵn:</Text>
+                {povMode === 'focused' && (
                   <TouchableOpacity
+                    style={styles.seniorOverviewSmallBtn}
+                    onPress={handleResetOverview}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={styles.seniorOverviewSmallBtnText}>🏠 Về toàn cảnh</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ paddingHorizontal: 4, gap: 10 }}
+              >
+                <TouchableOpacity
+                  style={[
+                    styles.seniorWaypointPill,
+                    povMode === 'overview' && !activeMemoryModal && styles.seniorWaypointPillActive
+                  ]}
+                  onPress={handleResetOverview}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[
+                    styles.seniorWaypointPillText,
+                    povMode === 'overview' && !activeMemoryModal && styles.seniorWaypointPillTextActive
+                  ]}>
+                    🏠 Toàn cảnh phòng
+                  </Text>
+                </TouchableOpacity>
+                {interactiveObjects.map((obj, idx) => (
+                  <TouchableOpacity
+                    key={'wp-' + idx}
                     style={[
                       styles.seniorWaypointPill,
-                      povMode === 'overview' && !activeMemoryModal && styles.seniorWaypointPillActive
+                      activeMemoryModal?.label === obj.label && styles.seniorWaypointPillActive
                     ]}
-                    onPress={handleResetOverview}
+                    onPress={() => {
+                      setGlideLabel(obj.label);
+                      setTimeout(() => setGlideLabel(''), 600);
+                    }}
                     activeOpacity={0.8}
                   >
                     <Text style={[
                       styles.seniorWaypointPillText,
-                      povMode === 'overview' && !activeMemoryModal && styles.seniorWaypointPillTextActive
+                      activeMemoryModal?.label === obj.label && styles.seniorWaypointPillTextActive
                     ]}>
-                      🏠 Toàn cảnh
+                      {getObjectIcon(obj.kind)} {obj.label}
                     </Text>
                   </TouchableOpacity>
-                  {interactiveObjects.map((obj, idx) => (
-                    <TouchableOpacity
-                      key={'wp-' + idx}
-                      style={[
-                        styles.seniorWaypointPill,
-                        activeMemoryModal?.label === obj.label && styles.seniorWaypointPillActive
-                      ]}
-                      onPress={() => {
-                        setGlideLabel(obj.label);
-                        setTimeout(() => setGlideLabel(''), 600);
-                      }}
-                      activeOpacity={0.8}
-                    >
-                      <Text style={[
-                        styles.seniorWaypointPillText,
-                        activeMemoryModal?.label === obj.label && styles.seniorWaypointPillTextActive
-                      ]}>
-                        {getObjectIcon(obj.kind)} {obj.label}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
-            )}
+                ))}
+              </ScrollView>
+            </View>
           </View>
 
           {/* Thẻ Ký Ức & Tương Tác Cụ Thể (Interactive Tactile Modals) */}
@@ -1949,10 +1941,47 @@ export default function App() {
                       setFocusLabel('');
                       setActiveMemoryModal(null);
                     }}
+                    activeOpacity={0.8}
                   >
-                    <Text style={styles.patientCardCloseText}>✕ Đóng</Text>
+                    <Text style={styles.patientCardCloseText}>✕ Trở lại phòng</Text>
                   </TouchableOpacity>
                 </View>
+
+                {/* Huy hiệu Tính Xác Thực & Nguồn Ký Ức (Mục 3.3) */}
+                {(activeMemoryModal.item?.source?.type === 'user_provided' || activeMemoryModal.item?.isCaregiverVerified !== false) ? (
+                  <View style={styles.verifiedMemoryBadge}>
+                    <Text style={styles.verifiedMemoryBadgeIcon}>🌟</Text>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.verifiedMemoryBadgeTitle}>Ký ức do gia đình lưu giữ</Text>
+                      <Text style={styles.verifiedMemoryBadgeDesc}>
+                        {activeMemoryModal.item?.verifiedBy
+                          ? `Ghi nhận bởi ${activeMemoryModal.item.verifiedBy}`
+                          : 'Kỷ vật đời thực đã được người chăm sóc xác nhận'}
+                      </Text>
+                    </View>
+                  </View>
+                ) : (
+                  <View style={styles.inferredMemoryBadge}>
+                    <Text style={styles.inferredMemoryBadgeIcon}>💡</Text>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.inferredMemoryBadgeTitle}>Khu vực không gian ước đoán</Text>
+                      <Text style={styles.inferredMemoryBadgeDesc}>
+                        Gợi ý tái hiện của AI, chưa có xác nhận từ người thân
+                      </Text>
+                    </View>
+                  </View>
+                )}
+
+                {/* Hình ảnh chính (Mục 3.2: Kích thước đủ lớn, dễ quan sát) */}
+                {Boolean(activeMemoryModal.item?.photoUri || activeMemoryModal.item?.memoryFragment?.image || activeMemoryModal.item?.memoryFragment?.photoUrl) && (
+                  <View style={styles.memoryMainImageContainer}>
+                    <Image
+                      source={{ uri: activeMemoryModal.item.photoUri || activeMemoryModal.item.memoryFragment.image || activeMemoryModal.item.memoryFragment.photoUrl }}
+                      style={styles.memoryMainImage}
+                      resizeMode="cover"
+                    />
+                  </View>
+                )}
 
                 <ScrollView style={[styles.patientCardBody, isLandscape && { maxHeight: 160 }]} contentContainerStyle={{ paddingBottom: 10 }}>
                   {/* 1. Tủ Quần Áo */}
@@ -2106,7 +2135,7 @@ export default function App() {
                   )}
                 </ScrollView>
 
-                {/* Card Actions */}
+                {/* Card Actions (Mục 3.2 & 4.3: Phát, tạm dừng, phát lại, đóng rõ ràng, vùng chạm >= 48px) */}
                 <View style={styles.patientCardActions}>
                   <TouchableOpacity
                     style={[
@@ -2117,7 +2146,7 @@ export default function App() {
                       const textToRead = activeMemoryModal.item?.interaction?.type === 'book_read'
                         ? (activeMemoryModal.item.interaction.pages?.[bookPageIndex] || activeMemoryModal.description)
                         : (activeMemoryModal.item?.memoryFragment?.story
-                            ? `${activeMemoryModal.label}. ${activeMemoryModal.item.memoryFragment.story}. ${activeMemoryModal.item.memoryFragment.senseOfSelf}`
+                            ? `${activeMemoryModal.label}. ${activeMemoryModal.item.memoryFragment.story}. ${activeMemoryModal.item.memoryFragment.senseOfSelf || ''}`
                             : activeMemoryModal.description);
                       if (speakingText) {
                         setSpeakingText(null);
@@ -2125,26 +2154,113 @@ export default function App() {
                         setSpeakingText(textToRead);
                       }
                     }}
+                    activeOpacity={0.8}
                   >
                     <Text style={styles.patientSpeakBtnText}>
-                      {speakingText ? '⏹ Dừng đọc' : '🔊 Nghe giọng đọc'}
+                      {speakingText ? '⏸️ Tạm dừng' : '🔊 Nghe kể lại'}
                     </Text>
                   </TouchableOpacity>
 
+                  {speakingText && (
+                    <TouchableOpacity
+                      style={styles.patientReplayBtn}
+                      onPress={() => {
+                        const textToRead = activeMemoryModal.item?.interaction?.type === 'book_read'
+                          ? (activeMemoryModal.item.interaction.pages?.[bookPageIndex] || activeMemoryModal.description)
+                          : (activeMemoryModal.item?.memoryFragment?.story
+                              ? `${activeMemoryModal.label}. ${activeMemoryModal.item.memoryFragment.story}. ${activeMemoryModal.item.memoryFragment.senseOfSelf || ''}`
+                              : activeMemoryModal.description);
+                        setSpeakingText(null);
+                        setTimeout(() => setSpeakingText(textToRead), 60);
+                      }}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={styles.patientReplayBtnText}>🔁 Nghe lại</Text>
+                    </TouchableOpacity>
+                  )}
+
                   <TouchableOpacity
-                    style={styles.patientFocusBtn}
+                    style={styles.patientBackRoomBtn}
                     onPress={() => {
-                      setGlideLabel(activeMemoryModal.label);
-                      setTimeout(() => setGlideLabel(''), 600);
+                      setSpeakingText(null);
+                      setFocusLabel('');
                       setActiveMemoryModal(null);
                     }}
+                    activeOpacity={0.8}
                   >
-                    <Text style={styles.patientFocusBtnText}>👁️ Đến ngắm cự ly gần</Text>
+                    <Text style={styles.patientBackRoomBtnText}>✕ Trở lại phòng</Text>
                   </TouchableOpacity>
                 </View>
               </View>
             </View>
           )}
+
+          {/* Modal Hướng Dẫn Khám Phá Dành Cho Người Cao Tuổi (Mục 5.2) */}
+          <Modal
+            onRequestClose={() => setPatientGuideModalVisible(false)}
+            visible={patientGuideModalVisible}
+            animationType="fade"
+            transparent
+          >
+            <View style={styles.modalOverlay}>
+              <View style={[styles.modalContent, styles.patientGuideCard]}>
+                <Text style={styles.patientGuideHeader}>🌸 KHÔNG GIAN KÝ ỨC CỦA BÁC</Text>
+                <Text style={styles.patientGuideSubheader}>
+                  Nơi Bác tự do dạo ngắm và tìm lại những mẩu chuyện thân thương nhất
+                </Text>
+
+                <View style={styles.patientGuideItemsList}>
+                  <View style={styles.patientGuideRow}>
+                    <Text style={styles.patientGuideRowIcon}>✨</Text>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.patientGuideRowTitle}>Chạm vào đồ vật</Text>
+                      <Text style={styles.patientGuideRowDesc}>
+                        Các đồ vật có đốm sáng lấp lánh lưu giữ hình ảnh và kỷ niệm gia đình thân thuộc.
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.patientGuideRow}>
+                    <Text style={styles.patientGuideRowIcon}>🔊</Text>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.patientGuideRowTitle}>Nghe giọng kể ấm áp</Text>
+                      <Text style={styles.patientGuideRowDesc}>
+                        Nhấn nút 'Nghe kể lại' để lắng nghe lời kể thong thả, có thể tạm dừng hoặc nghe lại bất cứ lúc nào.
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.patientGuideRow}>
+                    <Text style={styles.patientGuideRowIcon}>🏠</Text>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.patientGuideRowTitle}>Góc nhìn định sẵn, không sợ lạc</Text>
+                      <Text style={styles.patientGuideRowDesc}>
+                        Bác luôn có thể nhấn 'Toàn cảnh phòng' hoặc chọn các góc phòng bên dưới để quan sát căn phòng một cách vững vàng, không bị chóng mặt.
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.patientGuideRow}>
+                    <Text style={styles.patientGuideRowIcon}>🌿</Text>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.patientGuideRowTitle}>Tự chủ và thư thái</Text>
+                      <Text style={styles.patientGuideRowDesc}>
+                        Không tính giờ, không tính điểm, không có câu hỏi kiểm tra. Bác cứ thong thả dạo ngắm theo nhịp sống của riêng mình.
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                <TouchableOpacity
+                  style={styles.patientGuideCloseBtn}
+                  onPress={() => setPatientGuideModalVisible(false)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.patientGuideCloseBtnText}>🌸 Tôi đã hiểu, tiếp tục dạo phòng</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
 
           {/* Modal Sổ Tay Ký Ức Bản Thân (Sense of Self Modal) */}
           <Modal
@@ -2930,34 +3046,50 @@ const styles = StyleSheet.create({
     bottom: 12,
     left: 12,
     right: 12,
-    backgroundColor: 'rgba(18, 26, 22, 0.92)',
-    borderRadius: 16,
-    padding: 10,
-    borderWidth: 1.2,
+    backgroundColor: 'rgba(16, 26, 21, 0.94)',
+    borderRadius: 18,
+    padding: 12,
+    borderWidth: 1.5,
     borderColor: '#3a5447',
   },
   seniorWaypointsTitle: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '700',
-    color: '#80c2a6',
-    marginBottom: 6,
+    color: '#a3f0c4',
+    marginBottom: 4,
+  },
+  seniorOverviewSmallBtn: {
+    backgroundColor: '#254436',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#3f7057',
+  },
+  seniorOverviewSmallBtnText: {
+    color: '#a3f0c4',
+    fontSize: 13,
+    fontWeight: '700',
   },
   seniorWaypointPill: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#243b31',
-    borderWidth: 1,
-    borderColor: '#3a5c4d',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    minHeight: 48,
+    borderRadius: 24,
+    backgroundColor: '#21382e',
+    borderWidth: 1.2,
+    borderColor: '#395c4c',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   seniorWaypointPillActive: {
-    backgroundColor: '#34a853',
-    borderColor: '#46c268',
+    backgroundColor: '#2e7d4d',
+    borderColor: '#4ade80',
   },
   seniorWaypointPillText: {
-    fontSize: 13.5,
+    fontSize: 15,
     fontWeight: '700',
-    color: '#d4ebd9',
+    color: '#e4efe9',
   },
   seniorWaypointPillTextActive: {
     color: '#ffffff',
@@ -2993,52 +3125,53 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   modalSubHeader: {
-    fontSize: 14,
+    fontSize: 17,
     fontWeight: '700',
-    color: '#8b5a2b',
-    marginBottom: 4,
+    color: '#e2ba86',
+    marginBottom: 6,
   },
   itemDetailRow: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fbf8f1',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-    marginVertical: 2,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 10,
+    marginVertical: 3,
     borderWidth: 1,
     borderColor: '#eee5d8',
   },
   itemDetailIcon: {
-    fontSize: 16,
+    fontSize: 18,
     marginRight: 8,
   },
   itemDetailText: {
-    fontSize: 13.5,
-    color: '#333333',
+    fontSize: 16,
+    color: '#222222',
+    lineHeight: 24,
     flex: 1,
   },
   unlockedFragmentBox: {
     marginTop: 12,
     backgroundColor: '#fffdf0',
-    borderRadius: 10,
-    padding: 12,
+    borderRadius: 12,
+    padding: 14,
     borderWidth: 1.2,
     borderColor: '#f9ab00',
   },
   unlockedFragmentTitle: {
-    fontSize: 14.5,
+    fontSize: 18,
     fontWeight: '800',
     color: '#b06000',
     marginBottom: 4,
   },
   unlockedFragmentStory: {
-    fontSize: 13.5,
-    color: '#444444',
-    lineHeight: 20,
+    fontSize: 17,
+    color: '#333333',
+    lineHeight: 26,
   },
   unlockedFragmentSelf: {
-    fontSize: 13,
+    fontSize: 16,
     color: '#137333',
     fontWeight: '700',
     fontStyle: 'italic',
@@ -3049,74 +3182,77 @@ const styles = StyleSheet.create({
   },
   bookPageCard: {
     backgroundColor: '#fffef7',
-    borderRadius: 12,
-    padding: 14,
+    borderRadius: 14,
+    padding: 16,
     borderWidth: 1.5,
     borderColor: '#e8dcbe',
-    minHeight: 100,
+    minHeight: 120,
   },
   bookPageIndicator: {
-    fontSize: 11.5,
+    fontSize: 14,
     fontWeight: '700',
-    color: '#a07844',
-    marginBottom: 6,
+    color: '#8b5a2b',
+    marginBottom: 8,
     textTransform: 'uppercase',
   },
   bookPageText: {
-    fontSize: 15,
+    fontSize: 18,
     color: '#2a2218',
-    lineHeight: 23,
-    fontStyle: 'italic',
+    lineHeight: 28,
   },
   bookControlsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 8,
-    gap: 8,
+    marginTop: 10,
+    gap: 10,
   },
   bookPageBtn: {
     flex: 1,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingVertical: 12,
+    minHeight: 48,
+    borderRadius: 12,
     backgroundColor: '#f5eee1',
     alignItems: 'center',
-    borderWidth: 1,
+    justifyContent: 'center',
+    borderWidth: 1.2,
     borderColor: '#d8c7ac',
   },
   bookPageBtnText: {
-    fontSize: 13,
+    fontSize: 15,
     fontWeight: '700',
     color: '#5c4524',
   },
   bedRelaxBox: {
     alignItems: 'center',
-    paddingVertical: 4,
+    paddingVertical: 6,
   },
   bedBreathCircle: {
-    marginTop: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 20,
+    marginTop: 12,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 24,
     backgroundColor: '#e8f5e9',
-    borderWidth: 1,
+    borderWidth: 1.2,
     borderColor: '#a5d6a7',
   },
   bedBreathDot: {
-    fontSize: 13,
+    fontSize: 15,
     color: '#2e7d32',
-    fontWeight: '600',
+    fontWeight: '700',
     textAlign: 'center',
   },
   doorTransitionBtn: {
-    marginTop: 10,
+    marginTop: 12,
     backgroundColor: '#2e7d32',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: 22,
+    paddingVertical: 14,
+    minHeight: 48,
     borderRadius: 24,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   doorTransitionBtnText: {
-    fontSize: 14.5,
+    fontSize: 16,
     fontWeight: '800',
     color: '#ffffff',
   },
@@ -3956,10 +4092,10 @@ const styles = StyleSheet.create({
   },
   patientMemoryCard: {
     width: '100%',
-    maxWidth: 420,
-    maxHeight: '75%',
-    backgroundColor: '#1b2a24',
-    borderRadius: 18,
+    maxWidth: 480,
+    maxHeight: '84%',
+    backgroundColor: '#16241e',
+    borderRadius: 20,
     borderWidth: 1.5,
     borderColor: '#4d7563',
     padding: 18,
@@ -3972,11 +4108,11 @@ const styles = StyleSheet.create({
   patientCardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#2b4036',
     paddingBottom: 12,
-    marginBottom: 12,
+    marginBottom: 10,
   },
   patientCardIconTitle: {
     flexDirection: 'row',
@@ -3985,51 +4121,125 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   patientCardAvatar: {
-    fontSize: 32,
+    fontSize: 34,
   },
   patientCardTitle: {
-    fontSize: 19,
+    fontSize: 22,
     fontWeight: '800',
     color: '#ffffff',
   },
   patientCardSubtitle: {
-    fontSize: 12,
-    color: '#8dc5ad',
+    fontSize: 15,
+    color: '#9ed3bd',
     fontWeight: '600',
-    marginTop: 2,
+    marginTop: 3,
   },
   patientCardCloseBtn: {
-    backgroundColor: '#2b3f36',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 12,
+    backgroundColor: '#273b32',
+    minHeight: 44,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#3c5a4b',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   patientCardCloseText: {
-    color: '#d4eae0',
-    fontSize: 12,
-    fontWeight: '700',
+    color: '#e4f5ed',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  verifiedMemoryBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#193326',
+    borderColor: '#2e7d4d',
+    borderWidth: 1.2,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 10,
+    gap: 10,
+  },
+  verifiedMemoryBadgeIcon: {
+    fontSize: 22,
+  },
+  verifiedMemoryBadgeTitle: {
+    color: '#6ee7b7',
+    fontSize: 14.5,
+    fontWeight: '800',
+  },
+  verifiedMemoryBadgeDesc: {
+    color: '#d1fae5',
+    fontSize: 12.5,
+    fontWeight: '500',
+    marginTop: 1,
+  },
+  inferredMemoryBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#332b17',
+    borderColor: '#b48328',
+    borderWidth: 1.2,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 10,
+    gap: 10,
+  },
+  inferredMemoryBadgeIcon: {
+    fontSize: 22,
+  },
+  inferredMemoryBadgeTitle: {
+    color: '#fcd34d',
+    fontSize: 14.5,
+    fontWeight: '800',
+  },
+  inferredMemoryBadgeDesc: {
+    color: '#fef3c7',
+    fontSize: 12.5,
+    fontWeight: '500',
+    marginTop: 1,
+  },
+  memoryMainImageContainer: {
+    width: '100%',
+    height: 180,
+    borderRadius: 14,
+    overflow: 'hidden',
+    marginBottom: 12,
+    backgroundColor: '#0f1713',
+    borderWidth: 1.5,
+    borderColor: '#3a5447',
+  },
+  memoryMainImage: {
+    width: '100%',
+    height: '100%',
   },
   patientCardBody: {
-    maxHeight: 180,
+    maxHeight: 280,
     marginBottom: 14,
   },
   patientCardText: {
-    fontSize: 15.5,
-    lineHeight: 25,
-    color: '#e4f2eb',
+    fontSize: 18,
+    lineHeight: 28,
+    color: '#ffffff',
   },
   patientCardActions: {
     flexDirection: 'row',
     gap: 10,
+    alignItems: 'center',
   },
   patientSpeakBtn: {
-    flex: 1,
+    flex: 1.2,
     backgroundColor: '#2e6b54',
+    minHeight: 48,
     paddingVertical: 12,
-    borderRadius: 12,
+    paddingHorizontal: 8,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
+    borderWidth: 1.2,
     borderColor: '#499074',
   },
   patientSpeakBtnActive: {
@@ -4038,23 +4248,136 @@ const styles = StyleSheet.create({
   },
   patientSpeakBtnText: {
     color: '#ffffff',
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '800',
   },
-  patientFocusBtn: {
-    flex: 1,
-    backgroundColor: '#22382e',
+  patientReplayBtn: {
+    flex: 0.9,
+    backgroundColor: '#1f4838',
+    minHeight: 48,
     paddingVertical: 12,
-    borderRadius: 12,
+    paddingHorizontal: 8,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
+    borderWidth: 1.2,
+    borderColor: '#3c7059',
+  },
+  patientReplayBtnText: {
+    color: '#a3f0c4',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  patientBackRoomBtn: {
+    flex: 1.1,
+    backgroundColor: '#263b32',
+    minHeight: 48,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.2,
     borderColor: '#3c5a4b',
   },
-  patientFocusBtnText: {
-    color: '#a3d9c3',
+  patientBackRoomBtnText: {
+    color: '#e4efe9',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  patientGentleGuidanceBanner: {
+    backgroundColor: 'rgba(20, 32, 26, 0.94)',
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#2b4036',
+    alignItems: 'center',
+  },
+  patientGentleGuidanceText: {
+    color: '#b6e3cf',
+    fontSize: 13.5,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  patientGuideBtn: {
+    backgroundColor: '#203d30',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#3a6650',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  patientGuideBtnText: {
+    color: '#d4ebd9',
     fontSize: 13,
     fontWeight: '700',
+  },
+  patientGuideCard: {
+    width: '100%',
+    maxWidth: 440,
+    backgroundColor: '#16241e',
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: '#4d7563',
+    padding: 20,
+  },
+  patientGuideHeader: {
+    fontSize: 19,
+    fontWeight: '800',
+    color: '#ffffff',
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  patientGuideSubheader: {
+    fontSize: 14,
+    color: '#9ed3bd',
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 16,
+  },
+  patientGuideItemsList: {
+    gap: 12,
+    marginBottom: 18,
+  },
+  patientGuideRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    backgroundColor: '#1b2c25',
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#2d453a',
+  },
+  patientGuideRowIcon: {
+    fontSize: 24,
+  },
+  patientGuideRowTitle: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  patientGuideRowDesc: {
+    color: '#d0e5da',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  patientGuideCloseBtn: {
+    backgroundColor: '#2e6b54',
+    minHeight: 48,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.2,
+    borderColor: '#499074',
+  },
+  patientGuideCloseBtnText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '800',
   },
 
   // ===== Modals & Settings =====
